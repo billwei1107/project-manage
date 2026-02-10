@@ -1,59 +1,52 @@
 import { useState } from 'react';
-import { Box, Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material';
+import { Box, Button, TextField, Typography, Alert, CircularProgress } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore, type UserRole } from '../stores/useAuthStore';
+import { useAuthStore } from '../stores/useAuthStore';
 
 /**
  * @file Login.tsx
  * @description Login Page
- * @description_en Mock login form with role selection
- * @description_zh 模擬登入表單，包含角色選擇功能
+ * @description_en Real login form with API integration
+ * @description_zh 真實登入表單，整合後端 API
  */
 
 export default function Login() {
     const navigate = useNavigate();
-    const login = useAuthStore((state) => state.login);
-    const [role, setRole] = useState<UserRole>('ADMIN');
+    const { login, isLoading, error } = useAuthStore();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        // Mock Login Logic
-        login({
-            id: '1',
-            name: role === 'ADMIN' ? 'Admin User' : 'Client User',
-            email: `${role.toLowerCase()}@example.com`,
-            role: role,
-        });
+    const handleLogin = async () => {
+        if (!email || !password) return;
 
-        // Redirect based on role
-        if (role === 'CLIENT') {
-            navigate('/client');
-        } else {
-            navigate('/admin');
+        try {
+            await login(email, password);
+            navigate('/'); // Redirect to Dashboard on success
+        } catch (err) {
+            console.error("Login failed:", err);
         }
     };
 
     return (
         <Box sx={{ width: '100%' }}>
-            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'center' }}>
-                <ToggleButtonGroup
-                    value={role}
-                    exclusive
-                    onChange={(_, newRole) => newRole && setRole(newRole)}
-                    aria-label="role selection"
-                    fullWidth
-                >
-                    <ToggleButton value="ADMIN">管理員 / 開發者</ToggleButton>
-                    <ToggleButton value="CLIENT">客戶</ToggleButton>
-                </ToggleButtonGroup>
-            </Box>
+            <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, textAlign: 'center', color: 'primary.main' }}>
+                Project Manage CRM
+            </Typography>
+
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>
+                    {error}
+                </Alert>
+            )}
 
             <TextField
                 fullWidth
                 label="電子郵件"
                 variant="outlined"
                 margin="normal"
-                defaultValue="admin@example.com"
-                disabled
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isLoading}
             />
 
             <TextField
@@ -62,22 +55,27 @@ export default function Login() {
                 type="password"
                 variant="outlined"
                 margin="normal"
-                defaultValue="password"
-                disabled
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                onKeyPress={(e) => {
+                    if (e.key === 'Enter') handleLogin();
+                }}
             />
 
             <Button
                 fullWidth
                 variant="contained"
                 size="large"
-                sx={{ mt: 3 }}
+                sx={{ mt: 3, height: 48 }}
                 onClick={handleLogin}
+                disabled={isLoading}
             >
-                登入
+                {isLoading ? <CircularProgress size={24} /> : '登入'}
             </Button>
 
             <Typography variant="caption" display="block" sx={{ mt: 2, textAlign: 'center', color: 'text.secondary' }}>
-                * 模擬登入：密碼未經驗證
+                * 請使用註冊的帳號密碼登入
             </Typography>
         </Box>
     );
