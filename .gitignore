@@ -9,3 +9,6 @@ target/
 .gradle/
 .mvn/
 
+
+# Large Design Files
+docs/design/FIGMA拷貝/

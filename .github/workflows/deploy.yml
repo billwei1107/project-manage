@@ -1,0 +1,44 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: SSH Remote Commands
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USER }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script: |
+          # 1. Navigate to project directory
+          if [ -d "project-manage" ]; then
+            cd project-manage
+            echo "Pulling latest code..."
+            git pull origin main
+          else
+            echo "Cloning project..."
+            git clone https://github.com/billwei1107/project-manage.git
+            cd project-manage
+          fi
+
+          # 2. Stop old containers (Optional, but safe)
+          # docker compose -f docker/compose.yaml down
+
+          # 3. Start services with build
+          echo "Starting Docker Compose..."
+          docker compose -f docker/compose.yaml up -d --build --remove-orphans
+
+          # 4. Cleanup unused images
+          docker image prune -f
+          
+          echo "Deployment Completed!"
