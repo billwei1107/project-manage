@@ -47,3 +47,19 @@ jobs:
           docker image prune -f
           
           echo "Deployment Completed!"
+
+          # 5. POST-DEPLOY DEBUGGING (Strictly for diagnosis)
+          echo "=== DEBUGGING: Container Status ==="
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          
+          echo "=== DEBUGGING: Frontend File Check ==="
+          if docker ps | grep -q project-manage-frontend; then
+            docker exec project-manage-frontend ls -alR /usr/share/nginx/html
+            echo "--- Nginx Config ---"
+            docker exec project-manage-frontend cat /etc/nginx/conf.d/default.conf
+          else
+            echo "Frontend container is NOT running!"
+          fi
+
+          echo "=== DEBUGGING: Internal Curl Test ==="
+          curl -I http://localhost:8080 || echo "Curl failed"
