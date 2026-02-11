@@ -15,7 +15,6 @@ import {
     Divider,
     Button,
     Avatar,
-    Box, // Duplicate removed locally by using the one from this block
 } from '@mui/material';
 import {
     AttachMoney,
