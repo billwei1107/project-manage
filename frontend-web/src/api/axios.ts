@@ -30,6 +30,12 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     (error) => {
+        console.error('API Error:', {
+            url: error.config?.url,
+            status: error.response?.status,
+            data: error.response?.data
+        });
+
         if (error.response?.status === 401) {
             // Token expired or invalid
             localStorage.removeItem('token');
