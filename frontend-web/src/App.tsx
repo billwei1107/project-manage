@@ -6,6 +6,8 @@ import AdminLayout from './layouts/AdminLayout';
 import ClientLayout from './layouts/ClientLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import ProjectList from './pages/projects/ProjectList';
+import ProjectDetail from './pages/projects/ProjectDetail';
 
 /**
  * @file App.tsx
@@ -21,6 +23,7 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<Navigate to="/admin" replace />} />
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
           </Route>
@@ -28,7 +31,8 @@ function App() {
           {/* Protected Routes */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="projects" element={<div>Projects List</div>} />
+            <Route path="projects" element={<ProjectList />} />
+            <Route path="projects/:id" element={<ProjectDetail />} />
             <Route path="calendar" element={<div>Calendar (Coming Soon)</div>} />
             <Route path="finance" element={<div>Finance Overview</div>} />
             <Route path="messenger" element={<div>Messenger (Coming Soon)</div>} />

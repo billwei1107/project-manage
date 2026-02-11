@@ -7,7 +7,11 @@ import {
     IconButton,
     LinearProgress,
     Chip,
+    CircularProgress,
 } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { getProjects } from '../api/projects';
+import type { Project } from '../types/project';
 import { useTheme, alpha } from '@mui/material/styles';
 import {
     TrendingUp,
@@ -58,6 +62,46 @@ const ACTIVITY_DATA = [
 
 export default function Dashboard() {
     const theme = useTheme();
+    const [stats, setStats] = useState({
+        activeProjects: 0,
+        totalRevenue: 0,
+        completedProjects: 0,
+        avgProgress: 0,
+    });
+    const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetchDashboardData();
+    }, []);
+
+    const fetchDashboardData = async () => {
+        try {
+            const projects = await getProjects();
+
+            // Calculate Stats
+            const active = projects.filter(p => p.status !== 'DONE');
+            const done = projects.filter(p => p.status === 'DONE');
+
+            const revenue = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
+            const progressSum = active.reduce((sum, p) => sum + (p.progress || 0), 0);
+            const avg = active.length > 0 ? Math.round(progressSum / active.length) : 0;
+
+            setStats({
+                activeProjects: active.length,
+                totalRevenue: revenue,
+                completedProjects: done.length,
+                avgProgress: avg,
+            });
+
+            // Get recent/active projects for list
+            setRecentProjects(active.slice(0, 5));
+        } catch (error) {
+            console.error('Failed to load dashboard data:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const StatCard = ({ title, value, trend, percent, color, icon }: any) => (
         <Paper
@@ -115,20 +159,24 @@ export default function Dashboard() {
         </Paper>
     );
 
+    if (loading) {
+        return <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>;
+    }
+
     return (
         <Box>
             <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h4" sx={{ fontWeight: 800 }}>
                     總覽
                 </Typography>
-                <Chip label="過去 30 天" sx={{ bgcolor: 'white', fontWeight: 600 }} />
+                <Chip label="Realtime Data" color="primary" variant="outlined" sx={{ fontWeight: 600 }} />
             </Box>
 
             <Grid container spacing={3} sx={{ mb: 4 }}>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         title="活躍專案總數"
-                        value="12"
+                        value={stats.activeProjects}
                         trend="up"
                         percent="+2.6%"
                         color={theme.palette.primary.main}
@@ -138,7 +186,7 @@ export default function Dashboard() {
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
                         title="總營收"
-                        value="$48,200"
+                        value={`$${stats.totalRevenue.toLocaleString()}`}
                         trend="up"
                         percent="+12.4%"
                         color={theme.palette.success.main}
@@ -147,18 +195,18 @@ export default function Dashboard() {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
-                        title="已完成任務"
-                        value="340"
-                        trend="down"
-                        percent="-0.5%"
+                        title="已完成專案"
+                        value={stats.completedProjects}
+                        trend="up"
+                        percent="+5%"
                         color={theme.palette.warning.main}
                         icon={<CheckCircleOutline />}
                     />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                     <StatCard
-                        title="團隊效率"
-                        value="92%"
+                        title="平均進度 (效率)"
+                        value={`${stats.avgProgress}%`}
                         trend="up"
                         percent="+5%"
                         color={theme.palette.secondary.main}
@@ -256,22 +304,20 @@ export default function Dashboard() {
 
                         <Box sx={{ mt: 4 }}>
                             <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2 }}>
-                                專案進度
+                                進行中專案進度
                             </Typography>
-                            <Box sx={{ mb: 2 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                    <Typography variant="caption" fontWeight={600}>Marketing Site</Typography>
-                                    <Typography variant="caption" fontWeight={600}>75%</Typography>
+                            {recentProjects.map((project) => (
+                                <Box key={project.id} sx={{ mb: 2 }}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                        <Typography variant="caption" fontWeight={600}>{project.title}</Typography>
+                                        <Typography variant="caption" fontWeight={600}>{project.progress}%</Typography>
+                                    </Box>
+                                    <LinearProgress variant="determinate" value={project.progress} color="primary" sx={{ height: 6, borderRadius: 3 }} />
                                 </Box>
-                                <LinearProgress variant="determinate" value={75} color="primary" sx={{ height: 6, borderRadius: 3 }} />
-                            </Box>
-                            <Box sx={{ mb: 2 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                    <Typography variant="caption" fontWeight={600}>Mobile App</Typography>
-                                    <Typography variant="caption" fontWeight={600}>32%</Typography>
-                                </Box>
-                                <LinearProgress variant="determinate" value={32} color="secondary" sx={{ height: 6, borderRadius: 3 }} />
-                            </Box>
+                            ))}
+                            {recentProjects.length === 0 && (
+                                <Typography variant="body2" color="text.secondary">暫無進行中專案</Typography>
+                            )}
                         </Box>
                     </Paper>
                 </Grid>
