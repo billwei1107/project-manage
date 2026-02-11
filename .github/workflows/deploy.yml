@@ -20,6 +20,11 @@ jobs:
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         script: |
+          # 0. Check Active Ports (Diagnostic)
+          echo "=== ACTIVE PORTS (Before Maintainance) ==="
+          sudo netstat -tulpn | grep LISTEN || sudo ss -tulpn | grep LISTEN
+          echo "=========================================="
+
           # 1. Navigate to project directory
           if [ -d "project-manage" ]; then
             cd project-manage
