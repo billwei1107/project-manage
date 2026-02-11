@@ -33,7 +33,8 @@ public class SecurityConfig {
                                 .csrf(AbstractHttpConfigurer::disable)
                                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
                                 .authorizeHttpRequests(auth -> auth
-                                                .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**",
+                                                .requestMatchers("/api/auth/**", "/api/v1/auth/**", "/swagger-ui/**",
+                                                                "/v3/api-docs/**",
                                                                 "/error")
                                                 .permitAll()
                                                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")

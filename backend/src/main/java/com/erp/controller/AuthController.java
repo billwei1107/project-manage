@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @description_zh 認證相關的 Rest API 接口
  */
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -33,5 +33,14 @@ public class AuthController {
     public ResponseEntity<AuthResponse> authenticate(
             @RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.authenticate(request));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<AuthResponse.UserInfo> getCurrentUser() {
+        AuthResponse.UserInfo user = authService.getCurrentUser();
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+        return ResponseEntity.ok(user);
     }
 }

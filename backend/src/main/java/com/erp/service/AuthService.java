@@ -8,6 +8,7 @@ import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,56 +22,75 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
+        private final UserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
+        private final JwtService jwtService;
+        private final AuthenticationManager authenticationManager;
 
-    public AuthResponse register(AuthRequest request) {
-        // For demo purposes, creating a default ADMIN user if not exists
-        // In real app, registration logic would be more complex
-        var user = User.builder()
-                .name("New User")
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .role(User.Role.ADMIN)
-                .build();
+        public AuthResponse register(AuthRequest request) {
+                // For demo purposes, creating a default ADMIN user if not exists
+                // In real app, registration logic would be more complex
+                var user = User.builder()
+                                .name("New User")
+                                .email(request.getEmail())
+                                .password(passwordEncoder.encode(request.getPassword()))
+                                .role(User.Role.ADMIN)
+                                .build();
 
-        userRepository.save(user);
-        var userDetails = new com.erp.config.UserAdapter(user);
-        var jwtToken = jwtService.generateToken(userDetails);
+                userRepository.save(user);
+                var userDetails = new com.erp.config.UserAdapter(user);
+                var jwtToken = jwtService.generateToken(userDetails);
 
-        return AuthResponse.builder()
-                .token(jwtToken)
-                .user(AuthResponse.UserInfo.builder()
-                        .id(user.getId())
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .build())
-                .build();
-    }
+                return AuthResponse.builder()
+                                .token(jwtToken)
+                                .user(AuthResponse.UserInfo.builder()
+                                                .id(user.getId())
+                                                .name(user.getName())
+                                                .email(user.getEmail())
+                                                .role(user.getRole())
+                                                .build())
+                                .build();
+        }
 
-    public AuthResponse authenticate(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()));
+        public AuthResponse authenticate(AuthRequest request) {
+                authenticationManager.authenticate(
+                                new UsernamePasswordAuthenticationToken(
+                                                request.getEmail(),
+                                                request.getPassword()));
 
-        var user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow();
+                var user = userRepository.findByEmail(request.getEmail())
+                                .orElseThrow();
 
-        var userDetails = new com.erp.config.UserAdapter(user);
-        var jwtToken = jwtService.generateToken(userDetails);
+                var userDetails = new com.erp.config.UserAdapter(user);
+                var jwtToken = jwtService.generateToken(userDetails);
 
-        return AuthResponse.builder()
-                .token(jwtToken)
-                .user(AuthResponse.UserInfo.builder()
-                        .id(user.getId())
-                        .name(user.getName())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .build())
-                .build();
-    }
+                return AuthResponse.builder()
+                                .token(jwtToken)
+                                .user(AuthResponse.UserInfo.builder()
+                                                .id(user.getId())
+                                                .name(user.getName())
+                                                .email(user.getEmail())
+                                                .role(user.getRole())
+                                                .build())
+                                .build();
+        }
+
+        public AuthResponse.UserInfo getCurrentUser() {
+                var authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || !authentication.isAuthenticated() ||
+                                authentication.getPrincipal().equals("anonymousUser")) {
+                        return null;
+                }
+
+                String email = authentication.getName();
+                var user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                return AuthResponse.UserInfo.builder()
+                                .id(user.getId())
+                                .name(user.getName())
+                                .email(user.getEmail())
+                                .role(user.getRole())
+                                .build();
+        }
 }

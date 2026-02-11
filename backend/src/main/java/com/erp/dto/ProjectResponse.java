@@ -42,5 +42,6 @@ public class ProjectResponse {
         private String id;
         private String name;
         private String email;
+        private com.erp.entity.User.Role role;
     }
 }

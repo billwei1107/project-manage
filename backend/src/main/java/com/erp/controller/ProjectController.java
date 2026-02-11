@@ -49,4 +49,9 @@ public class ProjectController {
         projectService.deleteProject(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}/members")
+    public ResponseEntity<List<ProjectResponse.MemberInfo>> getProjectMembers(@PathVariable String id) {
+        return ResponseEntity.ok(projectService.getProjectById(id).getTeam());
+    }
 }
