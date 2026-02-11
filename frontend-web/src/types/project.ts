@@ -6,6 +6,7 @@ export interface UserInfo {
     name: string;
     email: string;
     avatar?: string; // Optional for frontend display
+    role?: string;
 }
 
 export interface Project {
