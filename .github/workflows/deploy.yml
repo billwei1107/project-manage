@@ -36,15 +36,18 @@ jobs:
             cd project-manage
           fi
 
-          # 2. Stop old containers (Optional, but safe)
-          # docker compose -f docker/compose.yaml down
+          # 2. Stop old containers (Force Clean)
+          echo "Force stopping old containers..."
+          docker compose -f docker/compose.yaml down --rmi local --remove-orphans
+          docker system prune -af --volumes
 
           # 3. Start services with build
           echo "Starting Docker Compose..."
-          docker compose -f docker/compose.yaml up -d --build --remove-orphans
+          docker compose -f docker/compose.yaml up -d --build --force-recreate
 
-          # 4. Cleanup unused images
-          docker image prune -f
+          # 4. Immediate Log Check
+          echo "=== IMMEDIATE LOG CHECK ==="
+          docker logs project-manage-frontend || echo "No logs found"
           
           echo "Deployment Completed!"
 
