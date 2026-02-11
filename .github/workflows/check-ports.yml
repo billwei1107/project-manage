@@ -1,0 +1,35 @@
+name: Check Server Ports
+
+on:
+  push:
+    paths:
+      - '.github/workflows/check-ports.yml'
+  workflow_dispatch:
+
+jobs:
+  check-ports:
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH Remote Commands
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            echo "========================================"
+            echo "       CHECKING ACTIVE PORTS"
+            echo "========================================"
+            # Try netstat
+            if command -v netstat >/dev/null 2>&1; then
+                sudo netstat -tulpn | grep LISTEN
+            else
+                echo "netstat not found, using ss..."
+                sudo ss -tulpn | grep LISTEN
+            fi
+            
+            echo ""
+            echo "========================================"
+            echo "       DOCKER CONTAINERS"
+            echo "========================================"
+            docker ps --format "table {{.Names}}\t{{.Ports}}"
