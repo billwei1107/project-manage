@@ -12,8 +12,8 @@ export const mockProjects: Project[] = [
         progress: 45,
         description: '將舊版 ERP 系統升級至全新的雲端解決方案，包含資料庫遷移與新功能開發。',
         team: [
-            { id: 'u1', name: 'Alice', avatar: 'https://i.pravatar.cc/150?u=u1' },
-            { id: 'u2', name: 'Bob', avatar: 'https://i.pravatar.cc/150?u=u2' },
+            { id: 'u1', name: 'Alice', email: 'alice@example.com', avatar: 'https://i.pravatar.cc/150?u=u1' },
+            { id: 'u2', name: 'Bob', email: 'bob@example.com', avatar: 'https://i.pravatar.cc/150?u=u2' },
         ],
     },
     {
@@ -27,7 +27,7 @@ export const mockProjects: Project[] = [
         progress: 10,
         description: '重新設計面向消費者的行動應用程式，提升使用者體驗與介面流暢度。',
         team: [
-            { id: 'u3', name: 'Charlie', avatar: 'https://i.pravatar.cc/150?u=u3' },
+            { id: 'u3', name: 'Charlie', email: 'charlie@example.com', avatar: 'https://i.pravatar.cc/150?u=u3' },
         ],
     },
     {
@@ -41,8 +41,8 @@ export const mockProjects: Project[] = [
         progress: 100,
         description: '電子商務網站的年度維護合約，包含安全性更新與效能優化。',
         team: [
-            { id: 'u1', name: 'Alice', avatar: 'https://i.pravatar.cc/150?u=u1' },
-            { id: 'u4', name: 'Dave', avatar: 'https://i.pravatar.cc/150?u=u4' },
+            { id: 'u1', name: 'Alice', email: 'alice@example.com', avatar: 'https://i.pravatar.cc/150?u=u1' },
+            { id: 'u4', name: 'Dave', email: 'dave@example.com', avatar: 'https://i.pravatar.cc/150?u=u4' },
         ],
     },
     {
@@ -56,8 +56,8 @@ export const mockProjects: Project[] = [
         progress: 90,
         description: '整合 AI 聊天機器人至客戶支援系統的概念驗證專案。',
         team: [
-            { id: 'u2', name: 'Bob', avatar: 'https://i.pravatar.cc/150?u=u2' },
-            { id: 'u3', name: 'Charlie', avatar: 'https://i.pravatar.cc/150?u=u3' },
+            { id: 'u2', name: 'Bob', email: 'bob@example.com', avatar: 'https://i.pravatar.cc/150?u=u2' },
+            { id: 'u3', name: 'Charlie', email: 'charlie@example.com', avatar: 'https://i.pravatar.cc/150?u=u3' },
         ],
     },
 ];
