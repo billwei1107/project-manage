@@ -109,6 +109,6 @@ public class GitHubService {
     public String getDownloadUrl(String token, String repoName, String branch) throws IOException {
         GitHub github = getGitHubClient(token);
         GHRepository repo = github.getRepository(repoName);
-        return repo.getArchiveLink(branch).toString(); // Default zipball
+        return repo.getHtmlUrl().toString() + "/archive/" + branch + ".zip";
     }
 }
