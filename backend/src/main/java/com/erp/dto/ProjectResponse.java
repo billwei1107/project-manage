@@ -31,6 +31,11 @@ public class ProjectResponse {
     private Integer progress;
     private String description;
     private List<MemberInfo> team;
+    private String githubRepo;
+    private String githubBranch;
+    private String backupConfig;
+    private String githubToken;
+    private String fileLocation;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

@@ -58,6 +58,21 @@ public class Project {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column
+    private String githubRepo;
+
+    @Column
+    private String githubBranch;
+
+    @Column(columnDefinition = "TEXT")
+    private String backupConfig;
+
+    @Column
+    private String githubToken;
+
+    @Column
+    private String fileLocation;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default

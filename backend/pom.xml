@@ -72,6 +72,11 @@
       <artifactId>jjwt-jackson</artifactId>
       <version>0.11.5</version>
     </dependency>
+    <dependency>
+      <groupId>org.kohsuke</groupId>
+      <artifactId>github-api</artifactId>
+      <version>1.318</version>
+    </dependency>
   </dependencies>
 
   <build>

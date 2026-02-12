@@ -28,4 +28,9 @@ public class ProjectRequest {
     private ProjectStatus status;
     private String description;
     private List<String> teamIds;
+    private String githubRepo;
+    private String githubBranch;
+    private String backupConfig;
+    private String githubToken;
+    private String fileLocation;
 }

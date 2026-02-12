@@ -21,3 +21,6 @@ spring:
 
 server:
   port: ${SERVER_PORT:8081}
+
+github:
+  token: ${GITHUB_TOKEN:ghp_placeholder}

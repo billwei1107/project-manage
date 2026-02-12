@@ -10,7 +10,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
-import { getProjects } from '../api/projects';
+import { projectApi } from '../api/projects';
 import type { Project } from '../types/project';
 import { useTheme, alpha } from '@mui/material/styles';
 import {
@@ -77,14 +77,15 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
         try {
-            const projects = await getProjects();
+            const response = await projectApi.getProjects();
+            const projects = response.data;
 
             // Calculate Stats
             const active = projects.filter(p => p.status !== 'DONE');
             const done = projects.filter(p => p.status === 'DONE');
 
-            const revenue = projects.reduce((sum, p) => sum + (p.budget || 0), 0);
-            const progressSum = active.reduce((sum, p) => sum + (p.progress || 0), 0);
+            const revenue = projects.reduce((sum: number, p: Project) => sum + (p.budget || 0), 0);
+            const progressSum = active.reduce((sum: number, p: Project) => sum + (p.progress || 0), 0);
             const avg = active.length > 0 ? Math.round(progressSum / active.length) : 0;
 
             setStats({

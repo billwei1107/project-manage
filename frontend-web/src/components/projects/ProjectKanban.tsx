@@ -23,7 +23,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { Box, Paper, Typography, Card, CardContent, Chip, Avatar, CircularProgress } from '@mui/material';
 import type { Task, TaskStatus } from '../../types/project';
-import { getTasks, updateTask } from '../../api/projects';
+import { projectApi } from '../../api/projects';
 
 const COLUMNS = [
     { id: 'TODO', title: '待辦 (To Do)', color: '#e0e0e0' },
@@ -138,9 +138,10 @@ export default function ProjectKanban({ projectId }: ProjectKanbanProps) {
     const fetchTasks = async () => {
         try {
             setLoading(true);
-            const data = await getTasks(projectId);
+            const response = await projectApi.getTasks(projectId);
+            const data = (response as any).data || response;
             // Sort by orderIndex
-            const sortedData = data.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+            const sortedData = [...(data as Task[])].sort((a: Task, b: Task) => (a.orderIndex || 0) - (b.orderIndex || 0));
             setTasks(sortedData);
         } catch (err) {
             console.error('Failed to fetch tasks:', err);
@@ -269,7 +270,7 @@ export default function ProjectKanban({ projectId }: ProjectKanbanProps) {
                 // Update local state first to avoid flicker? 
                 // We shouldn't mutate state directly.
                 // We'll update the 'tasks' state with new order indices at the end.
-                updates.push(updateTask(t.id, {
+                updates.push(projectApi.updateTask(t.id, {
                     orderIndex: index,
                     status: t.status // Ensure status is synced too
                 }));

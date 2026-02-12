@@ -67,6 +67,11 @@ public class ProjectService {
                 .endDate(request.getEndDate())
                 .status(request.getStatus() != null ? request.getStatus() : ProjectStatus.PLANNING)
                 .description(request.getDescription())
+                .githubRepo(request.getGithubRepo())
+                .githubBranch(request.getGithubBranch())
+                .backupConfig(request.getBackupConfig())
+                .githubToken(request.getGithubToken())
+                .fileLocation(request.getFileLocation())
                 .progress(0) // Default progress
                 .team(team)
                 .build();
@@ -89,6 +94,11 @@ public class ProjectService {
         project.setEndDate(request.getEndDate());
         project.setStatus(request.getStatus());
         project.setDescription(request.getDescription());
+        project.setGithubRepo(request.getGithubRepo());
+        project.setGithubBranch(request.getGithubBranch());
+        project.setBackupConfig(request.getBackupConfig());
+        project.setGithubToken(request.getGithubToken());
+        project.setFileLocation(request.getFileLocation());
 
         if (request.getTeamIds() != null) {
             Set<User> team = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
@@ -130,6 +140,11 @@ public class ProjectService {
                 .progress(project.getProgress())
                 .description(project.getDescription())
                 .team(teamInfo)
+                .githubRepo(project.getGithubRepo())
+                .githubBranch(project.getGithubBranch())
+                .backupConfig(project.getBackupConfig())
+                .githubToken(project.getGithubToken())
+                .fileLocation(project.getFileLocation())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();

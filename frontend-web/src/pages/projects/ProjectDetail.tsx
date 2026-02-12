@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Box, Tabs, Tab, Typography, Breadcrumbs, Link, CircularProgress, Alert } from '@mui/material';
-import { NavigateNext as NavigateNextIcon } from '@mui/icons-material';
+import { NavigateNext as NavigateNextIcon, GitHub as GitHubIcon } from '@mui/icons-material';
 import ProjectKanban from '../../components/projects/ProjectKanban';
+import { GitHubConfig } from '../../components/projects/GitHubConfig';
 import { statusLabels } from '../../utils/project';
-import { getProject } from '../../api/projects';
-import type { Project } from '../../types/project';
+import { projectApi } from '../../api/projects';
+import type { Project } from '../../api/projects'; // Updated import source
 
 // Placeholder components
 import {
@@ -21,7 +22,6 @@ import {
     DateRange,
     AccessTime,
     Flag,
-    GitHub,
     Group,
     ArrowForward
 } from '@mui/icons-material';
@@ -65,7 +65,7 @@ const StatisticItem = ({ label, value, subtext }: any) => (
     </Box>
 );
 
-function ProjectOverview({ project }: { project: Project }) {
+function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurrentTab: (index: number) => void }) {
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(amount);
     };
@@ -143,7 +143,7 @@ function ProjectOverview({ project }: { project: Project }) {
                     <OverviewCard title="專案成員 (Team)" icon={<Group />} color="#8b5cf6">
                         <Stack spacing={2}>
                             {project.team && project.team.length > 0 ? (
-                                project.team.map((member) => (
+                                project.team.map((member: any) => (
                                     <Stack key={member.id} direction="row" alignItems="center" spacing={2}>
                                         <Avatar src={member.avatar} alt={member.name}>
                                             {member.name.charAt(0)}
@@ -174,17 +174,27 @@ function ProjectOverview({ project }: { project: Project }) {
                 <Grid size={{ xs: 12 }}>
                     <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#24292f', color: 'white' }}>
                         <Stack direction="row" alignItems="center" spacing={2}>
-                            <GitHub fontSize="large" />
+                            <GitHubIcon fontSize="large" />
                             <Box sx={{ flexGrow: 1 }}>
                                 <Typography variant="h6" fontWeight="700">
                                     GitHub Repository
                                 </Typography>
                                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                                    尚未連結代碼倉庫
+                                    {project.githubRepo || '尚未連結代碼倉庫'}
                                 </Typography>
+                                {project.githubBranch && (
+                                    <Typography variant="caption" sx={{ opacity: 0.6 }}>
+                                        分支: {project.githubBranch}
+                                    </Typography>
+                                )}
                             </Box>
-                            <Button variant="contained" color="primary" sx={{ bgcolor: 'white', color: 'black', '&:hover': { bgcolor: '#f0f0f0' } }}>
-                                連結 Repo
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                sx={{ bgcolor: 'white', color: 'black', '&:hover': { bgcolor: '#f0f0f0' } }}
+                                onClick={() => setCurrentTab(2)} // Switch to GitHub Setting tab
+                            >
+                                {project.githubRepo ? '管理 Repo' : '連結 Repo'}
                             </Button>
                         </Stack>
                     </Paper>
@@ -223,8 +233,8 @@ export default function ProjectDetail() {
     const fetchProject = async (projectId: string) => {
         try {
             setLoading(true);
-            const data = await getProject(projectId);
-            setProject(data);
+            const data = await projectApi.getProject(projectId);
+            setProject(data.data as any);
             setError(null);
         } catch (err) {
             console.error('Failed to fetch project:', err);
@@ -262,7 +272,7 @@ export default function ProjectDetail() {
                     <Link underline="hover" color="inherit" href="/">
                         儀表板
                     </Link>
-                    <Link underline="hover" color="inherit" href="/projects">
+                    <Link underline="hover" color="inherit" href="/admin/projects">
                         專案列表
                     </Link>
                     <Typography color="text.primary">{project.title}</Typography>
@@ -275,7 +285,7 @@ export default function ProjectDetail() {
                     {project.title}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
-                    {project.client} • {statusLabels[project.status]}
+                    {project.client} • {(statusLabels as any)[project.status]}
                 </Typography>
             </Box>
 
@@ -284,6 +294,7 @@ export default function ProjectDetail() {
                 <Tabs value={currentTab} onChange={handleTabChange}>
                     <Tab label="概覽 (Overview)" />
                     <Tab label="看板 (Kanban)" />
+                    <Tab label="GitHub 設定" />
                     <Tab label="文件 (Files)" />
                     <Tab label="財務 (Finance)" />
                 </Tabs>
@@ -291,10 +302,11 @@ export default function ProjectDetail() {
 
             {/* Content */}
             <Box sx={{ bgcolor: 'background.default', minHeight: 'calc(100vh - 200px)' }}>
-                {currentTab === 0 && <ProjectOverview project={project} />}
+                {currentTab === 0 && <ProjectOverview project={project} setCurrentTab={setCurrentTab} />}
                 {currentTab === 1 && <ProjectKanban projectId={project.id} />}
-                {currentTab === 2 && <ProjectFiles />}
-                {currentTab === 3 && <Typography sx={{ p: 3 }}>財務管理 (Finance - Coming Soon)</Typography>}
+                {currentTab === 2 && <GitHubConfig project={project} onUpdate={(updated) => setProject(updated)} />}
+                {currentTab === 3 && <ProjectFiles />}
+                {currentTab === 4 && <Typography sx={{ p: 3 }}>財務管理 (Finance - Coming Soon)</Typography>}
             </Box>
         </Box>
     );

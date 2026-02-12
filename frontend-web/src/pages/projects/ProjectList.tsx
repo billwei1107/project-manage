@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../types/project';
 import AddProjectModal from '../../components/projects/AddProjectModal';
 import { statusColors, statusLabels } from '../../utils/project';
-import { getProjects, createProject, deleteProject } from '../../api/projects';
+import { projectApi } from '../../api/projects';
 
 export default function ProjectList() {
     const navigate = useNavigate();
@@ -48,8 +48,8 @@ export default function ProjectList() {
     const fetchProjects = async () => {
         try {
             setLoading(true);
-            const data = await getProjects();
-            setProjects(data);
+            const response = await projectApi.getProjects();
+            setProjects(response.data);
             setError(null);
         } catch (err: any) {
             console.error('Failed to fetch projects:', err);
@@ -75,7 +75,7 @@ export default function ProjectList() {
         if (selectedProjectId) {
             if (window.confirm('確定要刪除此專案嗎？ (Are you sure?)')) {
                 try {
-                    await deleteProject(selectedProjectId);
+                    await projectApi.deleteProject(selectedProjectId);
                     setProjects(projects.filter(p => p.id !== selectedProjectId));
                 } catch (err) {
                     console.error('Failed to delete project:', err);
@@ -92,8 +92,8 @@ export default function ProjectList() {
 
     const handleAddProject = async (newProjectData: any) => {
         try {
-            const createdProject = await createProject(newProjectData);
-            setProjects([...projects, createdProject]);
+            const response = await projectApi.createProject(newProjectData);
+            setProjects([...projects, response.data]);
             setIsModalOpen(false);
         } catch (err) {
             console.error('Failed to create project:', err);
@@ -290,7 +290,7 @@ export default function ProjectList() {
                                         cursor: 'pointer'
                                     },
                                 }}
-                                onClick={() => navigate(`/projects/${project.id}`)}
+                                onClick={() => navigate(`/admin/projects/${project.id}`)}
                             >
                                 <CardContent sx={{ flexGrow: 1, p: 3 }}>
                                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
