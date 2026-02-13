@@ -140,6 +140,55 @@ export const projectApi = {
             params: { token, branch }
         });
         return response.data;
+    },
+
+    githubGetContents: async (token: string, owner: string, repo: string, path?: string) => {
+        const response = await api.get<ApiResponse<any[]>>(`/v1/github/repos/${owner}/${repo}/contents`, {
+            params: { token, path }
+        });
+        return response.data;
+    },
+
+    // --- File Management ---
+    uploadFiles: async (
+        projectId: string,
+        files: FileList | File[],
+        onProgress?: (progress: number) => void
+    ): Promise<ApiResponse<string[]>> => {
+        const formData = new FormData();
+        Array.from(files).forEach((file) => {
+            const path = (file as any).webkitRelativePath || file.name;
+            formData.append('files', file, path);
+        });
+
+        const response = await api.post<ApiResponse<string[]>>(`/v1/projects/${projectId}/files`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            },
+            onUploadProgress: (progressEvent) => {
+                if (onProgress && progressEvent.total) {
+                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress(progress);
+                }
+            }
+        });
+        return response.data;
+    },
+
+    getFiles: async (projectId: string) => {
+        const response = await api.get<ApiResponse<string[]>>(`/v1/projects/${projectId}/files`);
+        return response.data;
+    },
+
+    getFileDownloadUrl: (projectId: string, fileName: string) => {
+        return `${api.defaults.baseURL}/v1/projects/${projectId}/files/download?fileName=${encodeURIComponent(fileName)}`;
+    },
+
+    deleteFile: async (projectId: string, fileName: string) => {
+        const response = await api.delete<ApiResponse<void>>(`/v1/projects/${projectId}/files`, {
+            params: { fileName }
+        });
+        return response.data;
     }
 };
 

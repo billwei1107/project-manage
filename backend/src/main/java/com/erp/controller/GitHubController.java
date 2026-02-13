@@ -99,4 +99,17 @@ public class GitHubController {
         String login = githubService.getAuthenticatedUser(token);
         return ResponseEntity.ok(ApiResponse.success("Authenticated user retrieved", login));
     }
+
+    /**
+     * Get repository content / 獲取儲存庫內容
+     */
+    @GetMapping("/repos/{owner}/{repo}/contents")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getRepoContent(
+            @PathVariable String owner,
+            @PathVariable String repo,
+            @RequestParam(required = false) String path,
+            @RequestParam String token) throws IOException {
+        List<Map<String, Object>> content = githubService.getRepoContent(token, owner + "/" + repo, path);
+        return ResponseEntity.ok(ApiResponse.success("Repository content retrieved", content));
+    }
 }

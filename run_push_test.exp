@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "chmod +x /root/project-manage/remote_push_test.sh && /root/project-manage/remote_push_test.sh"
+
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}

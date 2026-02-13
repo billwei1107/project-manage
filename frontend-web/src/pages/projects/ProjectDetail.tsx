@@ -4,6 +4,7 @@ import { Box, Tabs, Tab, Typography, Breadcrumbs, Link, CircularProgress, Alert 
 import { NavigateNext as NavigateNextIcon, GitHub as GitHubIcon } from '@mui/icons-material';
 import ProjectKanban from '../../components/projects/ProjectKanban';
 import { GitHubConfig } from '../../components/projects/GitHubConfig';
+import { ProjectFiles } from '../../components/projects/ProjectFiles';
 import { statusLabels } from '../../utils/project';
 import { projectApi } from '../../api/projects';
 import type { Project } from '../../api/projects'; // Updated import source
@@ -213,9 +214,7 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
     );
 }
 
-function ProjectFiles() {
-    return <Typography sx={{ p: 3 }}>文件庫 (Files - Coming Soon)</Typography>;
-}
+
 
 export default function ProjectDetail() {
     const { id } = useParams<{ id: string }>();
@@ -305,7 +304,7 @@ export default function ProjectDetail() {
                 {currentTab === 0 && <ProjectOverview project={project} setCurrentTab={setCurrentTab} />}
                 {currentTab === 1 && <ProjectKanban projectId={project.id} />}
                 {currentTab === 2 && <GitHubConfig project={project} onUpdate={(updated) => setProject(updated)} />}
-                {currentTab === 3 && <ProjectFiles />}
+                {currentTab === 3 && <ProjectFiles project={project} />}
                 {currentTab === 4 && <Typography sx={{ p: 3 }}>財務管理 (Finance - Coming Soon)</Typography>}
             </Box>
         </Box>

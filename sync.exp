@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 
 set timeout -1
-spawn rsync -avz -e "ssh -o StrictHostKeyChecking=no" --exclude ".git" --exclude "node_modules" --exclude "target" --exclude "dist" --exclude ".next" --exclude ".idea" --exclude ".vscode" . root@54.255.186.244:/root/project-manage
+spawn rsync -avz -e "ssh -o StrictHostKeyChecking=no" --exclude ".git" --exclude "node_modules" --exclude "target" --exclude "dist" --exclude ".next" --exclude ".idea" --exclude ".vscode" --exclude "github_deploy_key*" . root@54.255.186.244:/root/project-manage
 
 expect {
   "password:" {

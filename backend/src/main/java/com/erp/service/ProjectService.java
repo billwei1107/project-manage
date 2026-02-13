@@ -84,6 +84,10 @@ public class ProjectService {
      * Update project / 更新專案
      */
     public ProjectResponse updateProject(String id, ProjectRequest request) {
+        System.out.println("DEBUG: Updating project " + id);
+        System.out.println("DEBUG: Request Token: " + (request.getGithubToken() != null ? "PRESENT" : "NULL"));
+        System.out.println("DEBUG: Request FileLocation: " + request.getFileLocation());
+
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 

@@ -297,6 +297,7 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
                             value={fileLocation}
                             onChange={(e) => setFileLocation(e.target.value)}
                             disabled={loading}
+                            helperText={!fileLocation ? `預設路徑: /app/uploads/${project.id}` : "自定義檔案存放路徑"}
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>

@@ -111,4 +111,25 @@ public class GitHubService {
         GHRepository repo = github.getRepository(repoName);
         return repo.getHtmlUrl().toString() + "/archive/" + branch + ".zip";
     }
+
+    /**
+     * Get repository content (files and directories) / 獲取儲存庫內容
+     */
+    public List<Map<String, Object>> getRepoContent(String token, String repoName, String path) throws IOException {
+        GitHub github = getGitHubClient(token);
+        GHRepository repo = github.getRepository(repoName);
+        List<org.kohsuke.github.GHContent> contents = repo.getDirectoryContent(path != null ? path : "");
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (org.kohsuke.github.GHContent content : contents) {
+            result.add(Map.of(
+                    "name", content.getName(),
+                    "path", content.getPath(),
+                    "type", content.isDirectory() ? "dir" : "file",
+                    "size", content.getSize(),
+                    "html_url", content.getHtmlUrl() != null ? content.getHtmlUrl().toString() : "",
+                    "download_url", content.getDownloadUrl() != null ? content.getDownloadUrl() : ""));
+        }
+        return result;
+    }
 }

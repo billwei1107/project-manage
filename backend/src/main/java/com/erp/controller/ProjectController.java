@@ -45,6 +45,8 @@ public class ProjectController {
     public ResponseEntity<ApiResponse<ProjectResponse>> updateProject(
             @PathVariable String id,
             @RequestBody ProjectRequest request) {
+        System.out.println("DEBUG CONTROLLER: Update Project " + id);
+        System.out.println("DEBUG CONTROLLER: Token: " + request.getGithubToken());
         return ResponseEntity
                 .ok(ApiResponse.success("Project updated successfully", projectService.updateProject(id, request)));
     }

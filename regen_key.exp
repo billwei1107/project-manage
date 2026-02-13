@@ -1,0 +1,17 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+# Generate new key (overwrite if exists)
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "ssh-keygen -t ed25519 -C \"server-deploy-key-new\" -f /root/project-manage/github_deploy_key -N \"\" <<< y"
+
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  "Overwrite (y/n)?" {
+    send "y\r"
+    exp_continue
+  }
+  eof
+}
