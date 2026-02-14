@@ -112,4 +112,21 @@ public class GitHubController {
         List<Map<String, Object>> content = githubService.getRepoContent(token, owner + "/" + repo, path);
         return ResponseEntity.ok(ApiResponse.success("Repository content retrieved", content));
     }
+
+    /**
+     * Download repository archive (File Stream) / 下載儲存庫檔案流
+     */
+    @GetMapping("/repos/{owner}/{repo}/archive")
+    public void downloadRepoArchive(
+            @PathVariable String owner,
+            @PathVariable String repo,
+            @RequestParam String branch,
+            @RequestParam String token,
+            jakarta.servlet.http.HttpServletResponse response) throws IOException {
+
+        response.setContentType("application/zip");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + repo + "-" + branch + ".zip\"");
+
+        githubService.downloadRepoArchive(token, owner + "/" + repo, branch, response.getOutputStream());
+    }
 }

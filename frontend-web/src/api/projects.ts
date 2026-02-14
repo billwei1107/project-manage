@@ -142,6 +142,14 @@ export const projectApi = {
         return response.data;
     },
 
+    githubDownloadRepo: async (token: string, owner: string, repo: string, branch: string) => {
+        const response = await api.get(`/v1/github/repos/${owner}/${repo}/archive`, {
+            params: { token, branch },
+            responseType: 'blob'
+        });
+        return response.data; // Blob
+    },
+
     githubGetContents: async (token: string, owner: string, repo: string, path?: string) => {
         const response = await api.get<ApiResponse<any[]>>(`/v1/github/repos/${owner}/${repo}/contents`, {
             params: { token, path }

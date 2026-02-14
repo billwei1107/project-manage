@@ -183,14 +183,28 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
             setError("請確認已設定 Access Key、儲存庫與分支");
             return;
         }
+        setLoading(true);
         try {
             const [owner, repo] = githubRepo.split('/');
-            const res = await projectApi.githubGetDownloadUrl(accessKey, owner, repo, githubBranch);
-            if (res.success && res.data) {
-                window.open(res.data, '_blank');
-            }
+            const blob = await projectApi.githubDownloadRepo(accessKey, owner, repo, githubBranch);
+
+            // Create Blob URL and trigger download
+            const url = window.URL.createObjectURL(blob as any); // Type cast if needed
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${repo}-${githubBranch}.zip`;
+            document.body.appendChild(a);
+            a.click();
+
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            setSuccess("下載已開始");
         } catch (err: any) {
-            setError("獲取下載連結失敗");
+            console.error("Download failed", err);
+            setError("下載失敗，請確認 Token 權限或儲存庫存取設定");
+        } finally {
+            setLoading(false);
         }
     };
 

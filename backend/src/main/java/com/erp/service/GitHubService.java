@@ -132,4 +132,18 @@ public class GitHubService {
         }
         return result;
     }
+
+    /**
+     * Download repository archive (proxied via backend) / 下載儲存庫壓縮檔
+     */
+    public void downloadRepoArchive(String token, String repoName, String branch, java.io.OutputStream outputStream)
+            throws IOException {
+        GitHub github = getGitHubClient(token);
+        GHRepository repo = github.getRepository(repoName);
+        // Using readZip to stream content to the output stream
+        repo.readZip(is -> {
+            is.transferTo(outputStream);
+            return null;
+        }, branch);
+    }
 }
