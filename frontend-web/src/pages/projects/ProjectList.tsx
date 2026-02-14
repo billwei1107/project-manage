@@ -39,6 +39,7 @@ export default function ProjectList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [editingProject, setEditingProject] = useState<Project | null>(null);
     const openMenu = Boolean(anchorEl);
 
     useEffect(() => {
@@ -90,15 +91,34 @@ export default function ProjectList() {
         setSearchTerm(event.target.value);
     };
 
-    const handleAddProject = async (newProjectData: any) => {
+    const handleSaveProject = async (projectData: any) => {
         try {
-            const response = await projectApi.createProject(newProjectData);
-            setProjects([...projects, response.data]);
+            if (editingProject) {
+                // Update existing project
+                const response = await projectApi.updateProject(editingProject.id, projectData);
+                setProjects(projects.map(p => p.id === editingProject.id ? response.data : p));
+            } else {
+                // Create new project
+                const response = await projectApi.createProject(projectData);
+                setProjects([...projects, response.data]);
+            }
             setIsModalOpen(false);
+            setEditingProject(null);
         } catch (err) {
-            console.error('Failed to create project:', err);
-            alert('建立專案失敗 (Failed to create project)');
+            console.error('Failed to save project:', err);
+            alert('儲存失敗 (Failed to save)');
         }
+    };
+
+    const handleEditProject = () => {
+        if (selectedProjectId) {
+            const projectToEdit = projects.find(p => p.id === selectedProjectId);
+            if (projectToEdit) {
+                setEditingProject(projectToEdit);
+                setIsModalOpen(true);
+            }
+        }
+        handleMenuClose();
     };
 
     const filteredProjects = projects.filter((project) =>
@@ -144,19 +164,18 @@ export default function ProjectList() {
                 variant="contained"
                 startIcon={<AddIcon />}
                 size="large"
-                onClick={() => setIsModalOpen(true)}
+                onClick={() => {
+                    setEditingProject(null);
+                    setIsModalOpen(true);
+                }}
                 sx={{
                     borderRadius: 2,
-                    textTransform: 'none',
-                    px: 4,
-                    py: 1.5,
-                    fontSize: '1rem',
                     boxShadow: 4
                 }}
             >
                 立即建立專案
             </Button>
-        </Box>
+        </Box >
     );
 
     // Custom Error State Component
@@ -233,7 +252,10 @@ export default function ProjectList() {
                         variant="contained"
                         startIcon={<AddIcon />}
                         size="large"
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            setEditingProject(null);
+                            setIsModalOpen(true);
+                        }}
                         sx={{ borderRadius: 2, textTransform: 'none', px: 3 }}
                     >
                         新增專案
@@ -373,14 +395,18 @@ export default function ProjectList() {
                 onClose={handleMenuClose}
                 onClick={(e) => e.stopPropagation()}
             >
-                <MenuItem onClick={handleMenuClose}>編輯</MenuItem>
+                <MenuItem onClick={handleEditProject}>編輯</MenuItem>
                 <MenuItem onClick={handleDeleteProject}>刪除</MenuItem>
             </Menu>
 
             <AddProjectModal
                 open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                onSubmit={handleAddProject}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setEditingProject(null);
+                }}
+                onSubmit={handleSaveProject}
+                project={editingProject}
             />
         </Box>
     );

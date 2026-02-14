@@ -15,4 +15,8 @@ import java.util.List;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, String> {
     List<Task> findByProjectId(String projectId);
+
+    Integer countByProjectId(String projectId);
+
+    Integer countByProjectIdAndStatus(String projectId, com.erp.entity.TaskStatus status);
 }

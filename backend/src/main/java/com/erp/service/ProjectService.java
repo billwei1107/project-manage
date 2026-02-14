@@ -29,6 +29,7 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final com.erp.repository.TaskRepository taskRepository;
 
     /**
      * Get all projects / 獲取所有專案
@@ -141,7 +142,9 @@ public class ProjectService {
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .status(project.getStatus())
-                .progress(project.getProgress())
+                .status(project.getStatus())
+                .progress(calculateProgress(project.getId()))
+                .description(project.getDescription())
                 .description(project.getDescription())
                 .team(teamInfo)
                 .githubRepo(project.getGithubRepo())
@@ -152,5 +155,14 @@ public class ProjectService {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .build();
+    }
+
+    private Integer calculateProgress(String projectId) {
+        Integer totalTasks = taskRepository.countByProjectId(projectId);
+        if (totalTasks == 0) {
+            return 0;
+        }
+        Integer completedTasks = taskRepository.countByProjectIdAndStatus(projectId, com.erp.entity.TaskStatus.DONE);
+        return (int) Math.round(((double) completedTasks / totalTasks) * 100);
     }
 }

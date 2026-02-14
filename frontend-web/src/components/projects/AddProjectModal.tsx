@@ -27,16 +27,17 @@ import {
     Business,
     Assignment
 } from '@mui/icons-material';
-import type { ProjectStatus } from '../../types/project';
+import type { Project, ProjectStatus } from '../../types/project';
 import UserSelect from '../common/UserSelect';
 
 interface AddProjectModalProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (projectData: any) => void;
+    project?: Project | null;
 }
 
-export default function AddProjectModal({ open, onClose, onSubmit }: AddProjectModalProps) {
+export default function AddProjectModal({ open, onClose, onSubmit, project }: AddProjectModalProps) {
     const theme = useTheme();
     const [formData, setFormData] = useState({
         title: '',
@@ -47,7 +48,34 @@ export default function AddProjectModal({ open, onClose, onSubmit }: AddProjectM
         description: '',
         status: 'PLANNING' as ProjectStatus,
         teamIds: [] as string[],
+        githubToken: '',
+        fileLocation: '',
+        githubRepo: '',
+        githubBranch: '',
+        backupConfig: ''
     });
+
+    React.useEffect(() => {
+        if (open && project) {
+            setFormData({
+                title: project.title || '',
+                client: project.client || '',
+                budget: project.budget?.toString() || '',
+                startDate: project.startDate ? project.startDate.split('T')[0] : '',
+                endDate: project.endDate ? project.endDate.split('T')[0] : '',
+                description: project.description || '',
+                status: project.status || 'PLANNING',
+                teamIds: project.team?.map(t => t.id) || [],
+                githubToken: project.githubToken || '',
+                fileLocation: project.fileLocation || '',
+                githubRepo: project.githubRepo || '',
+                githubBranch: project.githubBranch || '',
+                backupConfig: project.backupConfig || ''
+            });
+        } else if (open && !project) {
+            resetForm();
+        }
+    }, [open, project]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,6 +99,11 @@ export default function AddProjectModal({ open, onClose, onSubmit }: AddProjectM
             description: '',
             status: 'PLANNING',
             teamIds: [],
+            githubToken: '',
+            fileLocation: '',
+            githubRepo: '',
+            githubBranch: '',
+            backupConfig: ''
         });
         onClose();
     };
@@ -121,9 +154,9 @@ export default function AddProjectModal({ open, onClose, onSubmit }: AddProjectM
                         <Work />
                     </Box>
                     <Box>
-                        新增專案 (New Project)
+                        {project ? '編輯專案 (Edit Project)' : '新增專案 (New Project)'}
                         <Typography variant="body2" color="text.secondary" fontWeight="400">
-                            建立一個新專案以開始追蹤進度與資源
+                            {project ? '修改專案資訊與狀態' : '建立一個新專案以開始追蹤進度與資源'}
                         </Typography>
                     </Box>
                 </Stack>
@@ -266,7 +299,7 @@ export default function AddProjectModal({ open, onClose, onSubmit }: AddProjectM
                     startIcon={<Work />}
                     sx={{ borderRadius: 2, px: 4, boxShadow: 4 }}
                 >
-                    確認建立 (Create)
+                    {project ? '確認修改 (Update)' : '確認建立 (Create)'}
                 </Button>
             </DialogActions>
         </Dialog>

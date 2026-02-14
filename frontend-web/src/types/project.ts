@@ -20,6 +20,11 @@ export interface Project {
     progress: number;
     description?: string;
     team: UserInfo[];
+    githubRepo?: string;
+    githubBranch?: string;
+    backupConfig?: string;
+    githubToken?: string;
+    fileLocation?: string;
     createdAt?: string;
     updatedAt?: string;
 }
