@@ -22,4 +22,6 @@ public class TaskRequest {
     private Integer orderIndex;
     private String projectId;
     private String assigneeId;
+    private java.time.LocalDateTime deadline;
+    private String description;
 }

@@ -58,6 +58,8 @@ public class TaskService {
                 .title(request.getTitle())
                 .status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
                 .orderIndex(request.getOrderIndex() != null ? request.getOrderIndex() : 0)
+                .deadline(request.getDeadline())
+                .description(request.getDescription())
                 .project(project)
                 .assignee(assignee)
                 .build();
@@ -82,10 +84,32 @@ public class TaskService {
         if (request.getOrderIndex() != null) {
             task.setOrderIndex(request.getOrderIndex());
         }
+        if (request.getDeadline() != null) {
+            task.setDeadline(request.getDeadline());
+        }
+        if (request.getDescription() != null) {
+            task.setDescription(request.getDescription());
+        }
+
+        // Handle assignee update (allow setting to null)
+        // If assigneeId is explicitly provided in request (even if null?), we should
+        // handle it.
+        // But simplified logic: if assigneeId is present in request object (not null),
+        // update it.
+        // If we want to unset assignee, we might need a specific flag or treat null
+        // differently.
+        // For now, let's assume if request.getAssigneeId() is provided, we update.
+        // NOTE: Standard practice might be to check if field is present in JSON (Patch)
+        // but here we use DTO.
+        // Let's assume if the client sends a value, we update.
         if (request.getAssigneeId() != null) {
-            User assignee = userRepository.findById(request.getAssigneeId())
-                    .orElse(null);
-            task.setAssignee(assignee);
+            if (request.getAssigneeId().isEmpty()) {
+                task.setAssignee(null);
+            } else {
+                User assignee = userRepository.findById(request.getAssigneeId())
+                        .orElse(null);
+                task.setAssignee(assignee);
+            }
         }
 
         Task updatedTask = taskRepository.save(task);
@@ -119,6 +143,8 @@ public class TaskService {
                 .orderIndex(task.getOrderIndex())
                 .projectId(task.getProject().getId())
                 .assignee(assigneeInfo)
+                .deadline(task.getDeadline())
+                .description(task.getDescription())
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
                 .build();

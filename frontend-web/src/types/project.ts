@@ -31,6 +31,8 @@ export interface Task {
     status: TaskStatus;
     assignee?: UserInfo;
     orderIndex?: number;
+    deadline?: string;
+    description?: string;
     createdAt?: string;
     updatedAt?: string;
 }

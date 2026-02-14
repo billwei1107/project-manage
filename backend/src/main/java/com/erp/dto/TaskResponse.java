@@ -27,6 +27,8 @@ public class TaskResponse {
     private AssigneeInfo assignee;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime deadline;
+    private String description;
 
     @Data
     @Builder

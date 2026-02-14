@@ -55,4 +55,10 @@ public class Task {
     @LastModifiedDate
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column
+    private LocalDateTime deadline;
+
+    @Column(columnDefinition = "TEXT")
+    private String description;
 }
