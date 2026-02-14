@@ -1,0 +1,28 @@
+#!/usr/bin/expect -f
+
+set timeout 30
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "
+    echo '---CONTAINER STATUS---'
+    docker ps --format '{{.Names}}\t{{.Status}}\t{{.Image}}'
+    
+    echo '---CODE VERIFICATION---'
+    if docker exec project-manage-frontend grep -q 'checkAuth' /usr/share/nginx/html/assets/index-*.js; then
+        echo 'VERIFIED: checkAuth found in frontend bundle'
+    else
+        echo 'FAILED: checkAuth NOT found'
+    fi
+    
+    if docker exec project-manage-frontend grep -q 'v1/auth/me' /usr/share/nginx/html/assets/index-*.js; then
+        echo 'VERIFIED: /v1/auth/me found in frontend bundle'
+    else
+        echo 'FAILED: /v1/auth/me NOT found'
+    fi
+"
+
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
