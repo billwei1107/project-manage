@@ -25,25 +25,29 @@ jobs:
           sudo netstat -tulpn | grep LISTEN || sudo ss -tulpn | grep LISTEN
           echo "=========================================="
 
-          # 1. Navigate to project directory
+          # 1. Configure Git (Fix ownership issue)
+          git config --global --add safe.directory /root/project-manage || true
+
+          # 2. Navigate to project directory
           if [ -d "project-manage" ]; then
             cd project-manage
             echo "Pulling latest code..."
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
           else
             echo "Cloning project..."
             git clone https://github.com/billwei1107/project-manage.git
             cd project-manage
           fi
 
-          # 2. Stop old containers (Force Clean)
-          # echo "Force stopping old containers..."
-          # docker compose -f docker/compose.yaml down --rmi local --remove-orphans
-          # docker system prune -af --volumes
+          # 3. Stop old containers (Force Clean)
+          echo "Force stopping old containers..."
+          docker compose -f docker/compose.yaml down --remove-orphans || true
+          docker system prune -f || true
 
-          # 3. Start services with build
+          # 4. Start services with build
           echo "Starting Docker Compose..."
-          docker compose -f docker/compose.yaml up -d --build --remove-orphans
+          docker compose -f docker/compose.yaml up -d --build --force-recreate --remove-orphans
 
           # 4. Cleanup unused images
           docker image prune -f
