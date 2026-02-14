@@ -13,8 +13,7 @@ import {
     Box,
     Typography,
     Avatar,
-    Stack,
-    ListItemIcon
+    Stack
 } from '@mui/material';
 import {
     Assignment,
@@ -22,8 +21,6 @@ import {
     CheckCircle,
     CalendarToday,
     AccessTime,
-    Person,
-    Subject,
     Delete
 } from '@mui/icons-material';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
