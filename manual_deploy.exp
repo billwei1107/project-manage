@@ -1,0 +1,12 @@
+#!/usr/bin/expect -f
+
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "git config --global --add safe.directory /root/project-manage && cd /root/project-manage && git fetch && git reset --hard origin/main && docker stop \$(docker ps -q) || true && docker system prune -f && docker compose -f docker/compose.yaml up -d --build --remove-orphans"
+
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}

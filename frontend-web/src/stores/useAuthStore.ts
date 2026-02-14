@@ -24,6 +24,7 @@ interface AuthState {
     error: string | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
+    checkAuth: () => Promise<void>;
 }
 
 import api from '../api/axios';
@@ -31,8 +32,25 @@ import api from '../api/axios';
 export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isAuthenticated: !!localStorage.getItem('token'),
-    isLoading: false,
+    isLoading: !!localStorage.getItem('token'),
     error: null,
+
+    checkAuth: async () => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            set({ isAuthenticated: false, isLoading: false });
+            return;
+        }
+
+        try {
+            const response = await api.get('/v1/auth/me');
+            set({ user: response.data, isAuthenticated: true, isLoading: false });
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            localStorage.removeItem('token');
+            set({ user: null, isAuthenticated: false, isLoading: false });
+        }
+    },
 
     login: async (email, password) => {
         set({ isLoading: true, error: null });
