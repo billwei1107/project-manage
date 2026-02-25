@@ -216,9 +216,8 @@ export default function AdminLayout() {
                     sx={{
                         width: `calc(100% - ${drawerWidth}px)`,
                         ml: `${drawerWidth}px`,
-                        bgcolor: 'transparent',
-                        boxShadow: 'none',
-                        backdropFilter: 'blur(6px)', // Glassmorphism
+                        bgcolor: 'background.paper',
+                        boxShadow: 1,
                     }}
                 >
                     <Toolbar sx={{ justifyContent: 'flex-end', gap: 2 }}>
