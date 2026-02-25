@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -10,13 +10,17 @@ import {
     FormControlLabel,
     Switch,
     Grid,
+    InputAdornment,
+    Box,
+    Typography,
 } from '@mui/material';
+import { Settings as SettingsIcon } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { Dayjs } from 'dayjs';
-import { FinancialCategory, type FinancialType } from '../../types/finance';
-import { useAuthStore } from '../../stores/useAuthStore'; // To get current user ID
+import { type FinancialType, type FinanceCategory } from '../../types/finance';
+import { useAuthStore } from '../../stores/useAuthStore';
 import api from '../../api/axios';
 
 interface AddFinancialRecordModalProps {
@@ -24,6 +28,7 @@ interface AddFinancialRecordModalProps {
     onClose: () => void;
     projectId: string;
     onSave: () => void;
+    onManageCategories: () => void;
 }
 
 const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
@@ -31,15 +36,35 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
     onClose,
     projectId,
     onSave,
+    onManageCategories,
 }) => {
     const { user } = useAuthStore();
     const [type, setType] = useState<FinancialType>('EXPENSE');
     const [amount, setAmount] = useState<string>('');
-    const [category, setCategory] = useState<FinancialCategory | ''>('');
+    const [category, setCategory] = useState<string>('');
     const [description, setDescription] = useState('');
     const [transactionDate, setTransactionDate] = useState<Dayjs | null>(dayjs());
     const [taxIncluded, setTaxIncluded] = useState(false);
+    const [taxRate, setTaxRate] = useState<number>(5);
     const [loading, setLoading] = useState(false);
+
+    const [availableCategories, setAvailableCategories] = useState<FinanceCategory[]>([]);
+
+    useEffect(() => {
+        if (open) {
+            fetchCategories(type);
+        }
+    }, [open, type]);
+
+    const fetchCategories = async (filterType: FinancialType) => {
+        try {
+            const res = await api.get(`/finance-categories?type=${filterType}`);
+            setAvailableCategories(res.data.data);
+            setCategory(''); // reset category on type change
+        } catch (error) {
+            console.error('Failed to fetch categories:', error);
+        }
+    };
 
     const handleSubmit = async () => {
         if (!amount || !category || !transactionDate) return;
@@ -50,11 +75,12 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
                 projectId,
                 type,
                 amount: parseFloat(amount),
-                category: category as FinancialCategory,
+                category,
                 description,
                 transactionDate: transactionDate.format('YYYY-MM-DD'),
                 createdBy: user?.id || 'unknown',
                 taxIncluded,
+                taxRate: taxIncluded ? taxRate : undefined
             };
 
             await api.post(`/projects/${projectId}/finance`, request);
@@ -69,13 +95,13 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
     };
 
     const handleClose = () => {
-        // Reset form
         setType('EXPENSE');
         setAmount('');
         setCategory('');
         setDescription('');
         setTransactionDate(dayjs());
         setTaxIncluded(false);
+        setTaxRate(5);
         onClose();
     };
 
@@ -97,20 +123,30 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
                         </TextField>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                        <TextField
-                            select
-                            label="分類 (Category)"
-                            value={category}
-                            onChange={(e) => setCategory(e.target.value as FinancialCategory)}
-                            fullWidth
-                            required
-                        >
-                            {Object.values(FinancialCategory).map((cat) => (
-                                <MenuItem key={cat} value={cat}>
-                                    {cat}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <TextField
+                                select
+                                label="分類 (Category)"
+                                value={category}
+                                onChange={(e) => setCategory(e.target.value)}
+                                fullWidth
+                                required
+                            >
+                                {availableCategories.map((cat) => (
+                                    <MenuItem key={cat.id} value={cat.name}>
+                                        {cat.name}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                            <Button
+                                variant="outlined"
+                                onClick={onManageCategories}
+                                sx={{ minWidth: 'auto', px: 2 }}
+                                title="管理分類"
+                            >
+                                <SettingsIcon />
+                            </Button>
+                        </Box>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -133,15 +169,30 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
                         />
                     </Grid>
                     <Grid size={{ xs: 12 }}>
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={taxIncluded}
-                                    onChange={(e) => setTaxIncluded(e.target.checked)}
+                        <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+                            <FormControlLabel
+                                control={
+                                    <Switch
+                                        checked={taxIncluded}
+                                        onChange={(e) => setTaxIncluded(e.target.checked)}
+                                    />
+                                }
+                                label="含稅 (Tax Included)"
+                            />
+                            {taxIncluded && (
+                                <TextField
+                                    label="稅率 (Tax Rate)"
+                                    type="number"
+                                    size="small"
+                                    value={taxRate}
+                                    onChange={(e) => setTaxRate(Number(e.target.value))}
+                                    InputProps={{
+                                        endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                    }}
+                                    sx={{ width: 120 }}
                                 />
-                            }
-                            label="含稅 (Tax Included) - 自動計算 5% 稅額"
-                        />
+                            )}
+                        </Box>
                     </Grid>
                     <Grid size={{ xs: 12 }}>
                         <TextField
@@ -157,7 +208,7 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>取消</Button>
-                <Button onClick={handleSubmit} variant="contained" disabled={loading}>
+                <Button onClick={handleSubmit} variant="contained" disabled={loading || !category}>
                     儲存
                 </Button>
             </DialogActions>

@@ -36,6 +36,7 @@ import {
 } from 'recharts';
 import type { FinancialRecord, FinancialSummary } from '../../types/finance';
 import AddFinancialRecordModal from './AddFinancialRecordModal';
+import ManageCategoriesModal from './ManageCategoriesModal';
 import api from '../../api/axios';
 
 const ProjectFinance: React.FC = () => {
@@ -48,7 +49,8 @@ const ProjectFinance: React.FC = () => {
         burnRate: 0,
     });
     const [records, setRecords] = useState<FinancialRecord[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isManageModalOpen, setIsManageModalOpen] = useState(false);
 
     // Group records for Pie Chart (Expense by Category)
     const expenseData = React.useMemo(() => {
@@ -87,12 +89,12 @@ const ProjectFinance: React.FC = () => {
     }, [fetchData]);
 
     const handleAddRecord = () => {
-        setIsModalOpen(true);
+        setIsAddModalOpen(true);
     };
 
     const handleSave = () => {
         fetchData();
-        setIsModalOpen(false);
+        setIsAddModalOpen(false);
     };
 
     const handleDelete = async (recordId: string) => {
@@ -249,9 +251,14 @@ const ProjectFinance: React.FC = () => {
 
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">收支明細 (Transactions)</Typography>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRecord} sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}>
-                    新增記錄 (Add Record)
-                </Button>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Button variant="outlined" onClick={() => setIsManageModalOpen(true)} sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}>
+                        管理分類 (Manage Categories)
+                    </Button>
+                    <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRecord} sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}>
+                        新增記錄 (Add Record)
+                    </Button>
+                </Box>
             </Box>
 
             <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
@@ -303,10 +310,17 @@ const ProjectFinance: React.FC = () => {
 
             {/* Add Modal */}
             <AddFinancialRecordModal
-                open={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                open={isAddModalOpen}
+                onClose={() => setIsAddModalOpen(false)}
                 projectId={id!}
                 onSave={handleSave}
+                onManageCategories={() => setIsManageModalOpen(true)}
+            />
+
+            {/* Manage Categories Modal */}
+            <ManageCategoriesModal
+                open={isManageModalOpen}
+                onClose={() => setIsManageModalOpen(false)}
             />
         </Box>
     );

@@ -1,28 +1,17 @@
 export type FinancialType = 'INCOME' | 'EXPENSE';
 
-export const FinancialCategory = {
-    PROJECT_REVENUE: 'PROJECT_REVENUE',
-    MAINTENANCE_FEE: 'MAINTENANCE_FEE',
-    CONSULTING: 'CONSULTING',
-    OTHERS_INCOME: 'OTHERS_INCOME',
-
-    HOSTING: 'HOSTING',
-    OUTSOURCING: 'OUTSOURCING',
-    LABOR: 'LABOR',
-    SOFTWARE: 'SOFTWARE',
-    TAX: 'TAX',
-    OFFICE: 'OFFICE',
-    OTHERS_EXPENSE: 'OTHERS_EXPENSE',
-} as const;
-
-export type FinancialCategory = typeof FinancialCategory[keyof typeof FinancialCategory];
+export interface FinanceCategory {
+    id: string;
+    name: string;
+    type: FinancialType;
+}
 
 export interface FinancialRecord {
     id: string;
     projectId: string;
     type: FinancialType;
     amount: number;
-    category: FinancialCategory;
+    category: string; // Dynamic Category Name
     description: string;
     transactionDate: string; // ISO Date
     createdBy: string;
@@ -42,9 +31,10 @@ export interface FinancialRecordRequest {
     projectId: string;
     type: FinancialType;
     amount: number;
-    category: FinancialCategory;
+    category: string;
     description: string;
     transactionDate: string; // YYYY-MM-DD
     createdBy?: string;
     taxIncluded: boolean;
+    taxRate?: number; // Configurable tax rate
 }

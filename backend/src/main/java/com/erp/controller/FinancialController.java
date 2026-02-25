@@ -3,9 +3,7 @@ package com.erp.controller;
 import com.erp.dto.ApiResponse;
 import com.erp.dto.FinancialRecordRequest;
 import com.erp.dto.FinancialSummaryResponse;
-import com.erp.entity.FinancialCategory;
 import com.erp.entity.FinancialRecord;
-import com.erp.entity.FinancialType;
 import com.erp.service.FinancialService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +52,8 @@ public class FinancialController {
             @RequestBody FinancialRecordRequest request) {
 
         double amount = request.getAmount();
-        double taxRate = 0.05;
+        double taxRate = (request.getTaxRate() != null && request.getTaxRate() > 0) ? request.getTaxRate() / 100.0
+                : 0.05;
         FinancialRecord mainRecord;
 
         if (request.isTaxIncluded()) {
@@ -79,16 +78,10 @@ public class FinancialController {
             // 2. Tax Record
             FinancialRecord taxRecord = FinancialRecord.builder()
                     .projectId(projectId)
-                    .type(request.getType()) // Keep same type (e.g. EXPENSE) or maybe explicitly TAX?
-                    // Typically tax on expense is also an expense. Tax on income is not usually
-                    // recorded as expense unless "Output Tax".
-                    // For simplicity: If Income, Tax portion is "Tax Payable" (Liability).
-                    // If Expense, Tax portion is "Input Tax" (Asset/Expense).
-                    // Let's just record it as EXPENSE with category TAX for now to keep calculating
-                    // logical.
+                    .type(request.getType())
                     .amount(taxAmount)
-                    .category(FinancialCategory.TAX)
-                    .description("Tax (5%) for: " + request.getDescription())
+                    .category("稅務支出") // Dynamic String
+                    .description("Tax (" + (taxRate * 100) + "%) for: " + request.getDescription())
                     .transactionDate(request.getTransactionDate())
                     .createdBy(request.getCreatedBy())
                     .build();

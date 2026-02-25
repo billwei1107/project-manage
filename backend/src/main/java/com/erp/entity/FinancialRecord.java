@@ -42,9 +42,8 @@ public class FinancialRecord {
     @Column(nullable = false)
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FinancialCategory category;
+    private String category;
 
     @Column(columnDefinition = "TEXT")
     private String description;
