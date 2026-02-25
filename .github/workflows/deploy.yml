@@ -19,6 +19,8 @@ jobs:
         host: ${{ secrets.SSH_HOST }}
         username: ${{ secrets.SSH_USER }}
         key: ${{ secrets.SSH_PRIVATE_KEY }}
+        timeout: 60s
+        command_timeout: 30m
         script: |
           # 0. Check Active Ports (Diagnostic)
           echo "=== ACTIVE PORTS (Before Maintainance) ==="
