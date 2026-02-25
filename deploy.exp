@@ -1,7 +1,7 @@
 #!/usr/bin/expect -f
 
 set timeout -1
-spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "cd /root/project-manage && (docker compose -f docker/compose.yaml down --remove-orphans || docker-compose -f docker/compose.yaml down --remove-orphans) && (docker rm -f project-manage-frontend || true) && (docker compose -f docker/compose.yaml up -d --build --force-recreate || docker-compose -f docker/compose.yaml up -d --build --force-recreate)"
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "cd /root/project-manage && git pull && (docker compose -f docker/compose.yaml down --remove-orphans || docker-compose -f docker/compose.yaml down --remove-orphans) && (docker rm -f project-manage-frontend || true) && (docker compose -f docker/compose.yaml up -d --build --force-recreate || docker-compose -f docker/compose.yaml up -d --build --force-recreate)"
 
 expect {
   "password:" {
