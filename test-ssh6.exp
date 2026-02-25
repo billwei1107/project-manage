@@ -1,0 +1,5 @@
+#!/usr/bin/expect -f
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "cat /root/.ssh/authorized_keys"
+expect "password:"
+send "NerssBiU56\r"
+expect eof

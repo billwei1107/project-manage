@@ -1,0 +1,5 @@
+#!/usr/bin/expect -f
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "sudo netstat -tulpn | grep LISTEN"
+expect "password:"
+send "NerssBiU56\r"
+expect eof

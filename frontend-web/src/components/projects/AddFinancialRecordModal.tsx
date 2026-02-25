@@ -57,7 +57,7 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
 
     const fetchCategories = async (filterType: FinancialType) => {
         try {
-            const res = await api.get(`/finance-categories?type=${filterType}`);
+            const res = await api.get(`/v1/finance-categories?type=${filterType}`);
             setAvailableCategories(res.data.data);
             setCategory(''); // reset category on type change
         } catch (error) {

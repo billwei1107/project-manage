@@ -37,7 +37,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({ open, onC
 
     const fetchCategories = async () => {
         try {
-            const res = await api.get('/finance-categories');
+            const res = await api.get('/v1/finance-categories');
             setCategories(res.data.data);
         } catch (error) {
             console.error('Failed to fetch categories:', error);
@@ -47,7 +47,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({ open, onC
     const handleAdd = async () => {
         if (!newCategoryName.trim()) return;
         try {
-            await api.post('/finance-categories', {
+            await api.post('/v1/finance-categories', {
                 name: newCategoryName.trim(),
                 type: currentTab
             });
@@ -62,7 +62,7 @@ const ManageCategoriesModal: React.FC<ManageCategoriesModalProps> = ({ open, onC
     const handleDelete = async (id: string) => {
         if (!window.confirm('確定要刪除此分類嗎？ (Are you sure you want to delete this category?)')) return;
         try {
-            await api.delete(`/finance-categories/${id}`);
+            await api.delete(`/v1/finance-categories/${id}`);
             fetchCategories();
         } catch (error) {
             console.error('Failed to delete category:', error);

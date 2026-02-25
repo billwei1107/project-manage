@@ -1,0 +1,14 @@
+#!/usr/bin/expect -f
+set timeout 5
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "sudo netstat -tulpn | grep LISTEN"
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  timeout {
+    puts "SSH command timed out!"
+    exit 1
+  }
+  eof
+}
