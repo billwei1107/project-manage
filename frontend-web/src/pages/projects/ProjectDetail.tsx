@@ -174,26 +174,29 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
 
                 {/* 4. GitHub Repo Card */}
                 <Grid size={{ xs: 12 }}>
-                    <Paper sx={{ p: 3, borderRadius: 3, bgcolor: '#24292f', color: 'white' }}>
-                        <Stack direction="row" alignItems="center" spacing={2}>
-                            <GitHubIcon fontSize="large" />
-                            <Box sx={{ flexGrow: 1 }}>
-                                <Typography variant="h6" fontWeight="700">
-                                    GitHub Repository
-                                </Typography>
-                                <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                                    {project.githubRepo || '尚未連結代碼倉庫'}
-                                </Typography>
-                                {project.githubBranch && (
-                                    <Typography variant="caption" sx={{ opacity: 0.6 }}>
-                                        分支: {project.githubBranch}
+                    <Paper sx={{ p: { xs: 2, sm: 3 }, borderRadius: 3, bgcolor: '#24292f', color: 'white' }}>
+                        <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={2}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                                <GitHubIcon fontSize="large" />
+                                <Box sx={{ flexGrow: 1, overflow: 'hidden' }}>
+                                    <Typography variant="h6" fontWeight="700" noWrap>
+                                        GitHub Repository
                                     </Typography>
-                                )}
+                                    <Typography variant="body2" sx={{ opacity: 0.8, wordBreak: 'break-all' }}>
+                                        {project.githubRepo || '尚未連結代碼倉庫'}
+                                    </Typography>
+                                    {project.githubBranch && (
+                                        <Typography variant="caption" sx={{ opacity: 0.6 }}>
+                                            分支: {project.githubBranch}
+                                        </Typography>
+                                    )}
+                                </Box>
                             </Box>
                             <Button
                                 variant="contained"
                                 color="primary"
-                                sx={{ bgcolor: 'white', color: 'black', '&:hover': { bgcolor: '#f0f0f0' } }}
+                                fullWidth={false}
+                                sx={{ bgcolor: 'white', color: 'black', '&:hover': { bgcolor: '#f0f0f0' }, mt: { xs: 2, sm: 0 }, alignSelf: { xs: 'stretch', sm: 'auto' } }}
                                 onClick={() => setCurrentTab(2)} // Switch to GitHub Setting tab
                             >
                                 {project.githubRepo ? '管理 Repo' : '連結 Repo'}
@@ -265,9 +268,9 @@ export default function ProjectDetail() {
     }
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', overflowX: 'hidden' }}>
             {/* Breadcrumbs */}
-            <Box sx={{ px: 3, pt: 2 }}>
+            <Box sx={{ px: { xs: 2, sm: 3 }, pt: 2 }}>
                 <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} aria-label="breadcrumb">
                     <Link underline="hover" color="inherit" href="/">
                         儀表板
@@ -280,8 +283,8 @@ export default function ProjectDetail() {
             </Box>
 
             {/* Header */}
-            <Box sx={{ px: 3, py: 2 }}>
-                <Typography variant="h4" fontWeight="700">
+            <Box sx={{ px: { xs: 2, sm: 3 }, py: 2 }}>
+                <Typography variant="h4" fontWeight="700" sx={{ wordBreak: 'break-word' }}>
                     {project.title}
                 </Typography>
                 <Typography variant="subtitle1" color="text.secondary">
@@ -290,8 +293,14 @@ export default function ProjectDetail() {
             </Box>
 
             {/* Tabs */}
-            <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}>
-                <Tabs value={currentTab} onChange={handleTabChange}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider', px: { xs: 0, sm: 3 } }}>
+                <Tabs
+                    value={currentTab}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
+                >
                     <Tab label="概覽 (Overview)" />
                     <Tab label="看板 (Kanban)" />
                     <Tab label="GitHub 設定" />

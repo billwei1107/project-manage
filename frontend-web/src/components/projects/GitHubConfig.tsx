@@ -209,8 +209,8 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
-            <Paper variant="outlined" sx={{ p: 3, mb: 3 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
+            <Paper variant="outlined" sx={{ p: { xs: 2, sm: 3 }, mb: 3 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <GitHub sx={{ mr: 1, color: 'text.secondary' }} />

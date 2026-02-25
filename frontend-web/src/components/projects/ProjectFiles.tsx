@@ -114,7 +114,7 @@ export const ProjectFiles = ({ project }: ProjectFilesProps) => {
     }
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
             <Box sx={{ mb: 3 }}>
                 <Breadcrumbs separator={<NavigateNext fontSize="small" />} aria-label="breadcrumb">
                     {breadcrumbs.map((crumb, index) => {

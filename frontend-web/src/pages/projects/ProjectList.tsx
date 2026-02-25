@@ -236,9 +236,9 @@ export default function ProjectList() {
     }
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
             {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'stretch', sm: 'flex-start' }, mb: 4, gap: 2 }}>
                 <Box>
                     <Typography variant="h4" fontWeight="700" color="text.primary">
                         專案管理 (Projects)
@@ -256,7 +256,7 @@ export default function ProjectList() {
                             setEditingProject(null);
                             setIsModalOpen(true);
                         }}
-                        sx={{ borderRadius: 2, textTransform: 'none', px: 3 }}
+                        sx={{ borderRadius: 2, textTransform: 'none', px: 3, alignSelf: { xs: 'stretch', sm: 'center' } }}
                     >
                         新增專案
                     </Button>
@@ -265,7 +265,7 @@ export default function ProjectList() {
 
             {/* Filter Bar - Only show if there are projects */}
             {projects.length > 0 && (
-                <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 4 }}>
                     <TextField
                         placeholder="搜尋專案..."
                         variant="outlined"
@@ -279,13 +279,13 @@ export default function ProjectList() {
                                 </InputAdornment>
                             ),
                         }}
-                        sx={{ width: 300, bgcolor: 'background.paper' }}
+                        sx={{ flex: { xs: '1 1 100%', sm: '0 0 300px' }, bgcolor: 'background.paper' }}
                     />
                     <Button
                         variant="outlined"
                         startIcon={<FilterListIcon />}
                         color="inherit"
-                        sx={{ borderColor: 'divider' }}
+                        sx={{ borderColor: 'divider', flex: { xs: '1 1 100%', sm: 'none' } }}
                     >
                         篩選
                     </Button>

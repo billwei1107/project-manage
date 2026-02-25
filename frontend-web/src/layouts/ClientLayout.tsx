@@ -32,16 +32,16 @@ export default function ClientLayout() {
                             Project Manage (Client)
                         </Typography>
 
-                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', gap: 2 }}>
-                            <Button color="inherit" onClick={() => navigate('/client')}>Overview</Button>
-                            <Button color="inherit" onClick={() => navigate('/client/projects')}>My Projects</Button>
+                        <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', gap: { xs: 0.5, sm: 2 }, flexWrap: 'wrap', alignItems: 'center' }}>
+                            <Button color="inherit" size="small" onClick={() => navigate('/client')} sx={{ minWidth: 'auto' }}>Overview</Button>
+                            <Button color="inherit" size="small" onClick={() => navigate('/client/projects')} sx={{ minWidth: 'auto' }}>My Projects</Button>
                         </Box>
 
-                        <Box sx={{ ml: 3 }}>
-                            <Typography variant="caption" display="block" align="right">
+                        <Box sx={{ ml: { xs: 1, sm: 3 }, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                            <Typography variant="caption" display="block" align="right" noWrap sx={{ maxWidth: { xs: 80, sm: 150 } }}>
                                 {user?.name}
                             </Typography>
-                            <Button color="error" size="small" onClick={handleLogout}>Logout</Button>
+                            <Button color="error" size="small" onClick={handleLogout} sx={{ minWidth: 'auto', p: { xs: 0, sm: undefined } }}>Logout</Button>
                         </Box>
                     </Toolbar>
                 </Container>

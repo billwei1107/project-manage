@@ -117,7 +117,7 @@ const ProjectFinance: React.FC = () => {
     };
 
     return (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: { xs: 2, sm: 3 } }}>
             {/* Summary Cards */}
             <Grid container spacing={3} mb={4}>
                 <Grid size={{ xs: 12, md: 3 }}>
@@ -247,24 +247,23 @@ const ProjectFinance: React.FC = () => {
                 </Grid>
             </Grid>
 
-            {/* Transactions */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h6">收支明細 (Transactions)</Typography>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRecord}>
+                <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRecord} sx={{ alignSelf: { xs: 'stretch', sm: 'auto' } }}>
                     新增記錄 (Add Record)
                 </Button>
             </Box>
 
-            <TableContainer component={Paper}>
-                <Table>
+            <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+                <Table sx={{ minWidth: 600 }}>
                     <TableHead>
                         <TableRow>
-                            <TableCell>日期 (Date)</TableCell>
-                            <TableCell>類別 (Category)</TableCell>
-                            <TableCell>描述 (Description)</TableCell>
-                            <TableCell align="right">金額 (Amount)</TableCell>
-                            <TableCell align="center">類型 (Type)</TableCell>
-                            <TableCell align="center">操作 (Actions)</TableCell>
+                            <TableCell sx={{ whiteSpace: 'nowrap' }}>日期 (Date)</TableCell>
+                            <TableCell sx={{ whiteSpace: 'nowrap' }}>類別 (Category)</TableCell>
+                            <TableCell sx={{ whiteSpace: 'nowrap' }}>描述 (Description)</TableCell>
+                            <TableCell align="right" sx={{ whiteSpace: 'nowrap' }}>金額 (Amount)</TableCell>
+                            <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>類型 (Type)</TableCell>
+                            <TableCell align="center" sx={{ whiteSpace: 'nowrap' }}>操作 (Actions)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

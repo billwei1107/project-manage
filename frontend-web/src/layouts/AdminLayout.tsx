@@ -270,7 +270,16 @@ export default function AdminLayout() {
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { md: `calc(100% - ${drawerWidth}px)` }, minHeight: '100vh', display: 'flex', flexDirection: 'column' }}
+                sx={{
+                    flexGrow: 1,
+                    p: { xs: 2, sm: 3 },
+                    width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+                    maxWidth: '100%',
+                    overflowX: 'hidden',
+                    minHeight: '100vh',
+                    display: 'flex',
+                    flexDirection: 'column'
+                }}
             >
                 <Toolbar /> {/* Toolbar spacer */}
                 <Outlet />

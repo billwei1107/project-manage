@@ -248,7 +248,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                         <Grid size={{ xs: 12, md: 6 }}>
                             <SectionHeader icon={<DateRange fontSize="small" />} text="時程與預算 (Schedule & Budget)" />
                             <Stack spacing={2.5}>
-                                <Stack direction="row" spacing={2}>
+                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
                                     <DatePicker
                                         label="開始日期"
                                         value={formData.startDate}
