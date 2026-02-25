@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Box, Tabs, Tab, Typography, Breadcrumbs, Link, CircularProgress, Alert } from '@mui/material';
 import { NavigateNext as NavigateNextIcon, GitHub as GitHubIcon } from '@mui/icons-material';
 import ProjectKanban from '../../components/projects/ProjectKanban';
+import ProjectFinance from '../../components/projects/ProjectFinance';
 import { GitHubConfig } from '../../components/projects/GitHubConfig';
 import { ProjectFiles } from '../../components/projects/ProjectFiles';
 import { statusLabels } from '../../utils/project';
@@ -305,7 +306,7 @@ export default function ProjectDetail() {
                 {currentTab === 1 && <ProjectKanban projectId={project.id} />}
                 {currentTab === 2 && <GitHubConfig project={project} onUpdate={(updated) => setProject(updated)} />}
                 {currentTab === 3 && <ProjectFiles project={project} />}
-                {currentTab === 4 && <Typography sx={{ p: 3 }}>財務管理 (Finance - Coming Soon)</Typography>}
+                {currentTab === 4 && <ProjectFinance />}
             </Box>
         </Box>
     );
