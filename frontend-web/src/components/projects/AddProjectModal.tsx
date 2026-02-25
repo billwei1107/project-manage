@@ -80,7 +80,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                 backupConfig: project.backupConfig || ''
             });
         } else if (open && !project) {
-            resetForm();
+            clearFormData();
         }
     }, [open, project]);
 
@@ -99,10 +99,11 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             startDate: formData.startDate ? formData.startDate.toISOString() : null,
             endDate: formData.endDate ? formData.endDate.toISOString() : null,
         });
-        resetForm();
+        clearFormData();
+        onClose();
     };
 
-    const resetForm = () => {
+    const clearFormData = () => {
         setFormData({
             title: '',
             client: '',
@@ -118,6 +119,10 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             githubBranch: '',
             backupConfig: ''
         });
+    };
+
+    const resetForm = () => {
+        clearFormData();
         onClose();
     };
 
