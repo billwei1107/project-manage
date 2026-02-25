@@ -73,8 +73,8 @@ const ProjectFinance: React.FC = () => {
         if (!id) return;
         try {
             const [summaryRes, recordsRes] = await Promise.all([
-                api.get(`/projects/${id}/finance/summary`),
-                api.get(`/projects/${id}/finance`),
+                api.get(`/v1/projects/${id}/finance/summary`),
+                api.get(`/v1/projects/${id}/finance`),
             ]);
 
             setSummary(summaryRes.data.data);
@@ -100,7 +100,7 @@ const ProjectFinance: React.FC = () => {
     const handleDelete = async (recordId: string) => {
         if (!window.confirm('Are you sure you want to delete this record?')) return;
         try {
-            await api.delete(`/projects/${id}/finance/${recordId}`);
+            await api.delete(`/v1/projects/${id}/finance/${recordId}`);
             fetchData();
         } catch (error) {
             console.error('Failed to delete', error);

@@ -82,7 +82,7 @@ const AddFinancialRecordModal: React.FC<AddFinancialRecordModalProps> = ({
                 taxRate: taxIncluded ? taxRate : undefined
             };
 
-            await api.post(`/projects/${projectId}/finance`, request);
+            await api.post(`/v1/projects/${projectId}/finance`, request);
             onSave();
             handleClose();
         } catch (error) {
