@@ -9,6 +9,7 @@ import { ProjectFiles } from '../../components/projects/ProjectFiles';
 import { statusLabels } from '../../utils/project';
 import { projectApi } from '../../api/projects';
 import type { Project } from '../../api/projects'; // Updated import source
+import api from '../../api/axios';
 
 // Placeholder components
 import {
@@ -68,6 +69,20 @@ const StatisticItem = ({ label, value, subtext }: any) => (
 );
 
 function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurrentTab: (index: number) => void }) {
+    const [summary, setSummary] = useState<{ budget: number; burnRate: number; totalExpense: number } | null>(null);
+
+    useEffect(() => {
+        const fetchSummary = async () => {
+            try {
+                const res = await api.get(`/v1/projects/${project.id}/finance/summary`);
+                setSummary(res.data.data);
+            } catch (err) {
+                console.error('Failed to fetch financial summary:', err);
+            }
+        };
+        fetchSummary();
+    }, [project.id]);
+
     const formatCurrency = (amount: number) => {
         return new Intl.NumberFormat('zh-TW', { style: 'currency', currency: 'TWD', minimumFractionDigits: 0 }).format(amount);
     };
@@ -90,13 +105,13 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
                         <Stack spacing={3}>
                             <StatisticItem
                                 label="總預算 (Total Budget)"
-                                value={formatCurrency(project.budget || 0)}
+                                value={summary ? formatCurrency(summary.budget) : formatCurrency(project.budget || 0)}
                                 subtext="含稅 (Tax Included)"
                             />
                             <StatisticItem
                                 label="預算消耗 (Burn Rate)"
-                                value="0%"
-                                subtext="目前尚無支出紀錄"
+                                value={summary ? `${summary.burnRate.toFixed(1)}%` : '0%'}
+                                subtext={summary && summary.totalExpense > 0 ? `已支出: ${formatCurrency(summary.totalExpense)}` : '目前尚無支出紀錄'}
                             />
                             <Button variant="outlined" color="success" size="small" endIcon={<ArrowForward />}>
                                 查看財務報表
