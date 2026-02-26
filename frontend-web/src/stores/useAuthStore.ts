@@ -12,7 +12,9 @@ export type UserRole = 'ADMIN' | 'CLIENT' | 'DEV';
 export interface User {
     id: string;
     name: string;
-    email: string;
+    username?: string;
+    employeeId?: string;
+    email?: string;
     role: UserRole;
     avatar?: string;
 }
@@ -22,7 +24,7 @@ interface AuthState {
     isAuthenticated: boolean;
     isLoading: boolean;
     error: string | null;
-    login: (email: string, password: string) => Promise<void>;
+    login: (loginId: string, password: string) => Promise<void>;
     logout: () => void;
     checkAuth: () => Promise<void>;
 }
@@ -52,10 +54,10 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    login: async (email, password) => {
+    login: async (loginId, password) => {
         set({ isLoading: true, error: null });
         try {
-            const response = await api.post('/v1/auth/login', { email, password });
+            const response = await api.post('/v1/auth/login', { loginId, password });
             const { token, user } = response.data;
 
             localStorage.setItem('token', token);

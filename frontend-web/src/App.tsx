@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProjectList from './pages/projects/ProjectList';
 import ProjectDetail from './pages/projects/ProjectDetail';
+import AccountManagement from './pages/admin/AccountManagement';
 
 /**
  * @file App.tsx
@@ -48,6 +49,7 @@ function App() {
               <Route path="messenger" element={<div>Messenger (Coming Soon)</div>} />
               <Route path="employees" element={<div>Employees Directory</div>} />
               <Route path="info-portal" element={<div>Info Portal</div>} />
+              <Route path="accounts" element={<AccountManagement />} />
             </Route>
 
             <Route path="/client" element={<ClientLayout />}>

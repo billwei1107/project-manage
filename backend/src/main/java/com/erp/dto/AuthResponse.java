@@ -27,6 +27,8 @@ public class AuthResponse {
     public static class UserInfo {
         private String id;
         private String name;
+        private String username;
+        private String employeeId;
         private String email;
         private User.Role role;
     }

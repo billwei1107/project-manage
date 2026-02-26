@@ -24,6 +24,16 @@ public interface UserRepository extends JpaRepository<User, String> {
     Optional<User> findByEmail(String email);
 
     /**
+     * 透過 Username 或 EmployeeID 或 Email 尋找使用者
+     *
+     * @param username   Username
+     * @param employeeId Employee ID
+     * @param email      Email
+     * @return Optional User
+     */
+    Optional<User> findByUsernameOrEmployeeIdOrEmail(String username, String employeeId, String email);
+
+    /**
      * 檢查 Email 是否存在
      * 
      * @param email User email

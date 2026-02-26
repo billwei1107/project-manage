@@ -30,8 +30,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true)
     private String email;
+
+    @Column(unique = true)
+    private String employeeId;
+
+    @Column(unique = true)
+    private String username;
 
     @Column(nullable = false)
     private String password;
@@ -42,6 +48,10 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isDefaultPassword = true;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)

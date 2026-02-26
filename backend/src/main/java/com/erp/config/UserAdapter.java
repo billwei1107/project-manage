@@ -34,6 +34,12 @@ public class UserAdapter implements UserDetails {
 
     @Override
     public String getUsername() {
+        if (user.getUsername() != null && !user.getUsername().isEmpty()) {
+            return user.getUsername();
+        }
+        if (user.getEmployeeId() != null && !user.getEmployeeId().isEmpty()) {
+            return user.getEmployeeId();
+        }
         return user.getEmail();
     }
 

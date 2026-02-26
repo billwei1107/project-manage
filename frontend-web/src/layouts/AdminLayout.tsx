@@ -30,6 +30,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useAuthStore } from '../stores/useAuthStore';
 
 /**
@@ -73,6 +74,7 @@ export default function AdminLayout() {
         { text: '訊息中心', icon: <MessageIcon />, path: '/admin/messenger' },
         { text: '員工管理', icon: <GroupIcon />, path: '/admin/employees' },
         { text: '資訊門戶', icon: <InfoIcon />, path: '/admin/info-portal' },
+        ...(user?.role === 'ADMIN' ? [{ text: '帳號管理', icon: <ManageAccountsIcon />, path: '/admin/accounts' }] : []),
     ];
 
     const drawer = (

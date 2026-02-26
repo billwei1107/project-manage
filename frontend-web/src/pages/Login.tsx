@@ -13,14 +13,14 @@ import { useAuthStore } from '../stores/useAuthStore';
 export default function Login() {
     const navigate = useNavigate();
     const { login, isLoading, error } = useAuthStore();
-    const [email, setEmail] = useState('');
+    const [loginId, setLoginId] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        if (!email || !password) return;
+        if (!loginId || !password) return;
 
         try {
-            await login(email, password);
+            await login(loginId, password);
             navigate('/'); // Redirect to Dashboard on success
         } catch (err) {
             console.error("Login failed:", err);
@@ -41,11 +41,11 @@ export default function Login() {
 
             <TextField
                 fullWidth
-                label="電子郵件"
+                label="用戶名 / 員工編號"
                 variant="outlined"
                 margin="normal"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
                 disabled={isLoading}
             />
 

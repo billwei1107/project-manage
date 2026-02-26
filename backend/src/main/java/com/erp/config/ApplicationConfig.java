@@ -27,7 +27,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> userRepository.findByEmail(username)
+        return username -> userRepository.findByUsernameOrEmployeeIdOrEmail(username, username, username)
                 .map(UserAdapter::new) // 需要一個 Adapter 將 Entity 轉為 UserDetails
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }

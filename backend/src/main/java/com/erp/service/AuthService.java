@@ -32,7 +32,7 @@ public class AuthService {
                 // In real app, registration logic would be more complex
                 var user = User.builder()
                                 .name("New User")
-                                .email(request.getEmail())
+                                .email(request.getLoginId())
                                 .password(passwordEncoder.encode(request.getPassword()))
                                 .role(User.Role.ADMIN)
                                 .build();
@@ -46,6 +46,8 @@ public class AuthService {
                                 .user(AuthResponse.UserInfo.builder()
                                                 .id(user.getId())
                                                 .name(user.getName())
+                                                .username(user.getUsername())
+                                                .employeeId(user.getEmployeeId())
                                                 .email(user.getEmail())
                                                 .role(user.getRole())
                                                 .build())
@@ -55,10 +57,12 @@ public class AuthService {
         public AuthResponse authenticate(AuthRequest request) {
                 authenticationManager.authenticate(
                                 new UsernamePasswordAuthenticationToken(
-                                                request.getEmail(),
+                                                request.getLoginId(),
                                                 request.getPassword()));
 
-                var user = userRepository.findByEmail(request.getEmail())
+                var user = userRepository
+                                .findByUsernameOrEmployeeIdOrEmail(request.getLoginId(), request.getLoginId(),
+                                                request.getLoginId())
                                 .orElseThrow();
 
                 var userDetails = new com.erp.config.UserAdapter(user);
@@ -69,6 +73,8 @@ public class AuthService {
                                 .user(AuthResponse.UserInfo.builder()
                                                 .id(user.getId())
                                                 .name(user.getName())
+                                                .username(user.getUsername())
+                                                .employeeId(user.getEmployeeId())
                                                 .email(user.getEmail())
                                                 .role(user.getRole())
                                                 .build())
@@ -82,13 +88,15 @@ public class AuthService {
                         return null;
                 }
 
-                String email = authentication.getName();
-                var user = userRepository.findByEmail(email)
+                String loginId = authentication.getName();
+                var user = userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
                 return AuthResponse.UserInfo.builder()
                                 .id(user.getId())
                                 .name(user.getName())
+                                .username(user.getUsername())
+                                .employeeId(user.getEmployeeId())
                                 .email(user.getEmail())
                                 .role(user.getRole())
                                 .build();
