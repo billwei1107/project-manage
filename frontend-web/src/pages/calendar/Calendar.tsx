@@ -9,6 +9,7 @@ import {
     alpha,
     List,
     ListItem,
+    Tooltip,
 } from '@mui/material';
 import {
     addMonths,
@@ -46,6 +47,7 @@ export default function Calendar() {
     const { events, fetchEvents } = useEventStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedEvent, setSelectedEvent] = useState<any>(null); // For editing
 
     useEffect(() => {
         fetchEvents();
@@ -57,11 +59,11 @@ export default function Calendar() {
 
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 }); // Monday start
-    const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday start
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
     const dateFormat = "d";
     const days = eachDayOfInterval({ start: startDate, end: endDate });
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
     // Helper to get events for a specific day
     const getEventsForDay = (day: Date) => {
@@ -94,7 +96,7 @@ export default function Calendar() {
                             sx={{ borderRadius: 2, textTransform: 'none', color: 'text.secondary', borderColor: theme.palette.divider }}
                         >
                             <EventIcon fontSize="small" sx={{ mr: 1 }} />
-                            Today
+                            今天
                         </Button>
                         <IconButton size="small" onClick={handlePrevMonth} sx={{ border: `1px solid ${theme.palette.divider}` }}>
                             <KeyboardArrowLeftIcon />
@@ -103,17 +105,17 @@ export default function Calendar() {
                             <KeyboardArrowRightIcon />
                         </IconButton>
                         <Typography variant="h5" sx={{ fontWeight: 700, ml: 2, color: 'text.primary' }}>
-                            {format(currentDate, 'MMMM yyyy')}
+                            {format(currentDate, 'yyyy 年 M 月')}
                         </Typography>
                     </Box>
                     <Button
                         variant="contained"
                         color="primary"
                         startIcon={<AddIcon />}
-                        onClick={() => setModalOpen(true)}
+                        onClick={() => { setSelectedEvent(null); setModalOpen(true); }}
                         sx={{ borderRadius: 2, px: 3, py: 1, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }}
                     >
-                        Add Event
+                        新增事件
                     </Button>
                 </Box>
 
@@ -164,26 +166,42 @@ export default function Calendar() {
                                 {/* Events for the day */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
                                     {dayEvents.map(event => (
-                                        <Box
+                                        <Tooltip
                                             key={event.id}
-                                            sx={{
-                                                bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                                color: 'primary.dark',
-                                                px: 1,
-                                                py: 0.5,
-                                                borderRadius: 1,
-                                                fontSize: '0.75rem',
-                                                fontWeight: 600,
-                                                whiteSpace: 'nowrap',
-                                                overflow: 'hidden',
-                                                textOverflow: 'ellipsis',
-                                                cursor: 'pointer',
-                                                '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
-                                            }}
-                                            onClick={() => console.log('Edit Event', event)}
+                                            title={
+                                                <Box sx={{ p: 0.5 }}>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{event.title}</Typography>
+                                                    <Typography variant="caption" display="block">{format(parseISO(event.startDate), 'HH:mm')} - {format(parseISO(event.endDate), 'HH:mm')}</Typography>
+                                                    {event.description && <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>{event.description}</Typography>}
+                                                    <Typography variant="caption" display="block" sx={{ mt: 0.5, color: 'primary.light' }}>類別: {event.category}</Typography>
+                                                </Box>
+                                            }
+                                            placement="top"
+                                            arrow
                                         >
-                                            {event.title}
-                                        </Box>
+                                            <Box
+                                                sx={{
+                                                    bgcolor: alpha(theme.palette.primary.main, 0.1),
+                                                    color: 'primary.dark',
+                                                    px: 1,
+                                                    py: 0.5,
+                                                    borderRadius: 1,
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 600,
+                                                    whiteSpace: 'nowrap',
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                    cursor: 'pointer',
+                                                    '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+                                                }}
+                                                onClick={() => {
+                                                    setSelectedEvent(event);
+                                                    setModalOpen(true);
+                                                }}
+                                            >
+                                                {event.title}
+                                            </Box>
+                                        </Tooltip>
                                     ))}
                                 </Box>
                             </Box>
@@ -196,12 +214,12 @@ export default function Calendar() {
             <Box sx={{ width: { xs: '100%', lg: 320 }, display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 700 }}>Nearest Events</Typography>
-                        <Button size="small" sx={{ textTransform: 'none' }}>View all</Button>
+                        <Typography variant="h6" sx={{ fontWeight: 700 }}>近期事件</Typography>
+                        <Button size="small" sx={{ textTransform: 'none' }}>查看全部</Button>
                     </Box>
                     <List disablePadding>
                         {nearestEvents.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>No upcoming events.</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>尚無近期事件</Typography>
                         ) : (
                             nearestEvents.map((event, idx) => {
                                 const isTodayEvent = isSameDay(parseISO(event.startDate), new Date());
@@ -230,11 +248,11 @@ export default function Calendar() {
                                             </Box>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                                    {isTodayEvent ? 'Today' : format(parseISO(event.startDate), 'MMM dd')} | {format(parseISO(event.startDate), 'h:mm a')}
+                                                    {isTodayEvent ? '今天' : format(parseISO(event.startDate), 'M月d日')} | {format(parseISO(event.startDate), 'HH:mm')}
                                                 </Typography>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: alpha(theme.palette.text.secondary, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>
                                                     <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>4h</Typography>
+                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{format(parseISO(event.endDate), 'HH:mm')}</Typography>
                                                 </Box>
                                             </Box>
                                         </Box>
@@ -246,7 +264,7 @@ export default function Calendar() {
                 </Paper>
             </Box>
 
-            <AddEventModal open={modalOpen} onClose={() => setModalOpen(false)} />
+            <AddEventModal open={modalOpen} onClose={() => { setModalOpen(false); setSelectedEvent(null); fetchEvents(); }} event={selectedEvent} />
         </Box>
     );
 }

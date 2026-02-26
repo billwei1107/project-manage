@@ -18,6 +18,7 @@ import {
     CircularProgress,
     alpha,
     useTheme,
+    Autocomplete,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
@@ -37,15 +38,15 @@ import type { EventRequest, Priority, RepeatType } from '../../types/event';
 interface AddEventModalProps {
     open: boolean;
     onClose: () => void;
-    // targetDate?: Date; // Optional: pre-fill date if clicked on calendar grid
+    event?: any; // If provided, modal is in edit mode
 }
 
-export default function AddEventModal({ open, onClose }: AddEventModalProps) {
+export default function AddEventModal({ open, onClose, event }: AddEventModalProps) {
     const theme = useTheme();
-    const { createEvent, loading, error } = useEventStore();
+    const { createEvent, updateEvent, loading, error } = useEventStore();
 
     const [title, setTitle] = useState('');
-    const [category, setCategory] = useState('Corporate Event');
+    const [category, setCategory] = useState<string | null>('公司活動');
     const [priority, setPriority] = useState<Priority>('Medium');
     const [date, setDate] = useState<Dayjs | null>(dayjs());
     const [time, setTime] = useState<Dayjs | null>(dayjs());
@@ -53,19 +54,32 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
     const [isRepeat, setIsRepeat] = useState(false);
     const [repeatType, setRepeatType] = useState<RepeatType>('None');
 
-    // Reset form when opened
+    const categoryOptions = ['公司活動', '會議', '個人', '其他'];
+
+    // Reset or populate form when opened
     useEffect(() => {
         if (open) {
-            setTitle('');
-            setCategory('Corporate Event');
-            setPriority('Medium');
-            setDate(dayjs());
-            setTime(dayjs());
-            setDescription('');
-            setIsRepeat(false);
-            setRepeatType('None');
+            if (event) {
+                setTitle(event.title);
+                setCategory(event.category || '公司活動');
+                setPriority(event.priority);
+                setDate(dayjs(event.startDate));
+                setTime(dayjs(event.startDate));
+                setDescription(event.description || '');
+                setIsRepeat(event.repeatType !== 'None');
+                setRepeatType(event.repeatType || 'None');
+            } else {
+                setTitle('');
+                setCategory('公司活動');
+                setPriority('Medium');
+                setDate(dayjs());
+                setTime(dayjs());
+                setDescription('');
+                setIsRepeat(false);
+                setRepeatType('None');
+            }
         }
-    }, [open]);
+    }, [open, event]);
 
     const handleSave = async () => {
         if (!title || !date || !time) return;
@@ -78,7 +92,7 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
 
         const eventData: EventRequest = {
             title,
-            category,
+            category: category || '未分類',
             priority,
             startDate: startDateTime.toISOString(),
             endDate: endDateTime.toISOString(),
@@ -87,10 +101,14 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
         };
 
         try {
-            await createEvent(eventData);
+            if (event) {
+                await updateEvent(event.id, eventData);
+            } else {
+                await createEvent(eventData);
+            }
             onClose();
         } catch (err) {
-            console.error('Failed to create event', err);
+            console.error('Failed to save event', err);
         }
     };
 
@@ -106,7 +124,7 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                 }}
             >
                 <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-                    <Typography variant="h6" sx={{ fontWeight: 700 }}>Add Event</Typography>
+                    <Typography variant="h6" sx={{ fontWeight: 700 }}>{event ? '編輯事件' : '新增事件'}</Typography>
                     <IconButton onClick={onClose} size="small" sx={{ bgcolor: alpha(theme.palette.text.secondary, 0.1) }}>
                         <CloseIcon fontSize="small" />
                     </IconButton>
@@ -115,11 +133,11 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                 <DialogContent>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, mt: 1 }}>
                         <Box>
-                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Event Name</Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>事件名稱</Typography>
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                placeholder="e.g. Katy's Birthday"
+                                placeholder="例如：部門會議"
                                 value={title}
                                 onChange={(e) => setTitle(e.target.value)}
                                 size="small"
@@ -128,39 +146,37 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                         </Box>
 
                         <Box>
-                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Event Category</Typography>
-                            <FormControl fullWidth size="small">
-                                <Select
-                                    value={category}
-                                    onChange={(e) => setCategory(e.target.value)}
-                                    sx={{ borderRadius: 2 }}
-                                >
-                                    <MenuItem value="Corporate Event">Corporate Event</MenuItem>
-                                    <MenuItem value="Meeting">Meeting</MenuItem>
-                                    <MenuItem value="Personal">Personal</MenuItem>
-                                    <MenuItem value="Other">Other</MenuItem>
-                                </Select>
-                            </FormControl>
+                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>事件類別</Typography>
+                            <Autocomplete
+                                freeSolo
+                                options={categoryOptions}
+                                value={category}
+                                onChange={(_, newValue) => setCategory(newValue)}
+                                onInputChange={(_, newInputValue) => setCategory(newInputValue)}
+                                renderInput={(params) => (
+                                    <TextField {...params} variant="outlined" size="small" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />
+                                )}
+                            />
                         </Box>
 
                         <Box>
-                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Priority</Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>優先級</Typography>
                             <FormControl fullWidth size="small">
                                 <Select
                                     value={priority}
                                     onChange={(e) => setPriority(e.target.value as Priority)}
                                     sx={{ borderRadius: 2 }}
                                 >
-                                    <MenuItem value="Low">Low</MenuItem>
-                                    <MenuItem value="Medium">Medium</MenuItem>
-                                    <MenuItem value="High">High</MenuItem>
+                                    <MenuItem value="Low">低</MenuItem>
+                                    <MenuItem value="Medium">中</MenuItem>
+                                    <MenuItem value="High">高</MenuItem>
                                 </Select>
                             </FormControl>
                         </Box>
 
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             <Box sx={{ flex: 1 }}>
-                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Date</Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>日期</Typography>
                                 <DatePicker
                                     value={date}
                                     onChange={(newValue) => setDate(newValue as Dayjs | null)}
@@ -168,7 +184,7 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                                 />
                             </Box>
                             <Box sx={{ flex: 1 }}>
-                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Time</Typography>
+                                <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>時間</Typography>
                                 <TimePicker
                                     value={time}
                                     onChange={(newValue) => setTime(newValue as Dayjs | null)}
@@ -178,11 +194,11 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                         </Box>
 
                         <Box>
-                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>Description</Typography>
+                            <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block', fontWeight: 600 }}>詳細描述</Typography>
                             <TextField
                                 fullWidth
                                 variant="outlined"
-                                placeholder="Add some description of the event"
+                                placeholder="請輸入事件描述"
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
                                 multiline
@@ -194,13 +210,13 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                         {/* Repeat Toggle UI */}
                         <Box sx={{ bgcolor: alpha(theme.palette.primary.main, 0.03), p: 2, borderRadius: 2 }}>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <Typography sx={{ fontWeight: 600 }}>Repeat Event</Typography>
+                                <Typography sx={{ fontWeight: 600 }}>重複事件</Typography>
                                 <Switch checked={isRepeat} onChange={(e) => setIsRepeat(e.target.checked)} color="primary" />
                             </Box>
 
                             {isRepeat && (
                                 <Box sx={{ mt: 2 }}>
-                                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block', fontWeight: 600 }}>Complete this task</Typography>
+                                    <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block', fontWeight: 600 }}>重複頻率</Typography>
                                     <ToggleButtonGroup
                                         value={repeatType}
                                         exclusive
@@ -216,9 +232,9 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                                             }
                                         }}
                                     >
-                                        <ToggleButton value="Daily">Daily</ToggleButton>
-                                        <ToggleButton value="Weekly">Weekly</ToggleButton>
-                                        <ToggleButton value="Monthly">Monthly</ToggleButton>
+                                        <ToggleButton value="Daily">每天</ToggleButton>
+                                        <ToggleButton value="Weekly">每週</ToggleButton>
+                                        <ToggleButton value="Monthly">每月</ToggleButton>
                                     </ToggleButtonGroup>
                                 </Box>
                             )}
@@ -240,7 +256,7 @@ export default function AddEventModal({ open, onClose }: AddEventModalProps) {
                         disabled={loading || !title || !date || !time}
                         sx={{ borderRadius: 2, px: 4, py: 1, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }}
                     >
-                        {loading ? <CircularProgress size={24} color="inherit" /> : 'Save Event'}
+                        {loading ? <CircularProgress size={24} color="inherit" /> : (event ? '儲存變更' : '建立事件')}
                     </Button>
                 </DialogActions>
             </Dialog>
