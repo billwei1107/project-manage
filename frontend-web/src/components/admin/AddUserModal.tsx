@@ -43,11 +43,6 @@ export default function AddUserModal({ open, onClose, onSuccess }: AddUserModalP
             return;
         }
 
-        if (!formData.employeeId && !formData.username && !formData.email) {
-            setError('員工編號、用戶名、電子郵件至少需填寫一項作為登入帳號');
-            return;
-        }
-
         try {
             setLoading(true);
             setError(null);
@@ -104,7 +99,7 @@ export default function AddUserModal({ open, onClose, onSuccess }: AddUserModalP
                         </FormControl>
 
                         <Typography variant="subtitle2" sx={{ mt: 1, color: 'text.secondary' }}>
-                            登入識別資訊 (至少填寫一項，建議填寫員工編號)
+                            登入識別資訊 (若皆留空，系統將自動產生一組員工編號)
                         </Typography>
 
                         <TextField

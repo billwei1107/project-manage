@@ -20,71 +20,83 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class AccountService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+        private final UserRepository userRepository;
+        private final PasswordEncoder passwordEncoder;
 
-    // TODO: Define better in application properties or constants
-    private static final String DEFAULT_PASSWORD = "ERP@123456";
+        // TODO: Define better in application properties or constants
+        private static final String DEFAULT_PASSWORD = "ERP@123456";
 
-    public List<AuthResponse.UserInfo> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(user -> AuthResponse.UserInfo.builder()
-                        .id(user.getId())
-                        .name(user.getName())
-                        .username(user.getUsername())
-                        .employeeId(user.getEmployeeId())
-                        .email(user.getEmail())
-                        .role(user.getRole())
-                        .build())
-                .collect(Collectors.toList());
-    }
-
-    public AuthResponse.UserInfo createUser(User newUserData) {
-        if (newUserData.getEmail() != null && userRepository.existsByEmail(newUserData.getEmail())) {
-            throw new RuntimeException("Email already exists");
+        public List<AuthResponse.UserInfo> getAllUsers() {
+                return userRepository.findAll().stream()
+                                .map(user -> AuthResponse.UserInfo.builder()
+                                                .id(user.getId())
+                                                .name(user.getName())
+                                                .username(user.getUsername())
+                                                .employeeId(user.getEmployeeId())
+                                                .email(user.getEmail())
+                                                .role(user.getRole())
+                                                .build())
+                                .collect(Collectors.toList());
         }
 
-        // Use default password
-        String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
+        public AuthResponse.UserInfo createUser(User newUserData) {
+                if (newUserData.getEmail() != null && userRepository.existsByEmail(newUserData.getEmail())) {
+                        throw new RuntimeException("Email already exists");
+                }
 
-        User user = User.builder()
-                .name(newUserData.getName())
-                .username(newUserData.getUsername())
-                .employeeId(newUserData.getEmployeeId())
-                .email(newUserData.getEmail())
-                .role(newUserData.getRole())
-                .password(encodedPassword)
-                .isDefaultPassword(true)
-                .build();
+                String username = newUserData.getUsername();
+                if (username != null && username.trim().isEmpty()) {
+                        username = null;
+                }
 
-        User savedUser = userRepository.save(user);
+                String employeeId = newUserData.getEmployeeId();
+                if (employeeId == null || employeeId.trim().isEmpty()) {
+                        // Auto-generate employee ID
+                        long nextId = userRepository.count() + 1;
+                        employeeId = String.format("EMP-%04d", nextId);
+                }
 
-        return AuthResponse.UserInfo.builder()
-                .id(savedUser.getId())
-                .name(savedUser.getName())
-                .username(savedUser.getUsername())
-                .employeeId(savedUser.getEmployeeId())
-                .email(savedUser.getEmail())
-                .role(savedUser.getRole())
-                .build();
-    }
+                // Use default password
+                String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
 
-    public AuthResponse.UserInfo resetPassword(String userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+                User user = User.builder()
+                                .name(newUserData.getName())
+                                .username(username)
+                                .employeeId(employeeId)
+                                .email(newUserData.getEmail())
+                                .role(newUserData.getRole())
+                                .password(encodedPassword)
+                                .isDefaultPassword(true)
+                                .build();
 
-        user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
-        user.setDefaultPassword(true);
+                User savedUser = userRepository.save(user);
 
-        User savedUser = userRepository.save(user);
+                return AuthResponse.UserInfo.builder()
+                                .id(savedUser.getId())
+                                .name(savedUser.getName())
+                                .username(savedUser.getUsername())
+                                .employeeId(savedUser.getEmployeeId())
+                                .email(savedUser.getEmail())
+                                .role(savedUser.getRole())
+                                .build();
+        }
 
-        return AuthResponse.UserInfo.builder()
-                .id(savedUser.getId())
-                .name(savedUser.getName())
-                .username(savedUser.getUsername())
-                .employeeId(savedUser.getEmployeeId())
-                .email(savedUser.getEmail())
-                .role(savedUser.getRole())
-                .build();
-    }
+        public AuthResponse.UserInfo resetPassword(String userId) {
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+                user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+                user.setDefaultPassword(true);
+
+                User savedUser = userRepository.save(user);
+
+                return AuthResponse.UserInfo.builder()
+                                .id(savedUser.getId())
+                                .name(savedUser.getName())
+                                .username(savedUser.getUsername())
+                                .employeeId(savedUser.getEmployeeId())
+                                .email(savedUser.getEmail())
+                                .role(savedUser.getRole())
+                                .build();
+        }
 }
