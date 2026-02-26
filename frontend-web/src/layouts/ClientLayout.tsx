@@ -1,4 +1,8 @@
-import { AppBar, Box, Button, Container, Toolbar, Typography } from '@mui/material';
+import { useState } from 'react';
+import { AppBar, Box, Button, Container, Toolbar, Typography, Avatar, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ChangePasswordModal from '../components/common/ChangePasswordModal';
 import { Outlet, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -12,6 +16,26 @@ import { useAuthStore } from '../stores/useAuthStore';
 export default function ClientLayout() {
     const navigate = useNavigate();
     const { user, logout } = useAuthStore();
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [pwModalOpen, setPwModalOpen] = useState(false);
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOpenPwModal = () => {
+        handleMenuClose();
+        setPwModalOpen(true);
+    };
+
+    const handleClosePwModal = () => {
+        setPwModalOpen(false);
+    };
 
     const handleLogout = () => {
         logout();
@@ -38,10 +62,37 @@ export default function ClientLayout() {
                         </Box>
 
                         <Box sx={{ ml: { xs: 1, sm: 3 }, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
-                            <Typography variant="caption" display="block" align="right" noWrap sx={{ maxWidth: { xs: 80, sm: 150 } }}>
-                                {user?.name}
-                            </Typography>
-                            <Button color="error" size="small" onClick={handleLogout} sx={{ minWidth: 'auto', p: { xs: 0, sm: undefined } }}>Logout</Button>
+                            <Avatar
+                                src={user?.avatar}
+                                alt={user?.name}
+                                sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                                onClick={handleMenuOpen}
+                            >
+                                {user?.name?.charAt(0)}
+                            </Avatar>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                                PaperProps={{
+                                    elevation: 3,
+                                    sx: { mt: 1.5, minWidth: 150 }
+                                }}
+                                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                            >
+                                <MenuItem disabled>
+                                    <ListItemText primary={user?.name} secondary={user?.role} />
+                                </MenuItem>
+                                <MenuItem onClick={handleOpenPwModal}>
+                                    <ListItemIcon sx={{ minWidth: 28 }}><ManageAccountsIcon fontSize="small" /></ListItemIcon>
+                                    <ListItemText primary="修改密碼" />
+                                </MenuItem>
+                                <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                                    <ListItemIcon sx={{ minWidth: 28, color: 'error.main' }}><LogoutIcon fontSize="small" /></ListItemIcon>
+                                    <ListItemText primary="登出" />
+                                </MenuItem>
+                            </Menu>
                         </Box>
                     </Toolbar>
                 </Container>
@@ -56,6 +107,8 @@ export default function ClientLayout() {
                     © 2026 Project Manage Inc.
                 </Typography>
             </Box>
+
+            <ChangePasswordModal open={pwModalOpen} onClose={handleClosePwModal} />
         </Box>
     );
 }

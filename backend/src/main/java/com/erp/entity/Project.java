@@ -73,6 +73,10 @@ public class Project {
     @Column
     private String fileLocation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "creator_id")
+    private User creator;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "project_members", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "user_id"))
     @Builder.Default

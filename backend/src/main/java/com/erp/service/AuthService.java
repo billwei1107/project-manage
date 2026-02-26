@@ -3,6 +3,7 @@ package com.erp.service;
 import com.erp.config.security.JwtService;
 import com.erp.dto.AuthRequest;
 import com.erp.dto.AuthResponse;
+import com.erp.dto.ChangePasswordRequest;
 import com.erp.entity.User;
 import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -100,5 +101,27 @@ public class AuthService {
                                 .email(user.getEmail())
                                 .role(user.getRole())
                                 .build();
+        }
+
+        public void changePassword(ChangePasswordRequest request) {
+                var authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication == null || !authentication.isAuthenticated() ||
+                                authentication.getPrincipal().equals("anonymousUser")) {
+                        throw new RuntimeException("User not authenticated");
+                }
+
+                String loginId = authentication.getName();
+                var user = userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                // Verify old password
+                if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+                        throw new RuntimeException("Current password is incorrect");
+                }
+
+                // Encode and save new password
+                user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+                user.setDefaultPassword(false);
+                userRepository.save(user);
         }
 }

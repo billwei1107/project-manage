@@ -4,6 +4,9 @@ import com.erp.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.erp.entity.User;
+import java.util.List;
+
 /**
  * @file ProjectRepository.java
  * @description 專案資料庫存取層 / Project Repository
@@ -12,4 +15,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, String> {
+    List<Project> findByCreatorOrTeamContaining(User creator, User member);
 }

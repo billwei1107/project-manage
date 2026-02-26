@@ -16,7 +16,9 @@ import {
     Avatar,
     Badge,
     useMediaQuery,
-    alpha
+    alpha,
+    Menu,
+    MenuItem
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -32,6 +34,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useAuthStore } from '../stores/useAuthStore';
+import ChangePasswordModal from '../components/common/ChangePasswordModal';
 
 /**
  * @file AdminLayout.tsx
@@ -59,6 +62,26 @@ export default function AdminLayout() {
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
+    };
+
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [pwModalOpen, setPwModalOpen] = useState(false);
+
+    const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleOpenPwModal = () => {
+        handleMenuClose();
+        setPwModalOpen(true);
+    };
+
+    const handleClosePwModal = () => {
+        setPwModalOpen(false);
     };
 
     const handleLogout = () => {
@@ -231,9 +254,34 @@ export default function AdminLayout() {
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>
-                        <Avatar src={user?.avatar} alt={user?.name} sx={{ width: 40, height: 40, cursor: 'pointer' }}>
+                        <Avatar
+                            src={user?.avatar}
+                            alt={user?.name}
+                            sx={{ width: 40, height: 40, cursor: 'pointer' }}
+                            onClick={handleMenuOpen}
+                        >
                             {user?.name?.charAt(0)}
                         </Avatar>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                            PaperProps={{
+                                elevation: 3,
+                                sx: { mt: 1.5, minWidth: 150 }
+                            }}
+                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        >
+                            <MenuItem onClick={handleOpenPwModal}>
+                                <ListItemIcon sx={{ minWidth: 28 }}><ManageAccountsIcon fontSize="small" /></ListItemIcon>
+                                <ListItemText primary="修改密碼" />
+                            </MenuItem>
+                            <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                                <ListItemIcon sx={{ minWidth: 28, color: 'error.main' }}><LogoutIcon fontSize="small" /></ListItemIcon>
+                                <ListItemText primary="登出" />
+                            </MenuItem>
+                        </Menu>
                     </Toolbar>
                 </AppBar>
             )}
@@ -285,6 +333,9 @@ export default function AdminLayout() {
                 <Toolbar /> {/* Toolbar spacer */}
                 <Outlet />
             </Box>
+
+            {/* Modals */}
+            <ChangePasswordModal open={pwModalOpen} onClose={handleClosePwModal} />
         </Box>
     );
 }

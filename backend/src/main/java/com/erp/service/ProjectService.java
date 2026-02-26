@@ -36,7 +36,24 @@ public class ProjectService {
      */
     @Transactional(readOnly = true)
     public List<ProjectResponse> getAllProjects() {
-        return projectRepository.findAll().stream()
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        String loginId = authentication.getName();
+        User currentUser = userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        List<Project> projects;
+        if (currentUser.getRole() == User.Role.ADMIN) {
+            projects = projectRepository.findAll();
+        } else {
+            projects = projectRepository.findByCreatorOrTeamContaining(currentUser, currentUser);
+        }
+
+        return projects.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -60,6 +77,12 @@ public class ProjectService {
             team.addAll(userRepository.findAllById(request.getTeamIds()));
         }
 
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        String loginId = authentication.getName();
+        User currentUser = userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         Project project = Project.builder()
                 .title(request.getTitle())
                 .client(request.getClient())
@@ -75,6 +98,7 @@ public class ProjectService {
                 .fileLocation(request.getFileLocation())
                 .progress(0) // Default progress
                 .team(team)
+                .creator(currentUser)
                 .build();
 
         Project savedProject = projectRepository.save(project);

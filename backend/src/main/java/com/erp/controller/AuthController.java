@@ -1,7 +1,9 @@
 package com.erp.controller;
 
+import com.erp.dto.ApiResponse;
 import com.erp.dto.AuthRequest;
 import com.erp.dto.AuthResponse;
+import com.erp.dto.ChangePasswordRequest;
 import com.erp.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,5 +45,16 @@ public class AuthController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(user);
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @RequestBody ChangePasswordRequest request) {
+        try {
+            authService.changePassword(request);
+            return ResponseEntity.ok(ApiResponse.success("Password changed successfully", null));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(ApiResponse.error(e.getMessage()));
+        }
     }
 }
