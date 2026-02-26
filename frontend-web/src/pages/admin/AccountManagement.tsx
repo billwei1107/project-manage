@@ -17,15 +17,18 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import LockResetIcon from '@mui/icons-material/LockReset';
+import EditIcon from '@mui/icons-material/Edit';
 import api from '../../api/axios';
 import type { User } from '../../stores/useAuthStore';
 import AddUserModal from '../../components/admin/AddUserModal';
+import EditUserModal from '../../components/admin/EditUserModal';
 
 export default function AccountManagement() {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [editingUser, setEditingUser] = useState<User | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     const fetchUsers = async () => {
@@ -117,6 +120,13 @@ export default function AccountManagement() {
                                     <TableCell>{user.email || '-'}</TableCell>
                                     <TableCell align="center">
                                         <IconButton
+                                            color="primary"
+                                            onClick={() => setEditingUser(user)}
+                                            title="編輯帳號資訊"
+                                        >
+                                            <EditIcon />
+                                        </IconButton>
+                                        <IconButton
                                             color="warning"
                                             onClick={() => handleResetPassword(user.id, user.name)}
                                             title="重設密碼為預設"
@@ -146,6 +156,18 @@ export default function AccountManagement() {
                     fetchUsers();
                     setSuccessMessage('新增使用者成功！預設密碼為 ERP@123456');
                     setTimeout(() => setSuccessMessage(null), 5000);
+                }}
+            />
+
+            <EditUserModal
+                open={!!editingUser}
+                user={editingUser}
+                onClose={() => setEditingUser(null)}
+                onSuccess={(updatedUser) => {
+                    setEditingUser(null);
+                    setUsers(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
+                    setSuccessMessage('帳號資訊更新成功！');
+                    setTimeout(() => setSuccessMessage(null), 3000);
                 }}
             />
         </Box>

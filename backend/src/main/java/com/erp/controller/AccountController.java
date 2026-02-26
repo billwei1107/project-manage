@@ -43,4 +43,11 @@ public class AccountController {
         return ResponseEntity
                 .ok(ApiResponse.success("Password reset to default successfully", accountService.resetPassword(id)));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<AuthResponse.UserInfo>> updateUser(@PathVariable String id,
+            @RequestBody User userRequest) {
+        return ResponseEntity
+                .ok(ApiResponse.success("Account updated successfully", accountService.updateUser(id, userRequest)));
+    }
 }

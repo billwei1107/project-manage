@@ -99,4 +99,47 @@ public class AccountService {
                                 .role(savedUser.getRole())
                                 .build();
         }
+
+        public AuthResponse.UserInfo updateUser(String userId, User updatedData) {
+                User user = userRepository.findById(userId)
+                                .orElseThrow(() -> new RuntimeException("User not found: " + userId));
+
+                if (updatedData.getEmail() != null && !updatedData.getEmail().equals(user.getEmail())) {
+                        if (userRepository.existsByEmail(updatedData.getEmail())) {
+                                throw new RuntimeException("Email already exists");
+                        }
+                        user.setEmail(updatedData.getEmail());
+                }
+
+                if (updatedData.getName() != null && !updatedData.getName().trim().isEmpty()) {
+                        user.setName(updatedData.getName());
+                }
+
+                if (updatedData.getUsername() != null) {
+                        if (updatedData.getUsername().trim().isEmpty()) {
+                                user.setUsername(null);
+                        } else {
+                                user.setUsername(updatedData.getUsername());
+                        }
+                }
+
+                if (updatedData.getEmployeeId() != null && !updatedData.getEmployeeId().trim().isEmpty()) {
+                        user.setEmployeeId(updatedData.getEmployeeId());
+                }
+
+                if (updatedData.getRole() != null) {
+                        user.setRole(updatedData.getRole());
+                }
+
+                User savedUser = userRepository.save(user);
+
+                return AuthResponse.UserInfo.builder()
+                                .id(savedUser.getId())
+                                .name(savedUser.getName())
+                                .username(savedUser.getUsername())
+                                .employeeId(savedUser.getEmployeeId())
+                                .email(savedUser.getEmail())
+                                .role(savedUser.getRole())
+                                .build();
+        }
 }
