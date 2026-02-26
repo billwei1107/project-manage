@@ -12,6 +12,7 @@ import Dashboard from './pages/Dashboard';
 import ProjectList from './pages/projects/ProjectList';
 import ProjectDetail from './pages/projects/ProjectDetail';
 import AccountManagement from './pages/admin/AccountManagement';
+import Calendar from './pages/calendar/Calendar';
 
 /**
  * @file App.tsx
@@ -44,7 +45,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="projects" element={<ProjectList />} />
               <Route path="projects/:id" element={<ProjectDetail />} />
-              <Route path="calendar" element={<div>Calendar (Coming Soon)</div>} />
+              <Route path="calendar" element={<Calendar />} />
               <Route path="finance" element={<div>Finance Overview</div>} />
               <Route path="messenger" element={<div>Messenger (Coming Soon)</div>} />
               <Route path="employees" element={<div>Employees Directory</div>} />
