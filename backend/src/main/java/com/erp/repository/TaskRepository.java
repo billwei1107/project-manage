@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import com.erp.entity.Project;
+
 /**
  * @file TaskRepository.java
  * @description 任務資料庫存取層 / Task Repository
@@ -19,4 +21,6 @@ public interface TaskRepository extends JpaRepository<Task, String> {
     Integer countByProjectId(String projectId);
 
     Integer countByProjectIdAndStatus(String projectId, com.erp.entity.TaskStatus status);
+
+    List<Task> findByProjectIn(List<Project> projects);
 }

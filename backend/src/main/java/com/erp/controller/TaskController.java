@@ -27,6 +27,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getTasksByProjectId(projectId));
     }
 
+    @GetMapping("/tasks/my-calendar-tasks")
+    public ResponseEntity<List<TaskResponse>> getMyCalendarTasks() {
+        return ResponseEntity.ok(taskService.getMyCalendarTasks());
+    }
+
     @PostMapping("/tasks")
     public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest request) {
         return ResponseEntity.ok(taskService.createTask(request));

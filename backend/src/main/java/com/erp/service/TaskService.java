@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,23 @@ public class TaskService {
     @Transactional(readOnly = true)
     public List<TaskResponse> getTasksByProjectId(String projectId) {
         return taskRepository.findByProjectId(projectId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 獲取當前登入使用者的專案待辦事項 (用於行事曆同步) / Get all tasks for the current user's projects
+     */
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getMyCalendarTasks() {
+        User currentUser = getCurrentUser();
+        List<Project> myProjects = projectRepository.findByCreatorOrTeamContaining(currentUser, currentUser);
+
+        if (myProjects.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        return taskRepository.findByProjectIn(myProjects).stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
     }
@@ -148,5 +166,17 @@ public class TaskService {
                 .createdAt(task.getCreatedAt())
                 .updatedAt(task.getUpdatedAt())
                 .build();
+    }
+
+    private User getCurrentUser() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            throw new RuntimeException("Unauthorized");
+        }
+        String loginId = authentication.getName();
+        return userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }

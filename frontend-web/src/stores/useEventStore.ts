@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '../api/axios';
 import type { EventResponse, EventRequest } from '../types/event';
+import type { Task } from '../types/project';
 
 /**
  * @file useEventStore.ts
@@ -11,6 +12,7 @@ import type { EventResponse, EventRequest } from '../types/event';
 
 interface EventState {
     events: EventResponse[];
+    tasks: Task[];
     loading: boolean;
     error: string | null;
     fetchEvents: () => Promise<void>;
@@ -21,14 +23,22 @@ interface EventState {
 
 export const useEventStore = create<EventState>((set, get) => ({
     events: [],
+    tasks: [],
     loading: false,
     error: null,
 
     fetchEvents: async () => {
         set({ loading: true, error: null });
         try {
-            const response = await api.get('/v1/events');
-            set({ events: response.data.data, loading: false });
+            const [eventsRes, tasksRes] = await Promise.all([
+                api.get('/v1/events'),
+                api.get('/v1/tasks/my-calendar-tasks')
+            ]);
+            set({
+                events: eventsRes.data.data,
+                tasks: tasksRes.data, // Assuming task controller returns standard list or ApiResponse? Wait, TaskController returns ResponseEntity.ok(list) directly, no ApiResponse wrapper! Let me check TaskController.
+                loading: false
+            });
         } catch (error: any) {
             set({ error: error.response?.data?.message || 'Failed to fetch events', loading: false });
         }

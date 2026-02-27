@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     Typography,
@@ -44,7 +44,7 @@ import AddEventModal from '../../components/calendar/AddEventModal';
 
 export default function Calendar() {
     const theme = useTheme();
-    const { events, fetchEvents } = useEventStore();
+    const { events, tasks, fetchEvents } = useEventStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any>(null); // For editing
@@ -52,6 +52,27 @@ export default function Calendar() {
     useEffect(() => {
         fetchEvents();
     }, [fetchEvents]);
+
+    const calendarItems = useMemo(() => {
+        const mappedTasks = (tasks || []).map(t => ({
+            id: t.id,
+            title: t.title,
+            startDate: t.deadline || t.createdAt, // fallback to creation date if no deadline
+            endDate: t.deadline || t.createdAt,
+            description: t.description || `狀態: ${t.status}`,
+            category: 'Project Task',
+            priority: 'Medium',
+            isTask: true,
+            originalTask: t
+        }));
+
+        const mappedEvents = (events || []).map(e => ({
+            ...e,
+            isTask: false
+        }));
+
+        return [...mappedEvents, ...mappedTasks];
+    }, [events, tasks]);
 
     const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
     const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
@@ -66,19 +87,20 @@ export default function Calendar() {
     const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
 
     // Helper to get events for a specific day
-    const getEventsForDay = (day: Date) => {
-        return events.filter(e => {
-            const eventStart = parseISO(e.startDate);
-            const eventEnd = parseISO(e.endDate);
+    const getItemsForDay = (day: Date) => {
+        return calendarItems.filter(item => {
+            if (!item.startDate) return false;
+            const itemStart = parseISO(item.startDate);
+            const itemEnd = item.endDate ? parseISO(item.endDate) : itemStart;
             // Simple check: if day is between start and end (inclusive of start/end days)
-            return isSameDay(day, eventStart) || (day >= eventStart && day <= eventEnd);
+            return isSameDay(day, itemStart) || (day >= itemStart && day <= itemEnd);
         });
     };
 
     // Sort events for the right sidebar (Nearest events)
-    const nearestEvents = [...events]
-        .filter(e => new Date(e.startDate) >= new Date(new Date().setHours(0, 0, 0, 0)))
-        .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
+    const nearestEvents = [...calendarItems]
+        .filter(item => item.startDate && new Date(item.startDate) >= new Date(new Date().setHours(0, 0, 0, 0)))
+        .sort((a, b) => new Date(a.startDate as string).getTime() - new Date(b.startDate as string).getTime())
         .slice(0, 5);
 
     return (
@@ -132,7 +154,7 @@ export default function Calendar() {
                     {days.map((day) => {
                         const isCurrentMonth = isSameMonth(day, monthStart);
                         const isDayToday = isToday(day);
-                        const dayEvents = getEventsForDay(day);
+                        const dayItems = getItemsForDay(day);
 
                         return (
                             <Box
@@ -165,15 +187,17 @@ export default function Calendar() {
 
                                 {/* Events for the day */}
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
-                                    {dayEvents.map(event => (
+                                    {dayItems.map(item => (
                                         <Tooltip
-                                            key={event.id}
+                                            key={item.id}
                                             title={
                                                 <Box sx={{ p: 0.5 }}>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{event.title}</Typography>
-                                                    <Typography variant="caption" display="block">{format(parseISO(event.startDate), 'HH:mm')} - {format(parseISO(event.endDate), 'HH:mm')}</Typography>
-                                                    {event.description && <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>{event.description}</Typography>}
-                                                    <Typography variant="caption" display="block" sx={{ mt: 0.5, color: 'primary.light' }}>類別: {event.category}</Typography>
+                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{item.title}</Typography>
+                                                    <Typography variant="caption" display="block">
+                                                        {item.isTask ? '專案待辦事項' : `${format(parseISO(item.startDate as string), 'HH:mm')} - ${format(parseISO(item.endDate as string), 'HH:mm')}`}
+                                                    </Typography>
+                                                    {item.description && <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>{item.description}</Typography>}
+                                                    {!item.isTask && <Typography variant="caption" display="block" sx={{ mt: 0.5, color: 'primary.light' }}>類別: {item.category}</Typography>}
                                                 </Box>
                                             }
                                             placement="top"
@@ -181,8 +205,8 @@ export default function Calendar() {
                                         >
                                             <Box
                                                 sx={{
-                                                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                                                    color: 'primary.dark',
+                                                    bgcolor: alpha(item.isTask ? theme.palette.success.main : theme.palette.primary.main, 0.1),
+                                                    color: item.isTask ? 'success.dark' : 'primary.dark',
                                                     px: 1,
                                                     py: 0.5,
                                                     borderRadius: 1,
@@ -191,15 +215,17 @@ export default function Calendar() {
                                                     whiteSpace: 'nowrap',
                                                     overflow: 'hidden',
                                                     textOverflow: 'ellipsis',
-                                                    cursor: 'pointer',
-                                                    '&:hover': { bgcolor: alpha(theme.palette.primary.main, 0.2) }
+                                                    cursor: item.isTask ? 'default' : 'pointer',
+                                                    '&:hover': { bgcolor: alpha(item.isTask ? theme.palette.success.main : theme.palette.primary.main, 0.2) }
                                                 }}
                                                 onClick={() => {
-                                                    setSelectedEvent(event);
-                                                    setModalOpen(true);
+                                                    if (!item.isTask) {
+                                                        setSelectedEvent(item);
+                                                        setModalOpen(true);
+                                                    }
                                                 }}
                                             >
-                                                {event.title}
+                                                {item.title}
                                             </Box>
                                         </Tooltip>
                                     ))}
@@ -222,7 +248,7 @@ export default function Calendar() {
                             <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>尚無近期事件</Typography>
                         ) : (
                             nearestEvents.map((event, idx) => {
-                                const isTodayEvent = isSameDay(parseISO(event.startDate), new Date());
+                                const isTodayEvent = isSameDay(parseISO(event.startDate as string), new Date());
                                 return (
                                     <ListItem
                                         key={event.id}
@@ -248,12 +274,17 @@ export default function Calendar() {
                                             </Box>
                                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                                    {isTodayEvent ? '今天' : format(parseISO(event.startDate), 'M月d日')} | {format(parseISO(event.startDate), 'HH:mm')}
+                                                    {isTodayEvent ? '今天' : format(parseISO(event.startDate as string), 'M月d日')} {event.isTask ? '' : `| ${format(parseISO(event.startDate as string), 'HH:mm')}`}
                                                 </Typography>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: alpha(theme.palette.text.secondary, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>
-                                                    <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                                                    <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{format(parseISO(event.endDate), 'HH:mm')}</Typography>
-                                                </Box>
+                                                {!event.isTask && (
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: alpha(theme.palette.text.secondary, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>
+                                                        <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{format(parseISO(event.endDate as string), 'HH:mm')}</Typography>
+                                                    </Box>
+                                                )}
+                                                {event.isTask && (
+                                                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600, bgcolor: alpha(theme.palette.success.main, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>專案待辦事項</Typography>
+                                                )}
                                             </Box>
                                         </Box>
                                     </ListItem>
