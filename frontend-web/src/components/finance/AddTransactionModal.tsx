@@ -7,6 +7,8 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { useFinanceStore } from '../../stores/useFinanceStore';
 import { useProjectStore } from '../../stores/useProjectStore';
 import type { FinancialRecordRequest, FinancialType } from '../../types/finance';
@@ -139,7 +141,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                                 label="關聯專案"
                                 onChange={(e) => setProjectId(e.target.value)}
                             >
-                                {projects.map(p => (
+                                {projects.map((p: any) => (
                                     <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
                                 ))}
                             </Select>
@@ -195,12 +197,14 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                             />
                         </Box>
 
-                        <DatePicker
-                            label="交易日期"
-                            value={transactionDate}
-                            onChange={(newValue) => setTransactionDate(newValue || dayjs())}
-                            sx={{ width: '100%' }}
-                        />
+                        <LocalizationProvider dateAdapter={AdapterDayjs}>
+                            <DatePicker
+                                label="交易日期"
+                                value={transactionDate}
+                                onChange={(newValue) => setTransactionDate(newValue || dayjs())}
+                                sx={{ width: '100%' }}
+                            />
+                        </LocalizationProvider>
 
                         <TextField
                             label="備註說明"
