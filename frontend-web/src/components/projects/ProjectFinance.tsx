@@ -41,8 +41,8 @@ export const ProjectFinance: React.FC<ProjectFinanceProps> = ({ projectId }) => 
         setError(null);
         try {
             const [recordsRes, summaryRes] = await Promise.all([
-                api.get(`/finance/projects/${projectId}`),
-                api.get(`/finance/projects/${projectId}/summary`)
+                api.get(`/v1/finance/projects/${projectId}`),
+                api.get(`/v1/finance/projects/${projectId}/summary`)
             ]);
 
             if (recordsRes.data.success) {
@@ -65,7 +65,7 @@ export const ProjectFinance: React.FC<ProjectFinanceProps> = ({ projectId }) => 
 
     const handleExport = async () => {
         try {
-            const response = await api.get(`/finance/export/csv?projectId=${projectId}`, { responseType: 'blob' });
+            const response = await api.get(`/v1/finance/export/csv?projectId=${projectId}`, { responseType: 'blob' });
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
@@ -82,7 +82,7 @@ export const ProjectFinance: React.FC<ProjectFinanceProps> = ({ projectId }) => 
     const handleDelete = async (recordId: string) => {
         if (!window.confirm('Are you sure you want to delete this record?')) return;
         try {
-            await api.delete(`/finance/${recordId}`);
+            await api.delete(`/v1/finance/${recordId}`);
             fetchData();
         } catch (deleteError) {
             console.error('Failed to delete', deleteError);
