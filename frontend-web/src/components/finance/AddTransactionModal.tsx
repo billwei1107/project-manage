@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Button, TextField, Box, MenuItem, FormControl, InputLabel, Select,
-    Typography, IconButton, Switch, FormControlLabel
+    Typography, IconButton, Switch, FormControlLabel, Autocomplete
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -37,6 +37,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
     const [description, setDescription] = useState('');
     const [transactionDate, setTransactionDate] = useState<Dayjs>(dayjs());
     const [taxIncluded, setTaxIncluded] = useState(false);
+    const [taxRate, setTaxRate] = useState<number | ''>(5);
 
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
     const [receiptUrl, setReceiptUrl] = useState<string | undefined>(undefined);
@@ -55,6 +56,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                 setDescription(initialData.description || '');
                 setTransactionDate(dayjs(initialData.transactionDate));
                 setTaxIncluded(initialData.taxIncluded || false);
+                setTaxRate(initialData.taxRate || 5);
                 setReceiptUrl(initialData.receiptUrl);
                 setReceiptFile(null);
             } else {
@@ -71,6 +73,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
         setDescription('');
         setTransactionDate(dayjs());
         setTaxIncluded(false);
+        setTaxRate(5);
         setReceiptFile(null);
         setReceiptUrl(undefined);
     };
@@ -104,7 +107,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
             description,
             transactionDate: transactionDate.format('YYYY-MM-DD'),
             taxIncluded,
-            taxRate: taxIncluded ? 5 : undefined, // Default Taiwan VAT 5%
+            taxRate: taxIncluded && taxRate !== '' ? Number(taxRate) : undefined,
             receiptUrl: finalReceiptUrl
         };
 
@@ -134,13 +137,14 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                 <DialogContent dividers>
                     <Box display="flex" flexDirection="column" gap={2}>
 
-                        <FormControl fullWidth required>
-                            <InputLabel>關聯專案</InputLabel>
+                        <FormControl fullWidth>
+                            <InputLabel>關聯專案 (選填)</InputLabel>
                             <Select
                                 value={projectId}
-                                label="關聯專案"
+                                label="關聯專案 (選填)"
                                 onChange={(e) => setProjectId(e.target.value)}
                             >
+                                <MenuItem value="">無專案 (公司收支)</MenuItem>
                                 {projects.map((p: any) => (
                                     <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
                                 ))}
@@ -162,18 +166,16 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                             </Select>
                         </FormControl>
 
-                        <FormControl fullWidth required>
-                            <InputLabel>分類</InputLabel>
-                            <Select
-                                value={category}
-                                label="分類"
-                                onChange={(e) => setCategory(e.target.value)}
-                            >
-                                {CATEGORIES[type].map(c => (
-                                    <MenuItem key={c} value={c}>{c}</MenuItem>
-                                ))}
-                            </Select>
-                        </FormControl>
+                        <Autocomplete
+                            freeSolo
+                            options={CATEGORIES[type]}
+                            value={category}
+                            onChange={(_e, newValue) => setCategory(newValue || '')}
+                            onInputChange={(_e, newInputValue) => setCategory(newInputValue)}
+                            renderInput={(params) => (
+                                <TextField {...params} label="分類 (可自訂填寫)" required fullWidth />
+                            )}
+                        />
 
                         <Box display="flex" gap={2} alignItems="center">
                             <TextField
@@ -193,8 +195,18 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                                         color="primary"
                                     />
                                 }
-                                label="含 5% 營業稅"
+                                label="含稅"
                             />
+                            {taxIncluded && (
+                                <TextField
+                                    label="稅率 (%)"
+                                    type="number"
+                                    value={taxRate}
+                                    onChange={(e) => setTaxRate(e.target.value ? Number(e.target.value) : '')}
+                                    inputProps={{ min: 0, step: "0.1" }}
+                                    sx={{ width: 100 }}
+                                />
+                            )}
                         </Box>
 
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -262,7 +274,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                         type="submit"
                         variant="contained"
                         color="primary"
-                        disabled={loading || !projectId || !category || amount === '' || amount <= 0}
+                        disabled={loading || !category || amount === '' || amount <= 0}
                     >
                         {loading ? '儲存中...' : '儲存'}
                     </Button>

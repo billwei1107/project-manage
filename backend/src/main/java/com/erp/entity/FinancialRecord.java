@@ -32,8 +32,8 @@ public class FinancialRecord {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    @Column(nullable = false)
-    private String projectId; // Linked project ID
+    @Column(nullable = true)
+    private String projectId; // Linked project ID, nullable for company expenses
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

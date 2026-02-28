@@ -53,9 +53,11 @@ public class FinancialService {
     }
 
     public FinancialRecordResponse addRecord(FinancialRecordRequest request) {
-        // Validate project exists
-        projectRepository.findById(request.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found: " + request.getProjectId()));
+        // Validate project exists if id is provided
+        if (request.getProjectId() != null && !request.getProjectId().trim().isEmpty()) {
+            projectRepository.findById(request.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project not found: " + request.getProjectId()));
+        }
 
         User currentUser = getCurrentUser();
 
