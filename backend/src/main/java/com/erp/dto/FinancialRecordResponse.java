@@ -7,12 +7,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
+/**
+ * @file FinancialRecordResponse.java
+ * @description 財務記錄回應 DTO / Financial Record Response DTO
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FinancialRecordRequest {
+public class FinancialRecordResponse {
+    private String id;
     private String projectId;
     private FinancialType type;
     private Double amount;
@@ -21,6 +27,6 @@ public class FinancialRecordRequest {
     private LocalDate transactionDate;
     private String receiptUrl;
     private String createdBy;
-    private boolean taxIncluded; // If true, backend will calculate tax
-    private Double taxRate; // Optional, defaults to 5 if not provided
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

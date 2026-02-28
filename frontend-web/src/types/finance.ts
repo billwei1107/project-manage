@@ -6,7 +6,7 @@ export interface FinanceCategory {
     type: FinancialType;
 }
 
-export interface FinancialRecord {
+export interface FinancialRecordResponse {
     id: string;
     projectId: string;
     type: FinancialType;
@@ -14,12 +14,13 @@ export interface FinancialRecord {
     category: string; // Dynamic Category Name
     description: string;
     transactionDate: string; // ISO Date
+    receiptUrl?: string; // Uploaded image path
     createdBy: string;
     createdAt: string;
     updatedAt: string;
 }
 
-export interface FinancialSummary {
+export interface FinancialSummaryResponse {
     budget: number;
     totalIncome: number;
     totalExpense: number;
@@ -34,6 +35,7 @@ export interface FinancialRecordRequest {
     category: string;
     description: string;
     transactionDate: string; // YYYY-MM-DD
+    receiptUrl?: string;
     createdBy?: string;
     taxIncluded: boolean;
     taxRate?: number; // Configurable tax rate

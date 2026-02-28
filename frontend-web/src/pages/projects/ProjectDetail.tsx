@@ -330,7 +330,7 @@ export default function ProjectDetail() {
                 {currentTab === 1 && <ProjectKanban projectId={project.id} />}
                 {currentTab === 2 && <GitHubConfig project={project} onUpdate={(updated) => setProject(updated)} />}
                 {currentTab === 3 && <ProjectFiles project={project} />}
-                {currentTab === 4 && <ProjectFinance />}
+                {currentTab === 4 && <ProjectFinance projectId={id!} />}
             </Box>
         </Box>
     );

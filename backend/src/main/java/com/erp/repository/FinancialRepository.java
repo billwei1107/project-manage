@@ -17,4 +17,6 @@ public interface FinancialRepository extends JpaRepository<FinancialRecord, Stri
     List<FinancialRecord> findByProjectId(String projectId);
 
     List<FinancialRecord> findByProjectIdOrderByTransactionDateDesc(String projectId);
+
+    List<FinancialRecord> findAllByOrderByTransactionDateDesc();
 }

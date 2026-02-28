@@ -21,4 +21,12 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*")
                 .allowCredentials(true);
     }
+
+    @Override
+    public void addResourceHandlers(
+            org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+        // Expose the uploads directory so receipts can be accessed directly
+        registry.addResourceHandler("/api/v1/finance/receipts/**")
+                .addResourceLocations("file:uploads/");
+    }
 }

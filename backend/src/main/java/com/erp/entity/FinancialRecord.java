@@ -52,6 +52,9 @@ public class FinancialRecord {
     private LocalDate transactionDate; // Date of transaction
 
     @Column
+    private String receiptUrl; // URL or path to the uploaded receipt/invoice image
+
+    @Column
     private String createdBy; // User ID who created this record
 
     @CreatedDate
