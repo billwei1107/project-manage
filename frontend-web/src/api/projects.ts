@@ -206,7 +206,6 @@ export const projectApi = {
         return response.data;
     }
 };
-};
 
 // Types for responses
 interface ApiResponse<T> {
