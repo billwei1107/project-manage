@@ -22,3 +22,19 @@
   2. **Controller/Service 邏輯放寬**: `FinancialService` 在處理 `addRecord` 和 `updateRecord` 時，不再無條件檢查 project 存在與否，僅在 `projectId` 非空字串時驗證。
   3. **前端元件升級**: 修改 `AddTransactionModal.tsx`，在關聯專案下拉選單新增 `無專案 (公司收支)` 的空字串選項。將原本寫死的分類 `<Select>` 升級為支援自由輸入的 `<Autocomplete freeSolo>`。並為 `taxIncluded` 狀態開啟後，補充 `<TextField type="number">` 讓使用者動態輸入含稅稅率。
   4. 完成在地化編譯測試無誤後，推送至 `main` 並且運行 `./deploy.exp` 發布。
+
+## 2026-03-01 - 解決上傳照片出現 413 Request Entity Too Large 錯誤
+- **問題描述 (Issue)**: 使用者在「新增紀錄」時，只要附加上傳圖片/憑證，儲存後就會得到 `Request failed with status code 413` 錯誤 (Payload Too Large/Request Entity Too Large)。
+- **原因分析 (Cause)**: 後端 Spring Boot 雖然已經在 `application.yml` 配置了 `max-file-size: 1024MB`，但前端到後端之間經過了 Nginx Reverse Proxy (前端容器)。Nginx 的預設 `client_max_body_size` 限制為 1MB，大於此大小的檔案會直接被 Nginx 阻擋並回傳 HTTP 413，根本沒有抵達後端。
+- **解決方案 (Solution)**:
+  1. 修改前端目錄下的 `frontend-web/nginx.conf`。
+  2. 在 `server {}` 區塊中加入 `client_max_body_size 100M;`，將請求大小限制放寬至 100MB。
+  3. 重新構建前端 Docker Image 並發布至測試伺服器。
+
+## 2026-03-01 - 解決上傳照片出現 500 Internal Server Error (Project not found: 1)
+- **問題描述 (Issue)**: 解決 413 錯誤後，上傳憑證照片儲存時，出現 HTTP 500 錯誤。
+- **原因分析 (Cause)**: 由於前端的 `useProjectStore` 先前使用了假資料 (Mock Data, ID: '1', '2', '3') 來顯示專案選項，使用者選擇 "ERP 系統開發" 時，`projectId` 被設為 `"1"`。然而，資料庫中 `projects` 表的 `id` 是 UUID 格式。後端 `FinancialService.addRecord` 在驗證 `projectId` 時，透過 `projectRepository.findById("1")` 找不到任何結果，丟出了 `RuntimeException("Project not found: 1")`。
+- **解決方案 (Solution)**:
+  1. 將 `useProjectStore.ts` 從使用 Mock Data 改為串接真實後端 API (`api.get('/v1/projects')`)。
+  2. 為了符合介面定義，將後端回傳的 `title` 映射為前端所需的 `name` 欄位。
+  3. 重新建置前端容器並發布至測試環境。

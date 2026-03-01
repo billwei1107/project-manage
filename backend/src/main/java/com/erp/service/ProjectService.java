@@ -8,8 +8,10 @@ import com.erp.entity.User;
 import com.erp.repository.ProjectRepository;
 import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.kohsuke.github.GHOrganization;
 
 import java.util.HashSet;
 import java.util.List;
@@ -25,11 +27,13 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final com.erp.repository.TaskRepository taskRepository;
+    private final GitHubService githubService;
 
     /**
      * Get all projects / 獲取所有專案
@@ -101,6 +105,33 @@ public class ProjectService {
                 .creator(currentUser)
                 .build();
 
+        if (Boolean.TRUE.equals(request.getCreateGithubRepo())) {
+            try {
+                String repoUrl = githubService.createOrganizationRepository(
+                        request.getTitle().replaceAll("\\s+", "-").toLowerCase(),
+                        request.getGithubRepoDescription() != null ? request.getGithubRepoDescription()
+                                : request.getDescription(),
+                        Boolean.TRUE.equals(request.getGithubPrivate()));
+                // We'll store the full URL or simply owner/repo format. The UI expects
+                // owner/repo
+                // Extract "bill-project-manage-system/repo-name" from URL
+                String[] parts = repoUrl.split("/");
+                if (parts.length >= 2) {
+                    String orgAndRepo = parts[parts.length - 2] + "/" + parts[parts.length - 1];
+                    project.setGithubRepo(orgAndRepo);
+
+                    // Add collaborators (only the newly created repo needs to do this
+                    // automatically)
+                    syncGithubCollaborators(orgAndRepo, team);
+                }
+            } catch (Exception e) {
+                log.error("Failed to create GitHub repository for project: {}", request.getTitle(), e);
+                // We proceed with project creation even if GitHub fails, but we should probably
+                // inform the user.
+                throw new RuntimeException("專案建立成功但 GitHub 倉庫建立失敗: " + e.getMessage());
+            }
+        }
+
         Project savedProject = projectRepository.save(project);
         return mapToResponse(savedProject);
     }
@@ -130,12 +161,78 @@ public class ProjectService {
         project.setFileLocation(request.getFileLocation());
 
         if (request.getTeamIds() != null) {
-            Set<User> team = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
-            project.setTeam(team);
+            Set<User> newTeam = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
+
+            // Only sync collaborators if the project already has a GitHub repo linked
+            if (project.getGithubRepo() != null && !project.getGithubRepo().isEmpty()) {
+                // Find users who are in newTeam but not in oldTeam
+                Set<User> oldTeam = project.getTeam() != null ? project.getTeam() : new HashSet<>();
+                Set<User> addedMembers = newTeam.stream()
+                        .filter(u -> !oldTeam.contains(u))
+                        .collect(Collectors.toSet());
+
+                if (!addedMembers.isEmpty()) {
+                    syncGithubCollaborators(project.getGithubRepo(), addedMembers);
+                }
+            }
+
+            project.setTeam(newTeam);
         }
 
         Project updatedProject = projectRepository.save(project);
         return mapToResponse(updatedProject);
+    }
+
+    /**
+     * Add team members as collaborators to the project's GitHub repository.
+     */
+    private void syncGithubCollaborators(String fullRepoName, Set<User> users) {
+        if (fullRepoName == null || fullRepoName.isEmpty())
+            return;
+
+        // Ensure we only use the repo name, not the owner/repo format if organization
+        // name is already prefixed in GitHubService
+        String repoName = fullRepoName;
+        String[] parts = fullRepoName.split("/");
+        if (parts.length == 2) {
+            repoName = parts[1];
+        }
+
+        for (User user : users) {
+            String githubUsername = user.getGithubUsername();
+            if (githubUsername != null && !githubUsername.trim().isEmpty()) {
+                try {
+                    // Assign WRITE permission to DEV roles, and READ permission to others. Or set
+                    // default to PUSH.
+                    GHOrganization.Permission permission = user.getRole() == User.Role.DEV
+                            ? GHOrganization.Permission.PUSH
+                            : GHOrganization.Permission.PULL;
+                    githubService.addCollaboratorToRepo(repoName, githubUsername, permission);
+                } catch (Exception e) {
+                    log.error("Failed to add collaborator {} to repository {}", githubUsername, repoName, e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Force sync all team members to GitHub repository as collaborators
+     */
+    public void forceSyncGithubCollaborators(String projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+
+        Set<User> team = project.getTeam();
+        if (team == null || team.isEmpty()) {
+            return; // No team to sync
+        }
+
+        String githubRepo = project.getGithubRepo();
+        if (githubRepo == null || githubRepo.isEmpty()) {
+            throw new RuntimeException("專案尚未綁定 GitHub 倉庫");
+        }
+
+        syncGithubCollaborators(githubRepo, team);
     }
 
     /**

@@ -1,0 +1,11 @@
+#!/usr/bin/expect -f
+set timeout -1
+log_file -noappend local_docker_logs.txt
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+expect "password:"
+send "NerssBiU56\r"
+expect "#"
+send "docker logs --tail 200 project-manage-backend\r"
+expect "#"
+send "exit\r"
+expect eof

@@ -15,6 +15,7 @@ export interface User {
     username?: string;
     employeeId?: string;
     email?: string;
+    githubUsername?: string;
     role: UserRole;
     avatar?: string;
 }

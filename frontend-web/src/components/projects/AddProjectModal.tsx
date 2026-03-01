@@ -13,6 +13,9 @@ import {
     Box,
     Divider,
     Stack,
+    Switch,
+    FormControlLabel,
+    Alert,
     useTheme,
     alpha
 } from '@mui/material';
@@ -23,6 +26,7 @@ import {
     Person,
     Work,
     Title,
+    GitHub,
     Business,
     Assignment,
     Autorenew,
@@ -59,7 +63,9 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
         fileLocation: '',
         githubRepo: '',
         githubBranch: '',
-        backupConfig: ''
+        backupConfig: '',
+        createGithubRepo: false,
+        githubPrivate: true
     });
 
     React.useEffect(() => {
@@ -77,7 +83,9 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                 fileLocation: project.fileLocation || '',
                 githubRepo: project.githubRepo || '',
                 githubBranch: project.githubBranch || '',
-                backupConfig: project.backupConfig || ''
+                backupConfig: project.backupConfig || '',
+                createGithubRepo: false,
+                githubPrivate: true
             });
         } else if (open && !project) {
             clearFormData();
@@ -117,7 +125,9 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             fileLocation: '',
             githubRepo: '',
             githubBranch: '',
-            backupConfig: ''
+            backupConfig: '',
+            createGithubRepo: false,
+            githubPrivate: true
         });
     };
 
@@ -310,6 +320,62 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                                     }}
                                 />
                             </Stack>
+                        </Grid>
+
+                        <Grid size={{ xs: 12 }}>
+                            <Divider sx={{ my: 1 }} />
+                        </Grid>
+
+                        {/* Full Width: GitHub Integration */}
+                        <Grid size={{ xs: 12 }}>
+                            <SectionHeader icon={<GitHub fontSize="small" />} text="GitHub 整合 (GitHub Integration)" />
+
+                            {!project ? (
+                                <Box sx={{
+                                    p: 2,
+                                    borderRadius: 2,
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    bgcolor: formData.createGithubRepo ? alpha(theme.palette.info.main, 0.05) : 'transparent'
+                                }}>
+                                    <FormControlLabel
+                                        control={
+                                            <Switch
+                                                checked={formData.createGithubRepo}
+                                                onChange={(e) => setFormData({ ...formData, createGithubRepo: e.target.checked })}
+                                                color="info"
+                                            />
+                                        }
+                                        label={
+                                            <Typography variant="body1" fontWeight={500}>
+                                                在組織建立共用倉庫 (Create GitHub Repository)
+                                            </Typography>
+                                        }
+                                    />
+
+                                    {formData.createGithubRepo && (
+                                        <Box sx={{ mt: 2, pl: 4 }}>
+                                            <Alert severity="info" sx={{ mb: 2 }}>
+                                                系統將自動在綁定的 GitHub 組織下建立一個倉庫，名稱為專案標題的轉換字串 (如 <code>abc-project</code>)。
+                                                被指派的成員若已綁定 GitHub 帳號，將會自動受邀。
+                                            </Alert>
+
+                                            <FormControlLabel
+                                                control={
+                                                    <Switch
+                                                        checked={formData.githubPrivate}
+                                                        onChange={(e) => setFormData({ ...formData, githubPrivate: e.target.checked })}
+                                                    />
+                                                }
+                                                label="設為私人倉庫 (Private Repository)"
+                                            />
+                                        </Box>
+                                    )}
+                                </Box>
+                            ) : (
+                                <Alert severity="info">
+                                    此專案已建立。若要進階設定 GitHub 連動，請至專案內的「資源與設定」區塊操作。
+                                </Alert>
+                            )}
                         </Grid>
                     </Grid>
                 </DialogContent>

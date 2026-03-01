@@ -70,6 +70,7 @@ const StatisticItem = ({ label, value, subtext }: any) => (
 
 function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurrentTab: (index: number) => void }) {
     const [summary, setSummary] = useState<{ budget: number; burnRate: number; totalExpense: number } | null>(null);
+    const [syncing, setSyncing] = useState(false);
 
     useEffect(() => {
         const fetchSummary = async () => {
@@ -94,6 +95,23 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
         const diffTime = end.getTime() - now.getTime();
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
         return diffDays > 0 ? `${diffDays} 天` : '已過期';
+    };
+
+    const handleSyncGithub = async () => {
+        if (!project.githubRepo) {
+            alert('請先綁定 GitHub 倉庫');
+            return;
+        }
+        try {
+            setSyncing(true);
+            await projectApi.syncGithubMembers(project.id);
+            alert('同步成功');
+        } catch (error: any) {
+            console.error('Failed to sync members to GitHub', error);
+            alert('同步失敗: ' + (error?.response?.data?.message || error.message));
+        } finally {
+            setSyncing(false);
+        }
     };
 
     return (
@@ -180,9 +198,14 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
                                     尚未指派成員
                                 </Typography>
                             )}
-                            <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />}>
-                                管理成員
-                            </Button>
+                            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+                                <Button variant="outlined" color="primary" size="small" onClick={handleSyncGithub} disabled={syncing || !project.githubRepo}>
+                                    {syncing ? <CircularProgress size={20} /> : 'Sync to GitHub'}
+                                </Button>
+                                <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />}>
+                                    管理成員
+                                </Button>
+                            </Stack>
                         </Stack>
                     </OverviewCard>
                 </Grid>

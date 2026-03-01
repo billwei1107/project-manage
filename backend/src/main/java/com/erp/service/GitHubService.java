@@ -26,6 +26,12 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GitHubService {
 
+    @Value("${github.org.name:}")
+    private String organizationName;
+
+    @Value("${github.org.token:}")
+    private String organizationToken;
+
     private GitHub getGitHubClient(String token) throws IOException {
         if (token == null || token.isEmpty()) {
             throw new IllegalArgumentException("GitHub Token is required");
@@ -53,6 +59,45 @@ public class GitHubService {
                 .create();
         log.info("Repository created: {}", repo.getHtmlUrl());
         return repo.getHtmlUrl().toString();
+    }
+
+    /**
+     * Create a new GitHub repository under the configured Organization
+     */
+    public String createOrganizationRepository(String name, String description, boolean isPrivate) throws IOException {
+        if (organizationName == null || organizationName.isEmpty()) {
+            throw new IllegalStateException("GitHub Organization Name is not configured");
+        }
+
+        log.info("Creating GitHub repository {} under organization: {}", name, organizationName);
+        GitHub github = getGitHubClient(organizationToken);
+
+        GHRepository repo = github.getOrganization(organizationName)
+                .createRepository(name)
+                .description(description)
+                .private_(isPrivate)
+                .create();
+
+        log.info("Organization repository created: {}", repo.getHtmlUrl());
+        return repo.getHtmlUrl().toString();
+    }
+
+    /**
+     * Add a collaborator to an organization's repository
+     */
+    public void addCollaboratorToRepo(String repoName, String githubUsername,
+            org.kohsuke.github.GHOrganization.Permission permission) throws IOException {
+        if (organizationName == null || organizationName.isEmpty()) {
+            throw new IllegalStateException("GitHub Organization Name is not configured");
+        }
+
+        log.info("Adding collaborator {} to repository {}/{} with permission {}", githubUsername, organizationName,
+                repoName, permission);
+        GitHub github = getGitHubClient(organizationToken);
+        GHRepository repo = github.getRepository(organizationName + "/" + repoName);
+
+        repo.addCollaborators(java.util.Collections.singletonList(github.getUser(githubUsername)), permission);
+        log.info("Collaborator added successfully");
     }
 
     /**

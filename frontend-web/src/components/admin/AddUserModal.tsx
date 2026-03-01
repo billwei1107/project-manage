@@ -30,6 +30,7 @@ export default function AddUserModal({ open, onClose, onSuccess }: AddUserModalP
         employeeId: '',
         username: '',
         email: '',
+        githubUsername: '',
         role: 'CLIENT' as UserRole
     });
     const [loading, setLoading] = useState(false);
@@ -54,6 +55,7 @@ export default function AddUserModal({ open, onClose, onSuccess }: AddUserModalP
                 employeeId: '',
                 username: '',
                 email: '',
+                githubUsername: '',
                 role: 'CLIENT'
             });
             onSuccess();
@@ -123,6 +125,14 @@ export default function AddUserModal({ open, onClose, onSuccess }: AddUserModalP
                             fullWidth
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+
+                        <TextField
+                            label="GitHub 用戶名 (選填，用於自動綁定程式碼權限)"
+                            fullWidth
+                            value={formData.githubUsername}
+                            onChange={(e) => setFormData({ ...formData, githubUsername: e.target.value })}
+                            placeholder="例如: octocat"
                         />
                     </Box>
                 </DialogContent>

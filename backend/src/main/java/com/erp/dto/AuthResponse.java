@@ -30,6 +30,7 @@ public class AuthResponse {
         private String username;
         private String employeeId;
         private String email;
+        private String githubUsername;
         private User.Role role;
     }
 }

@@ -34,6 +34,7 @@ public class AccountService {
                                                 .username(user.getUsername())
                                                 .employeeId(user.getEmployeeId())
                                                 .email(user.getEmail())
+                                                .githubUsername(user.getGithubUsername())
                                                 .role(user.getRole())
                                                 .build())
                                 .collect(Collectors.toList());
@@ -67,6 +68,7 @@ public class AccountService {
                                 .role(newUserData.getRole())
                                 .password(encodedPassword)
                                 .isDefaultPassword(true)
+                                .githubUsername(newUserData.getGithubUsername())
                                 .build();
 
                 User savedUser = userRepository.save(user);
@@ -77,6 +79,7 @@ public class AccountService {
                                 .username(savedUser.getUsername())
                                 .employeeId(savedUser.getEmployeeId())
                                 .email(savedUser.getEmail())
+                                .githubUsername(savedUser.getGithubUsername())
                                 .role(savedUser.getRole())
                                 .build();
         }
@@ -96,6 +99,7 @@ public class AccountService {
                                 .username(savedUser.getUsername())
                                 .employeeId(savedUser.getEmployeeId())
                                 .email(savedUser.getEmail())
+                                .githubUsername(savedUser.getGithubUsername())
                                 .role(savedUser.getRole())
                                 .build();
         }
@@ -131,6 +135,14 @@ public class AccountService {
                         user.setRole(updatedData.getRole());
                 }
 
+                if (updatedData.getGithubUsername() != null) {
+                        if (updatedData.getGithubUsername().trim().isEmpty()) {
+                                user.setGithubUsername(null);
+                        } else {
+                                user.setGithubUsername(updatedData.getGithubUsername());
+                        }
+                }
+
                 User savedUser = userRepository.save(user);
 
                 return AuthResponse.UserInfo.builder()
@@ -139,6 +151,7 @@ public class AccountService {
                                 .username(savedUser.getUsername())
                                 .employeeId(savedUser.getEmployeeId())
                                 .email(savedUser.getEmail())
+                                .githubUsername(savedUser.getGithubUsername())
                                 .role(savedUser.getRole())
                                 .build();
         }

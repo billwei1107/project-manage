@@ -13,6 +13,8 @@ export interface CreateProjectRequest {
     teamIds?: string[];
     githubToken?: string;
     fileLocation?: string;
+    createGithubRepo?: boolean;
+    githubPrivate?: boolean;
 }
 
 export interface CreateTaskRequest {
@@ -142,6 +144,11 @@ export const projectApi = {
         return response.data;
     },
 
+    syncGithubMembers: async (projectId: string): Promise<ApiResponse<void>> => {
+        const response = await api.post<ApiResponse<void>>(`/v1/projects/${projectId}/github/sync-members`);
+        return response.data;
+    },
+
     githubDownloadRepo: async (token: string, owner: string, repo: string, branch: string) => {
         const response = await api.get(`/v1/github/repos/${owner}/${repo}/archive`, {
             params: { token, branch },
@@ -198,6 +205,7 @@ export const projectApi = {
         });
         return response.data;
     }
+};
 };
 
 // Types for responses

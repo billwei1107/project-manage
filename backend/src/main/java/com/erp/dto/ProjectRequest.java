@@ -33,4 +33,9 @@ public class ProjectRequest {
     private String backupConfig;
     private String githubToken;
     private String fileLocation;
+
+    // New fields for GitHub Organization Integration
+    private Boolean createGithubRepo;
+    private String githubRepoDescription;
+    private Boolean githubPrivate;
 }

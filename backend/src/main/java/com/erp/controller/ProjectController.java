@@ -62,4 +62,10 @@ public class ProjectController {
         return ResponseEntity
                 .ok(ApiResponse.success("Members retrieved successfully", projectService.getProjectById(id).getTeam()));
     }
+
+    @PostMapping("/{id}/github/sync-members")
+    public ResponseEntity<ApiResponse<Void>> syncGithubMembers(@PathVariable String id) {
+        projectService.forceSyncGithubCollaborators(id);
+        return ResponseEntity.ok(ApiResponse.success("GitHub members synced successfully", null));
+    }
 }

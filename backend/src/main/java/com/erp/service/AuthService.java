@@ -50,6 +50,7 @@ public class AuthService {
                                                 .username(user.getUsername())
                                                 .employeeId(user.getEmployeeId())
                                                 .email(user.getEmail())
+                                                .githubUsername(user.getGithubUsername())
                                                 .role(user.getRole())
                                                 .build())
                                 .build();
@@ -77,6 +78,7 @@ public class AuthService {
                                                 .username(user.getUsername())
                                                 .employeeId(user.getEmployeeId())
                                                 .email(user.getEmail())
+                                                .githubUsername(user.getGithubUsername())
                                                 .role(user.getRole())
                                                 .build())
                                 .build();
@@ -99,6 +101,7 @@ public class AuthService {
                                 .username(user.getUsername())
                                 .employeeId(user.getEmployeeId())
                                 .email(user.getEmail())
+                                .githubUsername(user.getGithubUsername())
                                 .role(user.getRole())
                                 .build();
         }

@@ -45,6 +45,9 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "github_username")
+    private String githubUsername;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;

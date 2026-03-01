@@ -31,6 +31,7 @@ export default function EditUserModal({ open, user, onClose, onSuccess }: EditUs
         employeeId: user?.employeeId || '',
         username: user?.username || '',
         email: user?.email || '',
+        githubUsername: user?.githubUsername || '',
         role: user?.role || 'CLIENT'
     });
 
@@ -41,6 +42,7 @@ export default function EditUserModal({ open, user, onClose, onSuccess }: EditUs
                 employeeId: user.employeeId || '',
                 username: user.username || '',
                 email: user.email || '',
+                githubUsername: user.githubUsername || '',
                 role: user.role || 'CLIENT'
             });
             setError(null);
@@ -125,6 +127,14 @@ export default function EditUserModal({ open, user, onClose, onSuccess }: EditUs
                             fullWidth
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        />
+
+                        <TextField
+                            label="GitHub 用戶名 (選填，用於自動綁定程式碼權限)"
+                            fullWidth
+                            value={formData.githubUsername}
+                            onChange={(e) => setFormData({ ...formData, githubUsername: e.target.value })}
+                            placeholder="例如: octocat"
                         />
                     </Box>
                 </DialogContent>

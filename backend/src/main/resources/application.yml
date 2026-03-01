@@ -28,3 +28,6 @@ server:
 
 github:
   token: ${GITHUB_TOKEN:ghp_placeholder}
+  org:
+    name: ${GITHUB_ORG_NAME:bill-project-manage-system}
+    token: ${GITHUB_ORG_TOKEN:ghp_placeholder}
