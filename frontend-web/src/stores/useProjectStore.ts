@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import api from '../api/axios';
 
 export interface Project {
     id: string;
@@ -19,20 +20,15 @@ export const useProjectStore = create<ProjectState>((set) => ({
     fetchProjects: async () => {
         set({ loading: true });
         try {
-            // Mock fetching projects for now until we integrate with a real project API
-            // In a real scenario, this would be: const response = await api.get('/projects');
-            const mockProjects: Project[] = [
-                { id: '1', name: 'ERP 系統開發' },
-                { id: '2', name: '企業形象官網' },
-                { id: '3', name: '內部差勤系統維護' }
-            ];
+            const response = await api.get('/v1/projects');
+            const projectsData = response.data.data.map((p: any) => ({
+                id: p.id,
+                name: p.title
+            }));
 
-            // Simulate network delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            set({ projects: mockProjects, loading: false });
+            set({ projects: projectsData, loading: false });
         } catch (error: any) {
-            set({ error: error.message || 'Failed to fetch projects', loading: false });
+            set({ error: error.response?.data?.message || error.message || 'Failed to fetch projects', loading: false });
         }
     }
 }));
