@@ -14,3 +14,11 @@
 - **問題描述 (Issue)**: 使用者點擊「財務管理 (Finance)」頁面的「新增紀錄」按鈕時，畫面直接白屏崩潰 (White Screen Crash)。
 - **原因分析 (Cause)**: `AddTransactionModal.tsx` 中使用了 `@mui/x-date-pickers/DatePicker`，但是該元件沒有被包裹在 `<LocalizationProvider>` 內部，也沒有在全局 `App.tsx` 提供此 Context。當 React 嘗試掛載 (Mount) Modal 時，由於缺失時間定位的 Context 導致拋出無法捕獲的運行時錯誤，進而引發整棵 React 組件樹崩潰。
 - **解決方案 (Solution)**: 在 `AddTransactionModal.tsx` 引入 `LocalizationProvider` 與 `AdapterDayjs`，並將 `<DatePicker>` 完整包裹起來。重新編譯 (`npm run build`) 成功後，推送變更。
+
+## 2026-02-28 - Finance Module 新增紀錄彈性化 (公司收支、自訂分類、自訂稅率)
+- **需求描述 (Requirement)**: 使用者反映新增財務紀錄時，除了專案收支外，也會有「公司一般收支」。此外，分類選項需要能自由輸入，且稅率不該鎖死在 5%，必須設計為可編輯。
+- **解決方案 (Solution)**:
+  1. **後端 entity 調整**: 針對 `FinancialRecord.java`，將 `@Column(nullable = false)` 改為 `true`，允許 `projectId` 聯結為 null (代表無特定專案歸屬/公司帳)。
+  2. **Controller/Service 邏輯放寬**: `FinancialService` 在處理 `addRecord` 和 `updateRecord` 時，不再無條件檢查 project 存在與否，僅在 `projectId` 非空字串時驗證。
+  3. **前端元件升級**: 修改 `AddTransactionModal.tsx`，在關聯專案下拉選單新增 `無專案 (公司收支)` 的空字串選項。將原本寫死的分類 `<Select>` 升級為支援自由輸入的 `<Autocomplete freeSolo>`。並為 `taxIncluded` 狀態開啟後，補充 `<TextField type="number">` 讓使用者動態輸入含稅稅率。
+  4. 完成在地化編譯測試無誤後，推送至 `main` 並且運行 `./deploy.exp` 發布。

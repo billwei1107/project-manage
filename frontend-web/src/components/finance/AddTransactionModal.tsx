@@ -41,6 +41,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
 
     const [receiptFile, setReceiptFile] = useState<File | null>(null);
     const [receiptUrl, setReceiptUrl] = useState<string | undefined>(undefined);
+    const [submitError, setSubmitError] = useState<string | null>(null);
 
     useEffect(() => {
         fetchProjects();
@@ -76,6 +77,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
         setTaxRate(5);
         setReceiptFile(null);
         setReceiptUrl(undefined);
+        setSubmitError(null);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,15 +89,17 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        setSubmitError(null);
         let finalReceiptUrl = receiptUrl;
 
         // Upload the new file if one was selected
         if (receiptFile) {
             try {
                 finalReceiptUrl = await uploadReceipt(receiptFile);
-            } catch (error) {
+            } catch (error: any) {
                 console.error("Failed to upload receipt", error);
-                return; // Optionally show a toast here
+                setSubmitError(error.response?.data?.message || error.message || "上傳憑證失敗，請檢查檔案大小或格式");
+                return; // Stop form submission
             }
         }
 
@@ -118,8 +122,9 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
                 await addRecord(requestData);
             }
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
+            setSubmitError(error.response?.data?.message || error.message || '儲存失敗');
         }
     };
 
@@ -136,6 +141,12 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ open, 
             <form onSubmit={handleSubmit}>
                 <DialogContent dividers>
                     <Box display="flex" flexDirection="column" gap={2}>
+
+                        {submitError && (
+                            <Typography color="error" variant="body2" sx={{ bgcolor: 'error.light', p: 1, borderRadius: 1, color: 'error.contrastText' }}>
+                                儲存失敗: {submitError}
+                            </Typography>
+                        )}
 
                         <FormControl fullWidth>
                             <InputLabel>關聯專案 (選填)</InputLabel>
