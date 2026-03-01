@@ -36,6 +36,7 @@ public class ProjectRequest {
 
     // New fields for GitHub Organization Integration
     private Boolean createGithubRepo;
+    private String githubRepoName;
     private String githubRepoDescription;
     private Boolean githubPrivate;
 }

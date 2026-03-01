@@ -14,6 +14,7 @@ export interface CreateProjectRequest {
     githubToken?: string;
     fileLocation?: string;
     createGithubRepo?: boolean;
+    githubRepoName?: string;
     githubPrivate?: boolean;
 }
 

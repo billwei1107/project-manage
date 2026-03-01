@@ -107,8 +107,12 @@ public class ProjectService {
 
         if (Boolean.TRUE.equals(request.getCreateGithubRepo())) {
             try {
+                String repoNameToUse = (request.getGithubRepoName() != null && !request.getGithubRepoName().isBlank())
+                        ? request.getGithubRepoName().trim().replaceAll("\\s+", "-").toLowerCase()
+                        : request.getTitle().replaceAll("\\s+", "-").toLowerCase();
+
                 String repoUrl = githubService.createOrganizationRepository(
-                        request.getTitle().replaceAll("\\s+", "-").toLowerCase(),
+                        repoNameToUse,
                         request.getGithubRepoDescription() != null ? request.getGithubRepoDescription()
                                 : request.getDescription(),
                         Boolean.TRUE.equals(request.getGithubPrivate()));

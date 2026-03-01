@@ -65,6 +65,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
         githubBranch: '',
         backupConfig: '',
         createGithubRepo: false,
+        githubRepoName: '',
         githubPrivate: true
     });
 
@@ -85,6 +86,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                 githubBranch: project.githubBranch || '',
                 backupConfig: project.backupConfig || '',
                 createGithubRepo: false,
+                githubRepoName: '',
                 githubPrivate: true
             });
         } else if (open && !project) {
@@ -127,6 +129,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             githubBranch: '',
             backupConfig: '',
             createGithubRepo: false,
+            githubRepoName: '',
             githubPrivate: true
         });
     };
@@ -355,9 +358,27 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                                     {formData.createGithubRepo && (
                                         <Box sx={{ mt: 2, pl: 4 }}>
                                             <Alert severity="info" sx={{ mb: 2 }}>
-                                                系統將自動在綁定的 GitHub 組織下建立一個倉庫，名稱為專案標題的轉換字串 (如 <code>abc-project</code>)。
+                                                系統將自動在綁定的 GitHub 組織下建立一個倉庫。輸入的名稱會自動轉換為合法格式 (小寫與連字號)。
                                                 被指派的成員若已綁定 GitHub 帳號，將會自動受邀。
                                             </Alert>
+
+                                            <TextField
+                                                fullWidth
+                                                label="GitHub 倉庫名稱"
+                                                name="githubRepoName"
+                                                value={formData.githubRepoName}
+                                                onChange={(e) => {
+                                                    const formatted = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+                                                    setFormData({ ...formData, githubRepoName: formatted });
+                                                }}
+                                                placeholder="例如: abc-e-commerce-system"
+                                                required={formData.createGithubRepo}
+                                                sx={{ mb: 2 }}
+                                                autoFocus
+                                                InputProps={{
+                                                    startAdornment: <InputAdornment position="start"><GitHub fontSize="small" color="action" /></InputAdornment>,
+                                                }}
+                                            />
 
                                             <FormControlLabel
                                                 control={
@@ -394,7 +415,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                         variant="contained"
                         color="primary"
                         size="large"
-                        disabled={!formData.title}
+                        disabled={!formData.title || (formData.createGithubRepo && !formData.githubRepoName)}
                         startIcon={<Work />}
                         sx={{ borderRadius: 2, px: 4, boxShadow: 4 }}
                     >
