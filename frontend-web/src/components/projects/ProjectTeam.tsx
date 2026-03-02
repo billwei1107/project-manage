@@ -158,14 +158,14 @@ export const ProjectTeam = ({ project, onUpdate }: ProjectTeamProps) => {
                             >
                                 <ListItemAvatar>
                                     <Avatar src={member.avatar || undefined}>
-                                        {member.name.charAt(0)}
+                                        {(member.name || member.username || '?').charAt(0).toUpperCase()}
                                     </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText
-                                    primary={member.name}
+                                    primary={member.name || member.username || 'Unknown User'}
                                     secondary={
                                         <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
-                                            <Typography variant="body2" component="span">{member.email}</Typography>
+                                            <Typography variant="body2" component="span">{member.email || '未提供信箱'}</Typography>
                                             {member.githubUsername ? (
                                                 <Chip size="small" label={`GitHub: ${member.githubUsername}`} color="info" />
                                             ) : (
