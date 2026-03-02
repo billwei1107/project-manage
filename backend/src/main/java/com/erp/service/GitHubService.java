@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @file GitHubService.java
@@ -115,6 +116,27 @@ public class GitHubService {
 
         repo.removeCollaborators(github.getUser(githubUsername));
         log.info("Collaborator removed successfully");
+    }
+
+    // Get current collaborators of a repository
+    public Set<String> getRepoCollaborators(String repoName) throws IOException {
+        if (organizationName == null || organizationName.isEmpty()) {
+            throw new IllegalStateException("GitHub Organization Name is not configured");
+        }
+
+        GitHub github = getGitHubClient(organizationToken);
+        GHRepository repo = github.getRepository(organizationName + "/" + repoName);
+
+        return repo.getCollaborators().stream()
+                .map(target -> {
+                    try {
+                        return target.getLogin();
+                    } catch (Exception e) {
+                        return "";
+                    }
+                })
+                .filter(login -> !login.isEmpty())
+                .collect(java.util.stream.Collectors.toSet());
     }
 
     /**

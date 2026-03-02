@@ -277,8 +277,8 @@ public class ProjectService {
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
 
         Set<User> team = project.getTeam();
-        if (team == null || team.isEmpty()) {
-            return; // No team to sync
+        if (team == null) {
+            team = new HashSet<>();
         }
 
         String githubRepo = project.getGithubRepo();
@@ -286,7 +286,58 @@ public class ProjectService {
             throw new RuntimeException("專案尚未綁定 GitHub 倉庫");
         }
 
-        syncGithubCollaborators(githubRepo, team);
+        try {
+            // Get actual repo name avoiding org prefix if there
+            String repoName = githubRepo;
+            String[] parts = githubRepo.split("/");
+            if (parts.length == 2) {
+                repoName = parts[1];
+            }
+
+            // Get current collaborators from GitHub
+            Set<String> currentGithubCollaborators = githubService.getRepoCollaborators(repoName);
+
+            // Determine desired collaborators based on ERP team (only those with GitHub
+            // usernames)
+            Set<String> desiredGithubUsernames = team.stream()
+                    .map(User::getGithubUsername)
+                    .filter(u -> u != null && !u.trim().isEmpty())
+                    .collect(Collectors.toSet());
+
+            // 1. Members to Add (in ERP team but not on GitHub)
+            Set<User> membersToAdd = team.stream()
+                    .filter(u -> {
+                        String ghUsername = u.getGithubUsername();
+                        return ghUsername != null && !ghUsername.trim().isEmpty()
+                                && !currentGithubCollaborators.contains(ghUsername);
+                    })
+                    .collect(Collectors.toSet());
+
+            if (!membersToAdd.isEmpty()) {
+                log.info("Force sync: Adding missing members to GitHub: {}",
+                        membersToAdd.stream().map(User::getUsername).collect(Collectors.toList()));
+                syncGithubCollaborators(githubRepo, membersToAdd);
+            }
+
+            // 2. Members to Remove (on GitHub but not in ERP team)
+            Set<String> usernamesToRemove = currentGithubCollaborators.stream()
+                    .filter(ghUser -> !desiredGithubUsernames.contains(ghUser))
+                    .collect(Collectors.toSet());
+
+            if (!usernamesToRemove.isEmpty()) {
+                log.info("Force sync: Removing extra collaborators from GitHub: {}", usernamesToRemove);
+                for (String ghUsername : usernamesToRemove) {
+                    try {
+                        githubService.removeCollaboratorFromRepo(repoName, ghUsername);
+                    } catch (Exception e) {
+                        log.error("Failed to remove collaborator {} from repository {}", ghUsername, repoName, e);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to force sync GitHub collaborators for project: {}", projectId, e);
+            throw new RuntimeException("同步 GitHub 成員失敗", e);
+        }
     }
 
     /**
