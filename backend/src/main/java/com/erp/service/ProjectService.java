@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.HttpException;
+import java.io.IOException;
 
 import java.util.HashSet;
 import java.util.List;
@@ -128,10 +130,16 @@ public class ProjectService {
                     // automatically)
                     syncGithubCollaborators(orgAndRepo, team);
                 }
-            } catch (Exception e) {
+            } catch (HttpException e) {
+                log.error("GitHub API error while creating repository: {} - {}", e.getResponseCode(), e.getMessage());
+                String detail = e.getMessage();
+                if (detail != null && detail.contains("name already exists")) {
+                    throw new RuntimeException(
+                            "GitHub 倉庫建立失敗：名稱 [" + request.getGithubRepoName() + "] 在組織中已存在，請嘗試其他名稱。");
+                }
+                throw new RuntimeException("GitHub 倉庫建立失敗 (API 錯誤): " + e.getMessage());
+            } catch (IOException e) {
                 log.error("Failed to create GitHub repository for project: {}", request.getTitle(), e);
-                // We proceed with project creation even if GitHub fails, but we should probably
-                // inform the user.
                 throw new RuntimeException("專案建立成功但 GitHub 倉庫建立失敗: " + e.getMessage());
             }
         }
