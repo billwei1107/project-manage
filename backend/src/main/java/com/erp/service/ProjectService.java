@@ -174,7 +174,11 @@ public class ProjectService {
 
         if (request.getTeamIds() != null) {
             Set<User> newTeam = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
-            Set<User> oldTeam = project.getTeam() != null ? project.getTeam() : new HashSet<>();
+            Set<User> oldTeam = project.getTeam() != null ? new HashSet<>(project.getTeam()) : new HashSet<>();
+
+            log.info("Project update member sync: oldTeam={}, newTeam={}",
+                    oldTeam.stream().map(User::getUsername).collect(Collectors.toList()),
+                    newTeam.stream().map(User::getUsername).collect(Collectors.toList()));
 
             // Only sync collaborators if the project already has a GitHub repo linked
             if (project.getGithubRepo() != null && !project.getGithubRepo().isEmpty()) {
@@ -184,6 +188,8 @@ public class ProjectService {
                         .collect(Collectors.toSet());
 
                 if (!addedMembers.isEmpty()) {
+                    log.info("Adding members to GitHub: {}",
+                            addedMembers.stream().map(User::getUsername).collect(Collectors.toList()));
                     syncGithubCollaborators(project.getGithubRepo(), addedMembers);
                 }
 
@@ -193,6 +199,8 @@ public class ProjectService {
                         .collect(Collectors.toSet());
 
                 if (!removedMembers.isEmpty()) {
+                    log.info("Removing members from GitHub: {}",
+                            removedMembers.stream().map(User::getUsername).collect(Collectors.toList()));
                     syncGithubCollaboratorRemovals(project.getGithubRepo(), removedMembers);
                 }
             }
