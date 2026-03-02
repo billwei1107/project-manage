@@ -44,7 +44,7 @@ export const ProjectTeam = ({ project, onUpdate }: ProjectTeamProps) => {
         const fetchUsers = async () => {
             try {
                 const response = await api.get('/v1/users');
-                setAllUsers(response.data.data);
+                setAllUsers(response.data || []);
             } catch (err) {
                 console.error('Failed to fetch users', err);
             }
