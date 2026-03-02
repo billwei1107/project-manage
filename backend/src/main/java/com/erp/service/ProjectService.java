@@ -159,18 +159,30 @@ public class ProjectService {
         Project project = projectRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Project not found with id: " + id));
 
-        project.setTitle(request.getTitle());
-        project.setClient(request.getClient());
-        project.setBudget(request.getBudget());
-        project.setStartDate(request.getStartDate());
-        project.setEndDate(request.getEndDate());
-        project.setStatus(request.getStatus());
-        project.setDescription(request.getDescription());
-        project.setGithubRepo(request.getGithubRepo());
-        project.setGithubBranch(request.getGithubBranch());
-        project.setBackupConfig(request.getBackupConfig());
-        project.setGithubToken(request.getGithubToken());
-        project.setFileLocation(request.getFileLocation());
+        if (request.getTitle() != null)
+            project.setTitle(request.getTitle());
+        if (request.getClient() != null)
+            project.setClient(request.getClient());
+        if (request.getBudget() != null)
+            project.setBudget(request.getBudget());
+        if (request.getStartDate() != null)
+            project.setStartDate(request.getStartDate());
+        if (request.getEndDate() != null)
+            project.setEndDate(request.getEndDate());
+        if (request.getStatus() != null)
+            project.setStatus(request.getStatus());
+        if (request.getDescription() != null)
+            project.setDescription(request.getDescription());
+        if (request.getGithubRepo() != null)
+            project.setGithubRepo(request.getGithubRepo());
+        if (request.getGithubBranch() != null)
+            project.setGithubBranch(request.getGithubBranch());
+        if (request.getBackupConfig() != null)
+            project.setBackupConfig(request.getBackupConfig());
+        if (request.getGithubToken() != null)
+            project.setGithubToken(request.getGithubToken());
+        if (request.getFileLocation() != null)
+            project.setFileLocation(request.getFileLocation());
 
         if (request.getTeamIds() != null) {
             Set<User> newTeam = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
