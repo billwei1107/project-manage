@@ -202,7 +202,7 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
                                 <Button variant="outlined" color="primary" size="small" onClick={handleSyncGithub} disabled={syncing || !project.githubRepo}>
                                     {syncing ? <CircularProgress size={20} /> : 'Sync to GitHub'}
                                 </Button>
-                                <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />}>
+                                <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />} onClick={() => setCurrentTab(1)}>
                                     管理成員
                                 </Button>
                             </Stack>
