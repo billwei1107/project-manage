@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import type { ChangeEvent } from 'react';
 import {
     Box,
     Typography,
@@ -13,12 +12,10 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
-    FormControlLabel,
-    Switch,
     Paper,
 } from '@mui/material';
-import { GitHub, Backup, Save, Add, Download, Visibility, VisibilityOff } from '@mui/icons-material';
-import { IconButton, InputAdornment, Tooltip } from '@mui/material';
+import { GitHub, Backup, Save, Add, Download } from '@mui/icons-material';
+import { Tooltip } from '@mui/material';
 import { projectApi } from '../../api/projects';
 import type { Project } from '../../api/projects';
 
@@ -39,21 +36,12 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
     const [branches, setBranches] = useState<string[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [githubUser, setGithubUser] = useState<string | null>(null);
 
     // Form states
     const [githubRepo, setGithubRepo] = useState(project.githubRepo || '');
     const [githubBranch, setGithubBranch] = useState(project.githubBranch || '');
     const [backupConfig, setBackupConfig] = useState(project.backupConfig || '');
-    const [accessKey, setAccessKey] = useState(project.githubToken || '');
     const [fileLocation, setFileLocation] = useState(project.fileLocation || '');
-    const [showAccessKey, setShowAccessKey] = useState(false);
-
-    // Create Repo Dialog states
-    const [openCreateDialog, setOpenCreateDialog] = useState(false);
-    const [newRepoName, setNewRepoName] = useState(project.title.toLowerCase().replace(/\s+/g, '-'));
-    const [newRepoDesc, setNewRepoDesc] = useState(project.description || '');
-    const [isPrivate, setIsPrivate] = useState(true);
 
     // Create Branch Dialog states
     const [openBranchDialog, setOpenBranchDialog] = useState(false);
@@ -61,34 +49,15 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
     const [sourceBranch, setSourceBranch] = useState('main');
 
     useEffect(() => {
-        if (accessKey) {
-            fetchUserInfo();
-        }
-    }, [accessKey]);
-
-    useEffect(() => {
-        if (githubRepo && githubRepo.includes('/') && accessKey) {
+        if (githubRepo && githubRepo.includes('/')) {
             fetchBranches();
         }
-    }, [githubRepo, accessKey]);
-
-    const fetchUserInfo = async () => {
-        if (!accessKey) return;
-        try {
-            const res = await projectApi.githubGetMe(accessKey);
-            if (res.success) {
-                setGithubUser(res.data);
-            }
-        } catch (err) {
-            console.error("Failed to fetch GitHub user info", err);
-        }
-    };
+    }, [githubRepo]);
 
     const fetchBranches = async () => {
         const [owner, repo] = githubRepo.split('/');
         try {
-            if (!accessKey) return;
-            const res = await projectApi.githubGetBranches(accessKey, owner, repo);
+            const res = await projectApi.githubGetBranches(owner, repo);
             if (res.success) {
                 setBranches(res.data);
             }
@@ -113,7 +82,6 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
                 githubRepo,
                 githubBranch,
                 backupConfig,
-                githubToken: accessKey,
                 fileLocation
             } as any);
             onUpdate(updated.data);
@@ -125,42 +93,13 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
         }
     };
 
-    const handleCreateRepo = async () => {
-        setLoading(true);
-        setOpenCreateDialog(false);
-        setError(null);
-        try {
-            const res = await projectApi.githubCreateRepo({
-                token: accessKey,
-                name: newRepoName,
-                description: newRepoDesc,
-                private: isPrivate
-            });
-            if (res.success) {
-                const urlParts = res.data.split('/');
-                const ownerRepo = `${urlParts[urlParts.length - 2]}/${urlParts[urlParts.length - 1]}`;
-                setGithubRepo(ownerRepo);
-                setSuccess(`儲存庫建立成功: ${res.data}`);
-            }
-        } catch (err: any) {
-            setError(err.response?.data?.message || "建立儲存庫失敗，請確認 Token 權限 (需包含 'repo' 權限)");
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleCreateBranch = async () => {
-        if (!accessKey) {
-            setError("請先設定 Access Key");
-            return;
-        }
         setLoading(true);
         setOpenBranchDialog(false);
         setError(null);
         try {
             const [owner, repo] = githubRepo.split('/');
             const res = await projectApi.githubCreateBranch({
-                token: accessKey,
                 owner,
                 repo,
                 newBranch: newBranchName,
@@ -179,17 +118,17 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
     };
 
     const handleDownload = async () => {
-        if (!accessKey || !githubRepo || !githubBranch) {
-            setError("請確認已設定 Access Key、儲存庫與分支");
+        if (!githubRepo || !githubBranch) {
+            setError("請確認已設定儲存庫與分支");
             return;
         }
         setLoading(true);
         try {
             const [owner, repo] = githubRepo.split('/');
-            const blob = await projectApi.githubDownloadRepo(accessKey, owner, repo, githubBranch);
+            const blob = await projectApi.githubDownloadRepo(owner, repo, githubBranch);
 
             // Create Blob URL and trigger download
-            const url = window.URL.createObjectURL(blob as any); // Type cast if needed
+            const url = window.URL.createObjectURL(blob as any);
             const a = document.createElement('a');
             a.href = url;
             a.download = `${repo}-${githubBranch}.zip`;
@@ -202,7 +141,7 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
             setSuccess("下載已開始");
         } catch (err: any) {
             console.error("Download failed", err);
-            setError("下載失敗，請確認 Token 權限或儲存庫存取設定");
+            setError("下載失敗，請聯繫管理員確認系統 GitHub 配置");
         } finally {
             setLoading(false);
         }
@@ -216,59 +155,22 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
                         <GitHub sx={{ mr: 1, color: 'text.secondary' }} />
                         <Typography variant="h6">GitHub 儲存庫設定</Typography>
                     </Box>
-                    {githubUser && (
-                        <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center' }}>
-                            已連結帳號: <strong>{githubUser}</strong>
-                        </Typography>
-                    )}
+                    <Typography variant="caption" color="text.secondary">
+                        系統將自動透過組織憑證管理此專案的庫
+                    </Typography>
                 </Box>
 
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12 }}>
                         <TextField
                             fullWidth
-                            type={showAccessKey ? 'text' : 'password'}
-                            label="Repository Access Key (Token)"
-                            value={accessKey}
-                            onChange={(e) => setAccessKey(e.target.value)}
-                            disabled={loading}
-                            slotProps={{
-                                input: {
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            <IconButton
-                                                onClick={() => setShowAccessKey(!showAccessKey)}
-                                                edge="end"
-                                            >
-                                                {showAccessKey ? <VisibilityOff /> : <Visibility />}
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                },
-                            }}
-                            helperText="請輸入具備 'repo' 與 'read:user' 權限的 GitHub Token"
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 8 }}>
-                        <TextField
-                            fullWidth
                             label="GitHub 儲存庫 (owner/repo)"
-                            placeholder="例如: billwei1107/project-manage"
+                            placeholder="例如: bill-project-manage-system/erp"
                             value={githubRepo}
                             onChange={(e) => setGithubRepo(e.target.value)}
                             disabled={loading}
+                            helperText="輸入完整的 Owner/Repo 來綁定現有倉庫"
                         />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }} sx={{ display: 'flex', alignItems: 'center' }}>
-                        <Button
-                            variant="outlined"
-                            onClick={() => setOpenCreateDialog(true)}
-                            disabled={loading}
-                            fullWidth
-                        >
-                            建立新的 GitHub 儲存庫
-                        </Button>
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 6 }}>
@@ -357,83 +259,6 @@ export const GitHubConfig = ({ project, onUpdate }: GitHubConfigProps) => {
                     儲存配置
                 </Button>
             </Box>
-
-            {/* Create Repo Dialog */}
-            <Dialog open={openCreateDialog} onClose={() => setOpenCreateDialog(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>建立新的 GitHub 儲存庫</DialogTitle>
-                <DialogContent sx={{ pt: 2 }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                        儲存庫將包含專案的文件與版本歷史紀錄。
-                    </Typography>
-
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box sx={{ flexGrow: 0, minWidth: 120 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Owner"
-                                    value={githubUser || '載入中...'}
-                                    disabled
-                                    size="small"
-                                />
-                            </Box>
-                            <Typography variant="h6">/</Typography>
-                            <Box sx={{ flexGrow: 1 }}>
-                                <TextField
-                                    fullWidth
-                                    label="儲存庫名稱 *"
-                                    value={newRepoName}
-                                    onChange={(e) => setNewRepoName(e.target.value)}
-                                    size="small"
-                                    required
-                                    autoFocus
-                                />
-                            </Box>
-                        </Box>
-
-                        <Typography variant="caption" color="text.secondary">
-                            建議使用簡短且好記的名稱。
-                        </Typography>
-
-                        <TextField
-                            fullWidth
-                            multiline
-                            rows={3}
-                            label="描述 (Description)"
-                            value={newRepoDesc}
-                            onChange={(e) => setNewRepoDesc(e.target.value)}
-                            placeholder="關於此專案的簡短描述..."
-                        />
-
-                        <Paper variant="outlined" sx={{ p: 2, bgcolor: 'action.hover' }}>
-                            <FormControlLabel
-                                control={<Switch checked={isPrivate} onChange={(e: ChangeEvent<HTMLInputElement>) => setIsPrivate(e.target.checked)} />}
-                                label={
-                                    <Box>
-                                        <Typography variant="body2" fontWeight="600">
-                                            {isPrivate ? 'Private (私有)' : 'Public (公開)'}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            {isPrivate ? '只有您可以查看此儲存庫' : '任何人都可以在網路上查看此儲存庫'}
-                                        </Typography>
-                                    </Box>
-                                }
-                            />
-                        </Paper>
-                    </Box>
-                </DialogContent>
-                <DialogActions sx={{ p: 3 }}>
-                    <Button onClick={() => setOpenCreateDialog(false)}>取消</Button>
-                    <Button
-                        onClick={handleCreateRepo}
-                        variant="contained"
-                        disabled={!newRepoName || loading}
-                        startIcon={loading && <CircularProgress size={16} color="inherit" />}
-                    >
-                        確認建立儲存庫
-                    </Button>
-                </DialogActions>
-            </Dialog>
 
             {/* Create Branch Dialog */}
             <Dialog open={openBranchDialog} onClose={() => setOpenBranchDialog(false)} maxWidth="xs" fullWidth>

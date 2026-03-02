@@ -42,21 +42,21 @@ export const ProjectFiles = ({ project }: ProjectFilesProps) => {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        if (project.githubRepo && project.githubToken) {
+        if (project.githubRepo) {
             fetchContents('');
         }
-    }, [project.githubRepo, project.githubToken]);
+    }, [project.githubRepo]);
 
     const fetchContents = async (path: string) => {
         setLoading(true);
         setError(null);
         try {
             const [owner, repo] = (project.githubRepo || '').split('/');
-            if (!owner || !repo || !project.githubToken) {
+            if (!owner || !repo) {
                 return;
             }
 
-            const res = await projectApi.githubGetContents(project.githubToken, owner, repo, path);
+            const res = await projectApi.githubGetContents(owner, repo, path);
             // API returns array on success, or object on error/single file
             if (res.success && Array.isArray(res.data)) {
                 // Sort: folders first, then files

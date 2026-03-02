@@ -45,7 +45,7 @@ public class GitHubController {
     public ResponseEntity<ApiResponse<List<String>>> getBranches(
             @PathVariable String owner,
             @PathVariable String repo,
-            @RequestParam String token) throws IOException {
+            @RequestParam(required = false) String token) throws IOException {
         List<String> branches = githubService.getBranches(token, owner + "/" + repo);
         return ResponseEntity.ok(ApiResponse.success("Branches retrieved successfully", branches));
     }
@@ -74,7 +74,7 @@ public class GitHubController {
             @PathVariable String owner,
             @PathVariable String repo,
             @RequestParam String branch,
-            @RequestParam String token) throws IOException {
+            @RequestParam(required = false) String token) throws IOException {
         String url = githubService.getDownloadUrl(token, owner + "/" + repo, branch);
         return ResponseEntity.ok(ApiResponse.success("Download URL retrieved", url));
     }
@@ -86,7 +86,7 @@ public class GitHubController {
     public ResponseEntity<ApiResponse<Boolean>> checkRepoExists(
             @PathVariable String owner,
             @PathVariable String repo,
-            @RequestParam String token) {
+            @RequestParam(required = false) String token) {
         boolean exists = githubService.repositoryExists(token, owner + "/" + repo);
         return ResponseEntity.ok(ApiResponse.success("Repository check completed", exists));
     }
@@ -95,7 +95,8 @@ public class GitHubController {
      * Get the authenticated user's login name / 獲取授權用戶的登入名稱
      */
     @GetMapping("/me")
-    public ResponseEntity<ApiResponse<String>> getAuthenticatedUser(@RequestParam String token) throws IOException {
+    public ResponseEntity<ApiResponse<String>> getAuthenticatedUser(@RequestParam(required = false) String token)
+            throws IOException {
         String login = githubService.getAuthenticatedUser(token);
         return ResponseEntity.ok(ApiResponse.success("Authenticated user retrieved", login));
     }
@@ -108,7 +109,7 @@ public class GitHubController {
             @PathVariable String owner,
             @PathVariable String repo,
             @RequestParam(required = false) String path,
-            @RequestParam String token) throws IOException {
+            @RequestParam(required = false) String token) throws IOException {
         List<Map<String, Object>> content = githubService.getRepoContent(token, owner + "/" + repo, path);
         return ResponseEntity.ok(ApiResponse.success("Repository content retrieved", content));
     }
@@ -121,7 +122,7 @@ public class GitHubController {
             @PathVariable String owner,
             @PathVariable String repo,
             @RequestParam String branch,
-            @RequestParam String token,
+            @RequestParam(required = false) String token,
             jakarta.servlet.http.HttpServletResponse response) throws IOException {
 
         response.setContentType("application/zip");

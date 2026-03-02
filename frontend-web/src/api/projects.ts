@@ -103,44 +103,27 @@ export const projectApi = {
 
     // --- GitHub Integration ---
     // --- GitHub Integration ---
-    githubCreateRepo: async (data: { token: string, name: string, description: string, private: boolean }) => {
+    githubCreateRepo: async (data: { name: string, description: string, private: boolean }) => {
         const response = await api.post<ApiResponse<string>>('/v1/github/repos', data);
         return response.data;
     },
 
-    githubGetBranches: async (token: string, owner: string, repo: string) => {
-        const response = await api.get<ApiResponse<string[]>>(`/v1/github/repos/${owner}/${repo}/branches`, {
-            params: { token }
-        });
+    githubGetBranches: async (owner: string, repo: string) => {
+        const response = await api.get<ApiResponse<string[]>>(`/v1/github/repos/${owner}/${repo}/branches`);
         return response.data;
     },
 
-    githubGetMe: async (token: string): Promise<ApiResponse<string>> => {
-        const response = await api.get<ApiResponse<string>>('/v1/github/me', {
-            params: { token }
-        });
-        return response.data;
-    },
-
-    githubCheckRepoExists: async (token: string, owner: string, repo: string) => {
-        const response = await api.get<ApiResponse<boolean>>(`/v1/github/repos/${owner}/${repo}/exists`, {
-            params: { token }
-        });
-        return response.data;
-    },
-
-    githubCreateBranch: async (data: { token: string, owner: string, repo: string, newBranch: string, sourceBranch: string }) => {
+    githubCreateBranch: async (data: { owner: string, repo: string, newBranch: string, sourceBranch: string }) => {
         const response = await api.post<ApiResponse<string>>(`/v1/github/repos/${data.owner}/${data.repo}/branches`, {
-            token: data.token,
             newBranch: data.newBranch,
             sourceBranch: data.sourceBranch
         });
         return response.data;
     },
 
-    githubGetDownloadUrl: async (token: string, owner: string, repo: string, branch: string) => {
+    githubGetDownloadUrl: async (owner: string, repo: string, branch: string) => {
         const response = await api.get<ApiResponse<string>>(`/v1/github/repos/${owner}/${repo}/download`, {
-            params: { token, branch }
+            params: { branch }
         });
         return response.data;
     },
@@ -150,17 +133,17 @@ export const projectApi = {
         return response.data;
     },
 
-    githubDownloadRepo: async (token: string, owner: string, repo: string, branch: string) => {
+    githubDownloadRepo: async (owner: string, repo: string, branch: string) => {
         const response = await api.get(`/v1/github/repos/${owner}/${repo}/archive`, {
-            params: { token, branch },
+            params: { branch },
             responseType: 'blob'
         });
         return response.data; // Blob
     },
 
-    githubGetContents: async (token: string, owner: string, repo: string, path?: string) => {
+    githubGetContents: async (owner: string, repo: string, path?: string) => {
         const response = await api.get<ApiResponse<any[]>>(`/v1/github/repos/${owner}/${repo}/contents`, {
-            params: { token, path }
+            params: { path }
         });
         return response.data;
     },

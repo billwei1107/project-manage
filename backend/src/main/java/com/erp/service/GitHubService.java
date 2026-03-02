@@ -32,16 +32,18 @@ public class GitHubService {
     private String organizationToken;
 
     private GitHub getGitHubClient(String token) throws IOException {
-        if (token == null || token.isEmpty()) {
-            throw new IllegalArgumentException("GitHub Token is required");
+        String actualToken = (token == null || token.isBlank()) ? organizationToken : token;
+
+        if (actualToken == null || actualToken.isBlank() || "ghp_placeholder".equals(actualToken)) {
+            throw new IllegalArgumentException("GitHub Organization Token 未配置，請設定 GITHUB_ORG_TOKEN 環境變數");
         }
         try {
-            GitHub github = new GitHubBuilder().withOAuthToken(token).build();
+            GitHub github = new GitHubBuilder().withOAuthToken(actualToken).build();
             github.checkApiUrlValidity();
             return github;
         } catch (IOException e) {
             log.error("Failed to initialize GitHub client: {}", e.getMessage());
-            throw e;
+            throw new RuntimeException("GitHub 連線失敗，請檢查 Token 權限是否正確: " + e.getMessage(), e);
         }
     }
 
