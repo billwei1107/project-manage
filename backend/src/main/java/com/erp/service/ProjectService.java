@@ -174,17 +174,26 @@ public class ProjectService {
 
         if (request.getTeamIds() != null) {
             Set<User> newTeam = new HashSet<>(userRepository.findAllById(request.getTeamIds()));
+            Set<User> oldTeam = project.getTeam() != null ? project.getTeam() : new HashSet<>();
 
             // Only sync collaborators if the project already has a GitHub repo linked
             if (project.getGithubRepo() != null && !project.getGithubRepo().isEmpty()) {
                 // Find users who are in newTeam but not in oldTeam
-                Set<User> oldTeam = project.getTeam() != null ? project.getTeam() : new HashSet<>();
                 Set<User> addedMembers = newTeam.stream()
                         .filter(u -> !oldTeam.contains(u))
                         .collect(Collectors.toSet());
 
                 if (!addedMembers.isEmpty()) {
                     syncGithubCollaborators(project.getGithubRepo(), addedMembers);
+                }
+
+                // Find users who were removed (in oldTeam but not in newTeam)
+                Set<User> removedMembers = oldTeam.stream()
+                        .filter(u -> !newTeam.contains(u))
+                        .collect(Collectors.toSet());
+
+                if (!removedMembers.isEmpty()) {
+                    syncGithubCollaboratorRemovals(project.getGithubRepo(), removedMembers);
                 }
             }
 
@@ -193,6 +202,31 @@ public class ProjectService {
 
         Project updatedProject = projectRepository.save(project);
         return mapToResponse(updatedProject);
+    }
+
+    /**
+     * Remove team members as collaborators from the project's GitHub repository.
+     */
+    private void syncGithubCollaboratorRemovals(String fullRepoName, Set<User> users) {
+        if (fullRepoName == null || fullRepoName.isEmpty())
+            return;
+
+        String repoName = fullRepoName;
+        String[] parts = fullRepoName.split("/");
+        if (parts.length == 2) {
+            repoName = parts[1];
+        }
+
+        for (User user : users) {
+            String githubUsername = user.getGithubUsername();
+            if (githubUsername != null && !githubUsername.trim().isEmpty()) {
+                try {
+                    githubService.removeCollaboratorFromRepo(repoName, githubUsername);
+                } catch (Exception e) {
+                    log.error("Failed to remove collaborator {} from repository {}", githubUsername, repoName, e);
+                }
+            }
+        }
     }
 
     /**

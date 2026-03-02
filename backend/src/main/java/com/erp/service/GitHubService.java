@@ -102,6 +102,22 @@ public class GitHubService {
     }
 
     /**
+     * Remove a collaborator from an organization's repository
+     */
+    public void removeCollaboratorFromRepo(String repoName, String githubUsername) throws IOException {
+        if (organizationName == null || organizationName.isEmpty()) {
+            throw new IllegalStateException("GitHub Organization Name is not configured");
+        }
+
+        log.info("Removing collaborator {} from repository {}/{}", githubUsername, organizationName, repoName);
+        GitHub github = getGitHubClient(organizationToken);
+        GHRepository repo = github.getRepository(organizationName + "/" + repoName);
+
+        repo.removeCollaborators(github.getUser(githubUsername));
+        log.info("Collaborator removed successfully");
+    }
+
+    /**
      * Get branches for a repository / 獲取儲存庫的分支列表
      */
     public List<String> getBranches(String token, String repoName) throws IOException {
