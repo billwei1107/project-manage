@@ -32,6 +32,7 @@ public class UserController {
                         .name(user.getName())
                         .email(user.getEmail())
                         .role(user.getRole())
+                        .githubUsername(user.getGithubUsername())
                         .build())
                 .collect(Collectors.toList());
         return ResponseEntity.ok(users);
@@ -44,5 +45,6 @@ public class UserController {
         private String name;
         private String email;
         private User.Role role;
+        private String githubUsername;
     }
 }

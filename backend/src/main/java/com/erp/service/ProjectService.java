@@ -351,14 +351,15 @@ public class ProjectService {
     }
 
     private ProjectResponse mapToResponse(Project project) {
-        List<ProjectResponse.MemberInfo> teamInfo = project.getTeam().stream()
+        List<ProjectResponse.MemberInfo> teamInfo = project.getTeam() != null ? project.getTeam().stream()
                 .map(user -> ProjectResponse.MemberInfo.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .email(user.getEmail())
                         .role(user.getRole())
+                        .githubUsername(user.getGithubUsername())
                         .build())
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()) : null;
 
         return ProjectResponse.builder()
                 .id(project.getId())
@@ -368,9 +369,7 @@ public class ProjectService {
                 .startDate(project.getStartDate())
                 .endDate(project.getEndDate())
                 .status(project.getStatus())
-                .status(project.getStatus())
                 .progress(calculateProgress(project.getId()))
-                .description(project.getDescription())
                 .description(project.getDescription())
                 .team(teamInfo)
                 .githubRepo(project.getGithubRepo())

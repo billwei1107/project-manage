@@ -48,5 +48,6 @@ public class ProjectResponse {
         private String name;
         private String email;
         private com.erp.entity.User.Role role;
+        private String githubUsername;
     }
 }
