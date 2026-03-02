@@ -6,6 +6,7 @@ import ProjectKanban from '../../components/projects/ProjectKanban';
 import ProjectFinance from '../../components/projects/ProjectFinance';
 import { GitHubConfig } from '../../components/projects/GitHubConfig';
 import { ProjectFiles } from '../../components/projects/ProjectFiles';
+import { ProjectTeam } from '../../components/projects/ProjectTeam';
 import { statusLabels } from '../../utils/project';
 import { projectApi } from '../../api/projects';
 import type { Project } from '../../api/projects'; // Updated import source
@@ -202,7 +203,7 @@ function ProjectOverview({ project, setCurrentTab }: { project: Project, setCurr
                                 <Button variant="outlined" color="primary" size="small" onClick={handleSyncGithub} disabled={syncing || !project.githubRepo}>
                                     {syncing ? <CircularProgress size={20} /> : 'Sync to GitHub'}
                                 </Button>
-                                <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />} onClick={() => setCurrentTab(1)}>
+                                <Button variant="outlined" color="secondary" size="small" endIcon={<ArrowForward />} onClick={() => setCurrentTab(5)}>
                                     管理成員
                                 </Button>
                             </Stack>
@@ -344,6 +345,7 @@ export default function ProjectDetail() {
                     <Tab label="GitHub 設定" />
                     <Tab label="文件 (Files)" />
                     <Tab label="財務 (Finance)" />
+                    <Tab label="專案成員 (Team)" />
                 </Tabs>
             </Box>
 
@@ -354,6 +356,7 @@ export default function ProjectDetail() {
                 {currentTab === 2 && <GitHubConfig project={project} onUpdate={(updated) => setProject(updated)} />}
                 {currentTab === 3 && <ProjectFiles project={project} />}
                 {currentTab === 4 && <ProjectFinance projectId={id!} />}
+                {currentTab === 5 && <ProjectTeam project={project} onUpdate={(updated) => setProject(updated)} />}
             </Box>
         </Box>
     );

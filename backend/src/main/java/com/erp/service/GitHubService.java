@@ -127,7 +127,7 @@ public class GitHubService {
         GitHub github = getGitHubClient(organizationToken);
         GHRepository repo = github.getRepository(organizationName + "/" + repoName);
 
-        return repo.getCollaborators().stream()
+        Set<String> collaborators = repo.getCollaborators().stream()
                 .map(target -> {
                     try {
                         return target.getLogin();
@@ -137,6 +137,8 @@ public class GitHubService {
                 })
                 .filter(login -> !login.isEmpty())
                 .collect(java.util.stream.Collectors.toSet());
+
+        return collaborators;
     }
 
     /**
