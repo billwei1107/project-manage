@@ -18,7 +18,8 @@ import {
     useMediaQuery,
     alpha,
     Menu,
-    MenuItem
+    MenuItem,
+    Tooltip
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -33,6 +34,8 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
 
@@ -43,7 +46,8 @@ import ChangePasswordModal from '../components/common/ChangePasswordModal';
  * @description_zh 重構後的後台版面，包含完整導航與現代化標頭
  */
 
-const drawerWidth = 280;
+const DRAWER_WIDTH = 280;
+const COLLAPSED_DRAWER_WIDTH = 80;
 
 interface NavItem {
     text: string;
@@ -55,6 +59,9 @@ export default function AdminLayout() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
+
+    const currentDrawerWidth = isCollapsed && !isMobile ? COLLAPSED_DRAWER_WIDTH : DRAWER_WIDTH;
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -103,102 +110,146 @@ export default function AdminLayout() {
     const drawer = (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Logo Area */}
-            <Toolbar sx={{ px: 2.5 }}>
+            <Toolbar sx={{ px: isCollapsed ? 1 : 2.5, display: 'flex', justifyContent: 'center', position: 'relative' }}>
                 <Box
-                    component="img"
-                    // src="/logo.png" // Placeholder for logo
+                    sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', width: '100%', justifyContent: isCollapsed ? 'center' : 'flex-start' }}
                     onClick={() => navigate('/admin')}
-                    sx={{
-                        height: 40,
-                        width: 40,
-                        borderRadius: 1,
-                        bgcolor: 'primary.main',
-                        cursor: 'pointer',
-                        mr: 2
-                    }}
-                />
-                <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 800 }}>
-                    PRO MANAGE
-                </Typography>
+                >
+                    <Box
+                        sx={{
+                            height: 40,
+                            width: 40,
+                            borderRadius: 1,
+                            bgcolor: 'primary.main',
+                            mr: isCollapsed ? 0 : 2,
+                            flexShrink: 0
+                        }}
+                    />
+                    {!isCollapsed && (
+                        <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 800 }}>
+                            PRO MANAGE
+                        </Typography>
+                    )}
+                </Box>
             </Toolbar>
 
             {/* User Info Card in Sidebar */}
-            <Box sx={{ mb: 5, mx: 2.5, mt: 2 }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        p: 2,
-                        borderRadius: 2,
-                        bgcolor: 'action.hover', // Light grey background
-                    }}
-                >
-                    <Avatar src={user?.avatar} alt={user?.name} sx={{ mr: 2 }}>{user?.name?.charAt(0)}</Avatar>
-                    <Box>
-                        <Typography variant="subtitle2" sx={{ color: 'text.primary' }}>
-                            {user?.name}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                            {user?.role}
-                        </Typography>
+            <Box sx={{ mb: 5, mx: isCollapsed ? 1 : 2.5, mt: 2 }}>
+                <Tooltip title={isCollapsed ? (user?.name || '') : ''} placement="right">
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: isCollapsed ? 'center' : 'flex-start',
+                            p: isCollapsed ? 1 : 2,
+                            borderRadius: 2,
+                            bgcolor: 'action.hover', // Light grey background
+                        }}
+                    >
+                        <Avatar src={user?.avatar} alt={user?.name} sx={{ mr: isCollapsed ? 0 : 2 }}>{user?.name?.charAt(0)}</Avatar>
+                        {!isCollapsed && (
+                            <Box>
+                                <Typography variant="subtitle2" sx={{ color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 170 }}>
+                                    {user?.name}
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                                    {user?.role}
+                                </Typography>
+                            </Box>
+                        )}
                     </Box>
-                </Box>
+                </Tooltip>
             </Box>
 
             {/* Navigation List */}
-            <List sx={{ px: 1 }}>
+            <List sx={{ px: isCollapsed ? 1 : 1 }}>
                 {menuItems.map((item) => {
                     const isActive = location.pathname === item.path;
 
                     return (
-                        <ListItem key={item.text} disablePadding sx={{ mb: 1 }}>
-                            <ListItemButton
-                                onClick={() => navigate(item.path)}
-                                sx={{
-                                    borderRadius: 1.5,
-                                    bgcolor: isActive ? 'action.selected' : 'transparent',
-                                    color: isActive ? 'primary.main' : 'text.secondary',
-                                    '&:hover': {
-                                        bgcolor: 'action.hover',
-                                        color: 'text.primary',
-                                    }
-                                }}
-                            >
-                                <ListItemIcon
+                        <Tooltip title={isCollapsed ? item.text : ''} placement="right" key={item.text}>
+                            <ListItem disablePadding sx={{ mb: 1 }}>
+                                <ListItemButton
+                                    onClick={() => navigate(item.path)}
                                     sx={{
-                                        minWidth: 40,
-                                        color: isActive ? 'primary.main' : 'inherit'
+                                        borderRadius: 1.5,
+                                        justifyContent: isCollapsed ? 'center' : 'flex-start',
+                                        px: isCollapsed ? 1 : 2,
+                                        bgcolor: isActive ? 'action.selected' : 'transparent',
+                                        color: isActive ? 'primary.main' : 'text.secondary',
+                                        '&:hover': {
+                                            bgcolor: 'action.hover',
+                                            color: 'text.primary',
+                                        }
                                     }}
                                 >
-                                    {item.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }} />
-                            </ListItemButton>
-                        </ListItem>
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: isCollapsed ? 0 : 40,
+                                            mr: isCollapsed ? 0 : 2,
+                                            justifyContent: 'center',
+                                            color: isActive ? 'primary.main' : 'inherit'
+                                        }}
+                                    >
+                                        {item.icon}
+                                    </ListItemIcon>
+                                    {!isCollapsed && (
+                                        <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }} />
+                                    )}
+                                </ListItemButton>
+                            </ListItem>
+                        </Tooltip>
                     );
                 })}
             </List>
 
             <Box sx={{ flexGrow: 1 }} />
 
-            {/* Logout */}
-            <Box sx={{ p: 2.5 }}>
-                <ListItemButton
-                    onClick={handleLogout}
-                    sx={{
-                        borderRadius: 1.5,
-                        color: 'error.main',
-                        bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
-                        '&:hover': {
-                            bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
-                        }
-                    }}
-                >
-                    <ListItemIcon sx={{ minWidth: 40, color: 'error.main' }}>
-                        <LogoutIcon />
-                    </ListItemIcon>
-                    <ListItemText primary="登出" />
-                </ListItemButton>
+            {/* Logout & Collapse Toggle */}
+            <Box sx={{ p: isCollapsed ? 1 : 2.5, display: 'flex', flexDirection: 'column', gap: 1, pb: 2 }}>
+                <Tooltip title={isCollapsed ? "登出" : ''} placement="right">
+                    <ListItemButton
+                        onClick={handleLogout}
+                        sx={{
+                            borderRadius: 1.5,
+                            justifyContent: isCollapsed ? 'center' : 'flex-start',
+                            px: isCollapsed ? 1 : 2,
+                            color: 'error.main',
+                            bgcolor: (theme) => alpha(theme.palette.error.main, 0.08),
+                            '&:hover': {
+                                bgcolor: (theme) => alpha(theme.palette.error.main, 0.16),
+                            }
+                        }}
+                    >
+                        <ListItemIcon sx={{ minWidth: isCollapsed ? 0 : 40, mr: isCollapsed ? 0 : 2, justifyContent: 'center', color: 'error.main' }}>
+                            <LogoutIcon />
+                        </ListItemIcon>
+                        {!isCollapsed && <ListItemText primary="登出" />}
+                    </ListItemButton>
+                </Tooltip>
+
+                {/* Collapse Sidebar Toggle - Only visible on desktop */}
+                <Tooltip title={isCollapsed ? "展開選單" : "收起選單"} placement="right">
+                    <ListItemButton
+                        onClick={() => setIsCollapsed(!isCollapsed)}
+                        sx={{
+                            borderRadius: 1.5,
+                            justifyContent: isCollapsed ? 'center' : 'flex-start',
+                            px: isCollapsed ? 1 : 2,
+                            color: 'text.secondary',
+                            display: { xs: 'none', md: 'flex' },
+                            '&:hover': {
+                                bgcolor: 'action.hover',
+                                color: 'text.primary',
+                            }
+                        }}
+                    >
+                        <ListItemIcon sx={{ minWidth: isCollapsed ? 0 : 40, mr: isCollapsed ? 0 : 2, justifyContent: 'center', color: 'inherit' }}>
+                            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
+                        </ListItemIcon>
+                        {!isCollapsed && <ListItemText primary="收起選單" />}
+                    </ListItemButton>
+                </Tooltip>
             </Box>
         </Box>
     );
@@ -212,9 +263,13 @@ export default function AdminLayout() {
                 <AppBar
                     position="fixed"
                     sx={{
-                        width: { md: `calc(100% - ${drawerWidth}px)` },
-                        ml: { md: `${drawerWidth}px` },
+                        width: { md: `calc(100% - ${currentDrawerWidth}px)` },
+                        ml: { md: `${currentDrawerWidth}px` },
                         bgcolor: 'background.paper',
+                        transition: theme.transitions.create(['width', 'margin'], {
+                            easing: theme.transitions.easing.sharp,
+                            duration: isCollapsed ? theme.transitions.duration.leavingScreen : theme.transitions.duration.enteringScreen,
+                        }),
                     }}
                 >
                     <Toolbar>
@@ -239,10 +294,14 @@ export default function AdminLayout() {
                 <AppBar
                     position="fixed"
                     sx={{
-                        width: `calc(100% - ${drawerWidth}px)`,
-                        ml: `${drawerWidth}px`,
+                        width: { xs: '100%', md: `calc(100% - ${currentDrawerWidth}px)` },
+                        ml: { md: `${currentDrawerWidth}px` },
                         bgcolor: 'background.paper',
                         boxShadow: 1,
+                        transition: theme.transitions.create(['width', 'margin'], {
+                            easing: theme.transitions.easing.sharp,
+                            duration: isCollapsed ? theme.transitions.duration.leavingScreen : theme.transitions.duration.enteringScreen,
+                        }),
                     }}
                 >
                     <Toolbar sx={{ justifyContent: 'flex-end', gap: 2 }}>
@@ -288,7 +347,14 @@ export default function AdminLayout() {
 
             <Box
                 component="nav"
-                sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+                sx={{
+                    width: { md: currentDrawerWidth },
+                    flexShrink: { md: 0 },
+                    transition: theme.transitions.create('width', {
+                        easing: theme.transitions.easing.sharp,
+                        duration: isCollapsed ? theme.transitions.duration.leavingScreen : theme.transitions.duration.enteringScreen,
+                    }),
+                }}
                 aria-label="mailbox folders"
             >
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
@@ -301,7 +367,7 @@ export default function AdminLayout() {
                     }}
                     sx={{
                         display: { xs: 'block', md: 'none' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: DRAWER_WIDTH },
                     }}
                 >
                     {drawer}
@@ -310,7 +376,15 @@ export default function AdminLayout() {
                     variant="permanent"
                     sx={{
                         display: { xs: 'none', md: 'block' },
-                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                        '& .MuiDrawer-paper': {
+                            boxSizing: 'border-box',
+                            width: currentDrawerWidth,
+                            overflowX: 'hidden',
+                            transition: theme.transitions.create('width', {
+                                easing: theme.transitions.easing.sharp,
+                                duration: isCollapsed ? theme.transitions.duration.leavingScreen : theme.transitions.duration.enteringScreen,
+                            }),
+                        },
                     }}
                     open
                 >
@@ -322,8 +396,12 @@ export default function AdminLayout() {
                 sx={{
                     flexGrow: 1,
                     p: { xs: 2, sm: 3 },
-                    width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+                    width: { xs: '100%', md: `calc(100% - ${currentDrawerWidth}px)` },
                     maxWidth: '100%',
+                    transition: theme.transitions.create(['width', 'margin'], {
+                        easing: theme.transitions.easing.sharp,
+                        duration: isCollapsed ? theme.transitions.duration.leavingScreen : theme.transitions.duration.enteringScreen,
+                    }),
                     overflowX: 'hidden',
                     minHeight: '100vh',
                     display: 'flex',
