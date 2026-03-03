@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Box, Button, TextField, Typography, Alert, CircularProgress } from '@mui/material';
+import { Box, Button, TextField, Typography, Alert, CircularProgress, InputAdornment, IconButton } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 
@@ -15,6 +16,7 @@ export default function Login() {
     const { login, isLoading, error } = useAuthStore();
     const [loginId, setLoginId] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleLogin = async () => {
         if (!loginId || !password) return;
@@ -25,6 +27,12 @@ export default function Login() {
         } catch (err) {
             console.error("Login failed:", err);
         }
+    };
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
     };
 
     return (
@@ -52,7 +60,7 @@ export default function Login() {
             <TextField
                 fullWidth
                 label="密碼"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 variant="outlined"
                 margin="normal"
                 value={password}
@@ -60,6 +68,20 @@ export default function Login() {
                 disabled={isLoading}
                 onKeyPress={(e) => {
                     if (e.key === 'Enter') handleLogin();
+                }}
+                InputProps={{
+                    endAdornment: (
+                        <InputAdornment position="end">
+                            <IconButton
+                                aria-label="toggle password visibility"
+                                onClick={handleClickShowPassword}
+                                onMouseDown={handleMouseDownPassword}
+                                edge="end"
+                            >
+                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                            </IconButton>
+                        </InputAdornment>
+                    ),
                 }}
             />
 

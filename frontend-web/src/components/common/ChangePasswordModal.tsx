@@ -8,8 +8,11 @@ import {
     TextField,
     Box,
     Alert,
-    CircularProgress
+    CircularProgress,
+    InputAdornment,
+    IconButton
 } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import api from '../../api/axios';
 
 /**
@@ -33,6 +36,13 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
+
+    const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -95,29 +105,71 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <TextField
                             label="舊密碼"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             required
                             value={formData.oldPassword}
                             onChange={(e) => setFormData({ ...formData, oldPassword: e.target.value })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
 
                         <TextField
                             label="新密碼 (至少6個字元)"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             required
                             value={formData.newPassword}
                             onChange={(e) => setFormData({ ...formData, newPassword: e.target.value })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
 
                         <TextField
                             label="再次確認新密碼"
-                            type="password"
+                            type={showPassword ? 'text' : 'password'}
                             fullWidth
                             required
                             value={formData.confirmPassword}
                             onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            onMouseDown={handleMouseDownPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
                         />
                     </Box>
                 </DialogContent>
@@ -130,6 +182,6 @@ export default function ChangePasswordModal({ open, onClose }: ChangePasswordMod
                     </Button>
                 </DialogActions>
             </form>
-        </Dialog>
+        </Dialog >
     );
 }
