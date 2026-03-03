@@ -34,8 +34,6 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
 
@@ -110,27 +108,40 @@ export default function AdminLayout() {
     const drawer = (
         <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
             {/* Logo Area */}
-            <Toolbar sx={{ px: isCollapsed ? 1 : 2.5, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                <Box
-                    sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', width: '100%', justifyContent: isCollapsed ? 'center' : 'flex-start' }}
-                    onClick={() => navigate('/admin')}
+            <Toolbar sx={{ px: isCollapsed ? 1 : 2, display: 'flex', alignItems: 'center', justifyContent: isCollapsed ? 'center' : 'flex-start', position: 'relative' }}>
+                <IconButton
+                    onClick={() => setIsCollapsed(!isCollapsed)}
+                    sx={{
+                        display: { xs: 'none', md: 'flex' },
+                        mr: isCollapsed ? 0 : 1.5,
+                        color: 'text.primary',
+                        minWidth: 40,
+                        justifyContent: 'center'
+                    }}
                 >
+                    <MenuIcon />
+                </IconButton>
+
+                {!isCollapsed && (
                     <Box
-                        sx={{
-                            height: 40,
-                            width: 40,
-                            borderRadius: 1,
-                            bgcolor: 'primary.main',
-                            mr: isCollapsed ? 0 : 2,
-                            flexShrink: 0
-                        }}
-                    />
-                    {!isCollapsed && (
-                        <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 800 }}>
+                        sx={{ display: 'flex', alignItems: 'center', cursor: 'pointer', flexGrow: 1 }}
+                        onClick={() => navigate('/admin')}
+                    >
+                        <Box
+                            sx={{
+                                height: 32,
+                                width: 32,
+                                borderRadius: 1,
+                                bgcolor: 'primary.main',
+                                mr: 1.5,
+                                flexShrink: 0
+                            }}
+                        />
+                        <Typography variant="h6" noWrap component="div" sx={{ color: 'text.primary', fontWeight: 800, fontSize: '1.1rem' }}>
                             PRO MANAGE
                         </Typography>
-                    )}
-                </Box>
+                    </Box>
+                )}
             </Toolbar>
 
             {/* User Info Card in Sidebar */}
@@ -228,28 +239,6 @@ export default function AdminLayout() {
                     </ListItemButton>
                 </Tooltip>
 
-                {/* Collapse Sidebar Toggle - Only visible on desktop */}
-                <Tooltip title={isCollapsed ? "展開選單" : "收起選單"} placement="right">
-                    <ListItemButton
-                        onClick={() => setIsCollapsed(!isCollapsed)}
-                        sx={{
-                            borderRadius: 1.5,
-                            justifyContent: isCollapsed ? 'center' : 'flex-start',
-                            px: isCollapsed ? 1 : 2,
-                            color: 'text.secondary',
-                            display: { xs: 'none', md: 'flex' },
-                            '&:hover': {
-                                bgcolor: 'action.hover',
-                                color: 'text.primary',
-                            }
-                        }}
-                    >
-                        <ListItemIcon sx={{ minWidth: isCollapsed ? 0 : 40, mr: isCollapsed ? 0 : 2, justifyContent: 'center', color: 'inherit' }}>
-                            {isCollapsed ? <ChevronRightIcon /> : <ChevronLeftIcon />}
-                        </ListItemIcon>
-                        {!isCollapsed && <ListItemText primary="收起選單" />}
-                    </ListItemButton>
-                </Tooltip>
             </Box>
         </Box>
     );
