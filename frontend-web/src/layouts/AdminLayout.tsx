@@ -38,6 +38,7 @@ import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
 import { useEffect } from 'react';
 import axiosInstance from '../api/axios';
+import { useMessengerStore } from '../stores/useMessengerStore';
 
 /**
  * @file AdminLayout.tsx
@@ -76,6 +77,12 @@ export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuthStore();
+    const { unreadTotal, fetchUnreadCount } = useMessengerStore();
+
+    // 取得未讀數 / Fetch unread count on mount
+    useEffect(() => {
+        fetchUnreadCount();
+    }, []);
 
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
@@ -216,7 +223,11 @@ export default function AdminLayout() {
                                             color: isActive ? 'primary.main' : 'inherit'
                                         }}
                                     >
-                                        {item.icon}
+                                        {item.path === '/admin/messenger' ? (
+                                            <Badge badgeContent={unreadTotal} color="error" max={99}>
+                                                {item.icon}
+                                            </Badge>
+                                        ) : item.icon}
                                     </ListItemIcon>
                                     {!isCollapsed && (
                                         <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: isActive ? 600 : 500 }} />

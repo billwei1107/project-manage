@@ -28,6 +28,33 @@ services:
     volumes:
       - ../uploads:/app/uploads
 
+  messaging:
+    container_name: project-manage-messaging
+    build:
+      context: ../messaging-service
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-erp_db}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JAVA_BACKEND_URL: http://backend:8081
+      UPLOAD_DIR: /app/uploads
+    depends_on:
+      - postgres
+      - redis
+      - backend
+    volumes:
+      - ../uploads:/app/uploads
+    networks:
+      - app-network
+
   frontend:
     container_name: project-manage-frontend
     build:
