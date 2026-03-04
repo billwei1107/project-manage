@@ -63,7 +63,7 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @Builder.Default
-    @Column(name = "is_online", nullable = false)
+    @Column(name = "is_online", nullable = false, columnDefinition = "boolean default false")
     private boolean isOnline = false;
 
     @CreatedDate
