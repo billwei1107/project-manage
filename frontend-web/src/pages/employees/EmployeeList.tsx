@@ -42,7 +42,7 @@ export default function EmployeeList() {
         const fetchEmployees = async () => {
             try {
                 // Assuming we have this endpoint or use /admin/users if applicable
-                const response = await axiosInstance.get('/hr/employees');
+                const response = await axiosInstance.get('/v1/hr/employees');
                 const internalStaff = response.data;
                 setEmployees(internalStaff);
             } catch (error) {
@@ -128,7 +128,7 @@ export default function EmployeeList() {
                         ))}
                         {employees.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
                                     <Typography color="text.secondary">尚未有任何員工資料</Typography>
                                 </TableCell>
                             </TableRow>

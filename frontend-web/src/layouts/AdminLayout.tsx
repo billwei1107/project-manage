@@ -64,7 +64,7 @@ export default function AdminLayout() {
     // 心跳機制：每 3 分鐘回報一次在線狀態
     useEffect(() => {
         const sendHeartbeat = () => {
-            axiosInstance.post('/hr/heartbeat').catch(err => console.error("Heartbeat failed", err));
+            axiosInstance.post('/v1/hr/heartbeat').catch(err => console.error("Heartbeat failed", err));
         };
         sendHeartbeat(); // 發送一次初始心跳
         const intervalId = setInterval(sendHeartbeat, 3 * 60 * 1000);
