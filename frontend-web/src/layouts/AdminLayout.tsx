@@ -77,11 +77,13 @@ export default function AdminLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const { user, logout } = useAuthStore();
-    const { unreadTotal, fetchUnreadCount } = useMessengerStore();
+    const { unreadTotal, fetchUnreadCount, connectWebSocket, disconnectWebSocket } = useMessengerStore();
 
-    // 取得未讀數 / Fetch unread count on mount
+    // 取得未讀數與連線 WebSocket / Fetch unread count & connect WS on mount
     useEffect(() => {
         fetchUnreadCount();
+        connectWebSocket();
+        return () => disconnectWebSocket();
     }, []);
 
     const handleDrawerToggle = () => {

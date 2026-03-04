@@ -234,6 +234,11 @@ export const useMessengerStore = create<MessengerState>((set, get) => ({
     // WebSocket 連線 / WebSocket Connection
     // ========================================
     connectWebSocket: () => {
+        const { ws } = get();
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) {
+            return;
+        }
+
         const token = localStorage.getItem('token');
         if (!token) return;
 

@@ -29,7 +29,7 @@ export default function Messenger() {
     const {
         conversations, activeConversationId, messages, isLoading, users,
         fetchConversations, fetchUsers, setActiveConversation, sendMessage,
-        createConversation, connectWebSocket, disconnectWebSocket, fetchUnreadCount
+        createConversation, fetchUnreadCount
     } = useMessengerStore();
     const { user: currentUser } = useAuthStore();
     const [newMessageDialogOpen, setNewMessageDialogOpen] = useState(false);
@@ -38,8 +38,6 @@ export default function Messenger() {
         fetchConversations();
         fetchUsers();
         fetchUnreadCount();
-        connectWebSocket();
-        return () => disconnectWebSocket();
     }, []);
 
     // ========================================
@@ -320,18 +318,23 @@ function MessageBubble({ message, isOwn }: { message: MessageType; isOwn: boolea
                 <Paper
                     elevation={0}
                     sx={{
-                        px: 2, py: 1, borderRadius: 3,
-                        bgcolor: isOwn ? 'primary.main' : (theme) => alpha(theme.palette.grey[200], 0.8),
+                        px: message.messageType === 'IMAGE' && !message.content ? 0 : 2,
+                        py: message.messageType === 'IMAGE' && !message.content ? 0 : 1,
+                        borderRadius: 3,
+                        bgcolor: (message.messageType === 'IMAGE' && !message.content)
+                            ? 'transparent'
+                            : (isOwn ? 'primary.main' : (theme) => alpha(theme.palette.grey[200], 0.8)),
                         color: isOwn ? 'primary.contrastText' : 'text.primary',
+                        overflow: 'hidden'
                     }}
                 >
                     {/* 圖片訊息 / Image Message */}
                     {message.messageType === 'IMAGE' && message.fileUrl && (
-                        <Box sx={{ mb: message.content ? 1 : 0 }}>
+                        <Box sx={{ mb: message.content ? 1 : 0, display: 'flex' }}>
                             <img
                                 src={message.fileUrl}
                                 alt={message.fileName || 'Image'}
-                                style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8, cursor: 'pointer' }}
+                                style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8, cursor: 'pointer', objectFit: 'contain' }}
                                 onClick={() => window.open(message.fileUrl!, '_blank')}
                             />
                         </Box>
