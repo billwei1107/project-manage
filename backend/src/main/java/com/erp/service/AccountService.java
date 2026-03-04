@@ -50,11 +50,19 @@ public class AccountService {
                         username = null;
                 }
 
+                String email = newUserData.getEmail();
+                if (email != null && email.trim().isEmpty()) {
+                        email = null;
+                }
+
+                String githubUsername = newUserData.getGithubUsername();
+                if (githubUsername != null && githubUsername.trim().isEmpty()) {
+                        githubUsername = null;
+                }
+
                 String employeeId = newUserData.getEmployeeId();
                 if (employeeId == null || employeeId.trim().isEmpty()) {
-                        // Auto-generate employee ID
-                        long nextId = userRepository.count() + 1;
-                        employeeId = String.format("EMP-%04d", nextId);
+                        employeeId = generateEmployeeId(newUserData.getRole());
                 }
 
                 // Use default password
@@ -64,11 +72,11 @@ public class AccountService {
                                 .name(newUserData.getName())
                                 .username(username)
                                 .employeeId(employeeId)
-                                .email(newUserData.getEmail())
+                                .email(email)
                                 .role(newUserData.getRole())
                                 .password(encodedPassword)
                                 .isDefaultPassword(true)
-                                .githubUsername(newUserData.getGithubUsername())
+                                .githubUsername(githubUsername)
                                 .build();
 
                 User savedUser = userRepository.save(user);
@@ -108,11 +116,15 @@ public class AccountService {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-                if (updatedData.getEmail() != null && !updatedData.getEmail().equals(user.getEmail())) {
-                        if (userRepository.existsByEmail(updatedData.getEmail())) {
-                                throw new RuntimeException("Email already exists");
+                if (updatedData.getEmail() != null) {
+                        if (updatedData.getEmail().trim().isEmpty()) {
+                                user.setEmail(null);
+                        } else if (!updatedData.getEmail().equals(user.getEmail())) {
+                                if (userRepository.existsByEmail(updatedData.getEmail())) {
+                                        throw new RuntimeException("Email already exists");
+                                }
+                                user.setEmail(updatedData.getEmail());
                         }
-                        user.setEmail(updatedData.getEmail());
                 }
 
                 if (updatedData.getName() != null && !updatedData.getName().trim().isEmpty()) {
@@ -127,8 +139,12 @@ public class AccountService {
                         }
                 }
 
-                if (updatedData.getEmployeeId() != null && !updatedData.getEmployeeId().trim().isEmpty()) {
-                        user.setEmployeeId(updatedData.getEmployeeId());
+                if (updatedData.getEmployeeId() != null) {
+                        if (updatedData.getEmployeeId().trim().isEmpty()) {
+                                // Do not allow wiping the employeeId, ignore or self-correct
+                        } else {
+                                user.setEmployeeId(updatedData.getEmployeeId());
+                        }
                 }
 
                 if (updatedData.getRole() != null) {
@@ -154,5 +170,38 @@ public class AccountService {
                                 .githubUsername(savedUser.getGithubUsername())
                                 .role(savedUser.getRole())
                                 .build();
+        }
+
+        private String generateEmployeeId(User.Role role) {
+                String prefix;
+                switch (role) {
+                        case ADMIN:
+                                prefix = "ADM";
+                                break;
+                        case DEV:
+                                prefix = "DEV";
+                                break;
+                        case PM:
+                                prefix = "PM";
+                                break;
+                        case CLIENT:
+                                prefix = "CLI";
+                                break;
+                        default:
+                                prefix = "EMP";
+                }
+
+                return userRepository.findTopByEmployeeIdStartingWithOrderByEmployeeIdDesc(prefix)
+                                .map(User::getEmployeeId)
+                                .map(id -> id.substring(prefix.length())) // Extract numeric part
+                                .map(numStr -> {
+                                        try {
+                                                int currentMax = Integer.parseInt(numStr);
+                                                return String.format("%s%03d", prefix, currentMax + 1);
+                                        } catch (NumberFormatException e) {
+                                                return prefix + "001";
+                                        }
+                                })
+                                .orElse(prefix + "001");
         }
 }

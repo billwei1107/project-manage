@@ -40,4 +40,12 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return boolean
      */
     boolean existsByEmail(String email);
+
+    /**
+     * 尋找特定前綴且最大的員工編號
+     * 
+     * @param prefix Employee ID Prefix
+     * @return Optional User
+     */
+    Optional<User> findTopByEmployeeIdStartingWithOrderByEmployeeIdDesc(String prefix);
 }
