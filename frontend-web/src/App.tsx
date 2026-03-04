@@ -14,6 +14,10 @@ import ProjectDetail from './pages/projects/ProjectDetail';
 import AccountManagement from './pages/admin/AccountManagement';
 import Calendar from './pages/calendar/Calendar';
 import { Finance } from './pages/finance/Finance'; // Import the Finance component
+import EmployeesEntry from './pages/employees/index';
+import EmployeeDashboard from './pages/employees/EmployeeDashboard';
+import EmployeeList from './pages/employees/EmployeeList';
+import LeaveManagement from './pages/employees/LeaveManagement';
 
 /**
  * @file App.tsx
@@ -49,7 +53,11 @@ function App() {
               <Route path="calendar" element={<Calendar />} />
               <Route path="finance" element={<Finance />} /> {/* Add Route for Finance */}
               <Route path="messenger" element={<div>Messenger (Coming Soon)</div>} />
-              <Route path="employees" element={<div>Employees Directory</div>} />
+              <Route path="employees" element={<EmployeesEntry />}>
+                <Route index element={<EmployeeDashboard />} />
+                <Route path="list" element={<EmployeeList />} />
+                <Route path="leave" element={<LeaveManagement />} />
+              </Route>
               <Route path="info-portal" element={<div>Info Portal</div>} />
               <Route path="accounts" element={<AccountManagement />} />
             </Route>
