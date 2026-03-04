@@ -15,6 +15,8 @@ import java.util.Map;
  * @description_en Controller handling employee tracking and online status
  * @description_zh 負責處理員工基本在線狀態與心跳封包的控制器
  */
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/v1/hr")
 @RequiredArgsConstructor
@@ -30,6 +32,7 @@ public class HrController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/employees")
     public ResponseEntity<List<Map<String, Object>>> getEmployees() {
         return ResponseEntity.ok(hrService.getAllEmployeesBrief());

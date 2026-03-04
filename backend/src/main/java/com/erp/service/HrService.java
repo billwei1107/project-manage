@@ -45,14 +45,17 @@ public class HrService {
     public List<Map<String, Object>> getAllEmployeesBrief() {
         return userRepository.findAll().stream()
                 .filter(u -> u.getRole() != User.Role.CLIENT)
-                .map(user -> Map.<String, Object>of(
-                        "id", user.getId(),
-                        "name", user.getName(),
-                        "email", user.getEmail(),
-                        "role", user.getRole().name(),
-                        "isOnline", user.isOnline(),
-                        "lastLoginAt", user.getLastLoginAt() != null ? user.getLastLoginAt().toString() : null,
-                        "employeeId", user.getEmployeeId() != null ? user.getEmployeeId() : ""))
+                .map(user -> {
+                    Map<String, Object> map = new java.util.HashMap<>();
+                    map.put("id", user.getId());
+                    map.put("name", user.getName());
+                    map.put("email", user.getEmail());
+                    map.put("role", user.getRole().name());
+                    map.put("isOnline", user.isOnline());
+                    map.put("lastLoginAt", user.getLastLoginAt() != null ? user.getLastLoginAt().toString() : null);
+                    map.put("employeeId", user.getEmployeeId() != null ? user.getEmployeeId() : "");
+                    return map;
+                })
                 .collect(Collectors.toList());
     }
 }

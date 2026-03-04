@@ -112,9 +112,11 @@ export default function AdminLayout() {
         { text: '行事曆', icon: <CalendarMonthIcon />, path: '/admin/calendar' },
         { text: '財務報表', icon: <MonetizationOnIcon />, path: '/admin/finance' },
         { text: '訊息中心', icon: <MessageIcon />, path: '/admin/messenger' },
-        { text: '員工列表', icon: <GroupIcon />, path: '/admin/employees' },
         { text: '資訊門戶', icon: <InfoIcon />, path: '/admin/info-portal' },
-        ...(user?.role === 'ADMIN' ? [{ text: '帳號管理', icon: <ManageAccountsIcon />, path: '/admin/accounts' }] : []),
+        ...(user?.role === 'ADMIN' ? [
+            { text: '員工列表', icon: <GroupIcon />, path: '/admin/employees' },
+            { text: '帳號管理', icon: <ManageAccountsIcon />, path: '/admin/accounts' }
+        ] : []),
     ];
 
     const drawer = (
