@@ -172,7 +172,7 @@ public class AccountService {
                                 .build();
         }
 
-        private String generateEmployeeId(User.Role role) {
+        public String generateEmployeeId(User.Role role) {
                 String prefix;
                 switch (role) {
                         case ADMIN:
