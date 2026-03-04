@@ -318,10 +318,10 @@ function MessageBubble({ message, isOwn }: { message: MessageType; isOwn: boolea
                 <Paper
                     elevation={0}
                     sx={{
-                        px: message.messageType === 'IMAGE' && !message.content ? 0 : 2,
-                        py: message.messageType === 'IMAGE' && !message.content ? 0 : 1,
+                        px: message.messageType === 'IMAGE' ? 0 : 2,
+                        py: message.messageType === 'IMAGE' ? 0 : 1,
                         borderRadius: 3,
-                        bgcolor: (message.messageType === 'IMAGE' && !message.content)
+                        bgcolor: message.messageType === 'IMAGE'
                             ? 'transparent'
                             : (isOwn ? 'primary.main' : (theme) => alpha(theme.palette.grey[200], 0.8)),
                         color: isOwn ? 'primary.contrastText' : 'text.primary',
@@ -330,11 +330,11 @@ function MessageBubble({ message, isOwn }: { message: MessageType; isOwn: boolea
                 >
                     {/* 圖片訊息 / Image Message */}
                     {message.messageType === 'IMAGE' && message.fileUrl && (
-                        <Box sx={{ mb: message.content ? 1 : 0, display: 'flex' }}>
+                        <Box sx={{ display: 'flex' }}>
                             <img
                                 src={message.fileUrl}
                                 alt={message.fileName || 'Image'}
-                                style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 8, cursor: 'pointer', objectFit: 'contain' }}
+                                style={{ maxWidth: '100%', maxHeight: 300, borderRadius: 16, cursor: 'pointer', objectFit: 'contain' }}
                                 onClick={() => window.open(message.fileUrl!, '_blank')}
                             />
                         </Box>
