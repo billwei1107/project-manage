@@ -67,6 +67,10 @@ public class AuthService {
                                                 request.getLoginId())
                                 .orElseThrow();
 
+                user.setOnline(true);
+                user.setLastLoginAt(java.time.LocalDateTime.now());
+                userRepository.save(user);
+
                 var userDetails = new com.erp.config.UserAdapter(user);
                 var jwtToken = jwtService.generateToken(userDetails);
 

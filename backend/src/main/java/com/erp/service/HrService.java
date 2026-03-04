@@ -1,6 +1,5 @@
 package com.erp.service;
 
-import com.erp.entity.User;
 import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +28,7 @@ public class HrService {
      */
     @Transactional
     public void updateHeartbeat(String emailOrId) {
-        userRepository.findByEmail(emailOrId)
-                .or(() -> userRepository.findById(emailOrId))
+        userRepository.findByUsernameOrEmployeeIdOrEmail(emailOrId, emailOrId, emailOrId)
                 .ifPresent(user -> {
                     user.setOnline(true);
                     user.setLastLoginAt(LocalDateTime.now());
@@ -44,13 +42,12 @@ public class HrService {
     @Transactional(readOnly = true)
     public List<Map<String, Object>> getAllEmployeesBrief() {
         return userRepository.findAll().stream()
-                .filter(u -> u.getRole() != User.Role.CLIENT)
                 .map(user -> {
                     Map<String, Object> map = new java.util.HashMap<>();
                     map.put("id", user.getId());
-                    map.put("name", user.getName());
-                    map.put("email", user.getEmail());
-                    map.put("role", user.getRole().name());
+                    map.put("name", user.getName() != null ? user.getName() : "Unknown");
+                    map.put("email", user.getEmail() != null ? user.getEmail() : "");
+                    map.put("role", user.getRole() != null ? user.getRole().name() : "N/A");
                     map.put("isOnline", user.isOnline());
                     map.put("lastLoginAt", user.getLastLoginAt() != null ? user.getLastLoginAt().toString() : null);
                     map.put("employeeId", user.getEmployeeId() != null ? user.getEmployeeId() : "");
