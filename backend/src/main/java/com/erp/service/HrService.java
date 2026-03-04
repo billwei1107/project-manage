@@ -4,6 +4,7 @@ import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,5 +55,23 @@ public class HrService {
                     return map;
                 })
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * 定期清理過期的在線狀態 (每 3 分鐘執行一次)
+     * 若最後活動時間超過 5 分鐘，則視為離線。
+     */
+    @Scheduled(fixedRate = 180000)
+    @Transactional
+    public void cleanupOfflineUsers() {
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
+        List<com.erp.entity.User> staleUsers = userRepository.findAll().stream()
+                .filter(u -> u.isOnline() && (u.getLastLoginAt() == null || u.getLastLoginAt().isBefore(threshold)))
+                .collect(Collectors.toList());
+
+        if (!staleUsers.isEmpty()) {
+            staleUsers.forEach(u -> u.setOnline(false));
+            userRepository.saveAll(staleUsers);
+        }
     }
 }

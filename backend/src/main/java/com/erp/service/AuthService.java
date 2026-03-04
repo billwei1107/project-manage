@@ -131,4 +131,17 @@ public class AuthService {
                 user.setDefaultPassword(false);
                 userRepository.save(user);
         }
+
+        public void logout() {
+                var authentication = SecurityContextHolder.getContext().getAuthentication();
+                if (authentication != null && authentication.isAuthenticated() &&
+                                !authentication.getPrincipal().equals("anonymousUser")) {
+                        String loginId = authentication.getName();
+                        userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                                        .ifPresent(user -> {
+                                                user.setOnline(false);
+                                                userRepository.save(user);
+                                        });
+                }
+        }
 }

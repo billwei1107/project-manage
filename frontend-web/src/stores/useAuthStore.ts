@@ -72,8 +72,14 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    logout: () => {
-        localStorage.removeItem('token');
-        set({ user: null, isAuthenticated: false });
+    logout: async () => {
+        try {
+            await api.post('/v1/auth/logout');
+        } catch (error) {
+            console.error("Backend logout failed", error);
+        } finally {
+            localStorage.removeItem('token');
+            set({ user: null, isAuthenticated: false });
+        }
     },
 }));
