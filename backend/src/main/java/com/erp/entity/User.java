@@ -59,6 +59,13 @@ public class User {
     @Column(nullable = false)
     private boolean isDefaultPassword = true;
 
+    @Column(name = "last_login_at")
+    private LocalDateTime lastLoginAt;
+
+    @Builder.Default
+    @Column(name = "is_online", nullable = false)
+    private boolean isOnline = false;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -70,6 +77,7 @@ public class User {
     public enum Role {
         ADMIN,
         CLIENT,
-        DEV
+        DEV,
+        PM
     }
 }

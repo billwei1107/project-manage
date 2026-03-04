@@ -29,6 +29,8 @@ interface Employee {
     name: string;
     email: string;
     role: string;
+    isOnline: boolean;
+    lastLoginAt?: string;
     avatar?: string;
 }
 
@@ -40,9 +42,8 @@ export default function EmployeeList() {
         const fetchEmployees = async () => {
             try {
                 // Assuming we have this endpoint or use /admin/users if applicable
-                const response = await axiosInstance.get('/admin/users');
-                // Filter out CLIENT role if we only want internal staff
-                const internalStaff = response.data.filter((u: Employee) => u.role !== 'CLIENT');
+                const response = await axiosInstance.get('/hr/employees');
+                const internalStaff = response.data;
                 setEmployees(internalStaff);
             } catch (error) {
                 console.error('Failed to fetch employees:', error);
@@ -84,6 +85,8 @@ export default function EmployeeList() {
                             <TableCell sx={{ fontWeight: 600 }}>編號 (ID)</TableCell>
                             <TableCell sx={{ fontWeight: 600 }}>聯絡信箱</TableCell>
                             <TableCell sx={{ fontWeight: 600 }}>系統角色</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>當前狀態</TableCell>
+                            <TableCell sx={{ fontWeight: 600 }}>最近登入</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -104,6 +107,22 @@ export default function EmployeeList() {
                                         size="small"
                                         variant="outlined"
                                     />
+                                </TableCell>
+                                <TableCell>
+                                    <Stack direction="row" alignItems="center" spacing={1}>
+                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: emp.isOnline ? 'success.main' : 'action.disabled' }} />
+                                        <Typography variant="body2" color={emp.isOnline ? 'success.main' : 'text.secondary'}>
+                                            {emp.isOnline ? '在線上' : '離線'}
+                                        </Typography>
+                                    </Stack>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body2" color="text.secondary">
+                                        {emp.lastLoginAt ? new Date(emp.lastLoginAt).toLocaleString('zh-TW', {
+                                            year: 'numeric', month: '2-digit', day: '2-digit',
+                                            hour: '2-digit', minute: '2-digit'
+                                        }) : '從未登入'}
+                                    </Typography>
                                 </TableCell>
                             </TableRow>
                         ))}

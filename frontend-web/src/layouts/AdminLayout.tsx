@@ -36,6 +36,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
+import { useEffect } from 'react';
+import axiosInstance from '../api/axios';
 
 /**
  * @file AdminLayout.tsx
@@ -58,6 +60,16 @@ export default function AdminLayout() {
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
     const [mobileOpen, setMobileOpen] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
+
+    // 心跳機制：每 3 分鐘回報一次在線狀態
+    useEffect(() => {
+        const sendHeartbeat = () => {
+            axiosInstance.post('/hr/heartbeat').catch(err => console.error("Heartbeat failed", err));
+        };
+        sendHeartbeat(); // 發送一次初始心跳
+        const intervalId = setInterval(sendHeartbeat, 3 * 60 * 1000);
+        return () => clearInterval(intervalId);
+    }, []);
 
     const currentDrawerWidth = isCollapsed && !isMobile ? COLLAPSED_DRAWER_WIDTH : DRAWER_WIDTH;
 
@@ -100,9 +112,7 @@ export default function AdminLayout() {
         { text: '行事曆', icon: <CalendarMonthIcon />, path: '/admin/calendar' },
         { text: '財務報表', icon: <MonetizationOnIcon />, path: '/admin/finance' },
         { text: '訊息中心', icon: <MessageIcon />, path: '/admin/messenger' },
-        { text: '員工管理', icon: <GroupIcon />, path: '/admin/employees' },
-        { text: '員工列表', icon: <GroupIcon sx={{ ml: 2, fontSize: 20 }} />, path: '/admin/employees/list' },
-        { text: '請假申請', icon: <GroupIcon sx={{ ml: 2, fontSize: 20 }} />, path: '/admin/employees/leave' },
+        { text: '員工列表', icon: <GroupIcon />, path: '/admin/employees' },
         { text: '資訊門戶', icon: <InfoIcon />, path: '/admin/info-portal' },
         ...(user?.role === 'ADMIN' ? [{ text: '帳號管理', icon: <ManageAccountsIcon />, path: '/admin/accounts' }] : []),
     ];
