@@ -41,10 +41,6 @@ public class AccountService {
         }
 
         public AuthResponse.UserInfo createUser(User newUserData) {
-                if (newUserData.getEmail() != null && userRepository.existsByEmail(newUserData.getEmail())) {
-                        throw new RuntimeException("Email already exists");
-                }
-
                 String username = newUserData.getUsername();
                 if (username != null && username.trim().isEmpty()) {
                         username = null;
@@ -58,6 +54,10 @@ public class AccountService {
                 String githubUsername = newUserData.getGithubUsername();
                 if (githubUsername != null && githubUsername.trim().isEmpty()) {
                         githubUsername = null;
+                }
+
+                if (email != null && userRepository.existsByEmail(email)) {
+                        throw new RuntimeException("Email already exists");
                 }
 
                 String employeeId = newUserData.getEmployeeId();
