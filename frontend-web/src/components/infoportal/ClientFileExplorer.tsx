@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import {
     Box, Typography, List, ListItem, ListItemText, ListItemButton,
-    Divider, IconButton, Breadcrumbs, Link, Paper, Button,
+    Divider, IconButton, Breadcrumbs, Link, Button,
     Dialog, DialogTitle, DialogContent, DialogActions, TextField,
     Menu, MenuItem, Grid, Card, CardContent
 } from '@mui/material';
@@ -216,7 +216,7 @@ const ClientFileExplorer: React.FC = () => {
                             <Grid container spacing={2}>
                                 {/* Folders */}
                                 {store.directories.map(dir => (
-                                    <Grid item xs={12} sm={6} md={4} lg={3} key={`dir-${dir.id}`}>
+                                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`dir-${dir.id}`}>
                                         <Card
                                             variant="outlined"
                                             sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
@@ -241,7 +241,7 @@ const ClientFileExplorer: React.FC = () => {
 
                                 {/* Files */}
                                 {store.files.map(file => (
-                                    <Grid item xs={12} sm={6} md={4} lg={3} key={`file-${file.id}`}>
+                                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`file-${file.id}`}>
                                         <Card
                                             variant="outlined"
                                             sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}

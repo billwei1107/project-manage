@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Tab, Tabs, Typography } from '@mui/material';
+import { Box, Tab, Tabs } from '@mui/material';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import CampaignIcon from '@mui/icons-material/Campaign';
 
@@ -36,7 +36,7 @@ function TabPanel(props: TabPanelProps) {
 const InfoPortal: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
 
-    const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
     };
 
