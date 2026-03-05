@@ -65,6 +65,7 @@ interface InfoPortalState {
     deleteFile: (id: string) => Promise<void>;
 
     fetchAnnouncements: () => Promise<void>;
+    createClient: (clientData: Omit<Client, 'id'>) => Promise<void>;
 }
 
 export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
@@ -87,6 +88,16 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
             console.error('Error fetching clients', error);
         } finally {
             set({ isLoading: false });
+        }
+    },
+
+    createClient: async (clientData) => {
+        try {
+            await axios.post('/api/v1/clients', clientData);
+            get().fetchClients();
+        } catch (error) {
+            console.error('Error creating client', error);
+            throw error;
         }
     },
 

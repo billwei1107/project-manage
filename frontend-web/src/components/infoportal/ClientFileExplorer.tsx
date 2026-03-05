@@ -13,6 +13,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import ShareIcon from '@mui/icons-material/Share';
+import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { useInfoPortalStore } from '../../stores/useInfoPortalStore';
@@ -125,11 +126,38 @@ const ClientFileExplorer: React.FC = () => {
         alert('連結已複製！');
     };
 
+    // --- Client Creation ---
+    const [newClientDialogOpen, setNewClientDialogOpen] = useState(false);
+    const [newClientData, setNewClientData] = useState({
+        name: '',
+        contactPerson: '',
+        phone: '',
+        email: '',
+        address: '',
+        notes: ''
+    });
+
+    const handleCreateClient = async () => {
+        if (!newClientData.name.trim()) return;
+        try {
+            await store.createClient(newClientData);
+            setNewClientDialogOpen(false);
+            setNewClientData({ name: '', contactPerson: '', phone: '', email: '', address: '', notes: '' });
+        } catch (error) {
+            alert('客戶建立失敗，請重試。');
+        }
+    };
+
     return (
         <Box sx={{ display: 'flex', flex: 1, height: '100%', overflow: 'hidden' }}>
             {/* Left Sidebar: Clients List */}
             <Box sx={{ width: 280, borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column' }}>
-                <Typography variant="h6" sx={{ p: 2, fontWeight: 'bold' }}>客戶清單</Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold' }}>客戶清單</Typography>
+                    <IconButton size="small" color="primary" onClick={() => setNewClientDialogOpen(true)}>
+                        <AddIcon />
+                    </IconButton>
+                </Box>
                 <Divider />
                 <List sx={{ flex: 1, overflowY: 'auto' }}>
                     {store.clients.map(c => (
@@ -366,6 +394,62 @@ const ClientFileExplorer: React.FC = () => {
                         />
                     )}
                 </Box>
+            </Dialog>
+
+            {/* New Client Dialog */}
+            <Dialog open={newClientDialogOpen} onClose={() => setNewClientDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>新增客戶</DialogTitle>
+                <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                    <TextField
+                        label="客戶名稱 *"
+                        fullWidth
+                        value={newClientData.name}
+                        onChange={(e) => setNewClientData({ ...newClientData, name: e.target.value })}
+                    />
+                    <TextField
+                        label="聯絡人"
+                        fullWidth
+                        value={newClientData.contactPerson}
+                        onChange={(e) => setNewClientData({ ...newClientData, contactPerson: e.target.value })}
+                    />
+                    <TextField
+                        label="聯絡電話"
+                        fullWidth
+                        value={newClientData.phone}
+                        onChange={(e) => setNewClientData({ ...newClientData, phone: e.target.value })}
+                    />
+                    <TextField
+                        label="Email"
+                        fullWidth
+                        type="email"
+                        value={newClientData.email}
+                        onChange={(e) => setNewClientData({ ...newClientData, email: e.target.value })}
+                    />
+                    <TextField
+                        label="公司地址"
+                        fullWidth
+                        value={newClientData.address}
+                        onChange={(e) => setNewClientData({ ...newClientData, address: e.target.value })}
+                    />
+                    <TextField
+                        label="備註"
+                        fullWidth
+                        multiline
+                        rows={3}
+                        value={newClientData.notes}
+                        onChange={(e) => setNewClientData({ ...newClientData, notes: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setNewClientDialogOpen(false)}>取消</Button>
+                    <Button
+                        onClick={handleCreateClient}
+                        variant="contained"
+                        disabled={!newClientData.name.trim()}
+                    >
+                        建立
+                    </Button>
+                </DialogActions>
             </Dialog>
         </Box>
     );
