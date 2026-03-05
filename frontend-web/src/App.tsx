@@ -16,6 +16,8 @@ import Calendar from './pages/calendar/Calendar';
 import { Finance } from './pages/finance/Finance'; // Import the Finance component
 import EmployeeList from './pages/employees/EmployeeList';
 import Messenger from './pages/messenger/Messenger';
+import InfoPortal from './pages/infoportal/InfoPortal';
+import PublicUploadPortal from './pages/infoportal/PublicUploadPortal';
 
 /**
  * @file App.tsx
@@ -38,6 +40,7 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Navigate to="/admin" replace />} />
+          <Route path="/public/upload/:tokenId" element={<PublicUploadPortal />} />
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
           </Route>
@@ -52,7 +55,7 @@ function App() {
               <Route path="finance" element={<Finance />} /> {/* Add Route for Finance */}
               <Route path="messenger" element={<Messenger />} />
               <Route path="employees" element={<EmployeeList />} />
-              <Route path="info-portal" element={<div>Info Portal</div>} />
+              <Route path="info-portal" element={<InfoPortal />} />
               <Route path="accounts" element={<AccountManagement />} />
             </Route>
 
