@@ -191,6 +191,7 @@ interface ChatRoomProps {
 
 function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMessage, conversationName }: ChatRoomProps) {
     const [input, setInput] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -203,13 +204,23 @@ function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMe
     // 傳送文字訊息 / Send Text Message
     // ========================================
     const handleSend = async () => {
-        if (!input.trim()) return;
+        if (!input.trim() || isSubmitting) return;
+
+        setIsSubmitting(true);
         const text = input.trim();
         setInput('');
-        await onSendMessage(conversationId, text, 'TEXT');
+
+        try {
+            await onSendMessage(conversationId, text, 'TEXT');
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
+        // 防止輸入法 (IME) 組字過程中的 Enter 觸發傳送 / Prevent IME composition enter
+        if (e.nativeEvent.isComposing) return;
+
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
@@ -221,8 +232,9 @@ function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMe
     // ========================================
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) return;
+        if (!file || isSubmitting) return;
 
+        setIsSubmitting(true);
         const formData = new FormData();
         formData.append('file', file);
 
@@ -239,6 +251,8 @@ function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMe
             }
         } catch (err) {
             console.error('Upload failed:', err);
+        } finally {
+            setIsSubmitting(false);
         }
         // 重設 input / Reset input
         if (fileInputRef.current) fileInputRef.current.value = '';
@@ -276,6 +290,7 @@ function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMe
                     multiline
                     maxRows={4}
                     size="small"
+                    disabled={isSubmitting}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
@@ -286,7 +301,7 @@ function ChatRoom({ conversationId, messages, isLoading, currentUserId, onSendMe
                                     onChange={handleFileUpload}
                                     accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip,.rar"
                                 />
-                                <IconButton size="small" onClick={() => fileInputRef.current?.click()} title="上傳檔案">
+                                <IconButton size="small" onClick={() => fileInputRef.current?.click()} title="上傳檔案" disabled={isSubmitting}>
                                     <AttachFileIcon />
                                 </IconButton>
                                 <IconButton size="small" color="primary" onClick={handleSend} disabled={!input.trim()} title="傳送">
