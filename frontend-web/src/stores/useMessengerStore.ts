@@ -295,11 +295,16 @@ export const useMessengerStore = create<MessengerState>((set, get) => ({
     addIncomingMessage: (message) => {
         const { activeConversationId } = get();
 
-        // 如果是當前對話的訊息，加入訊息列表 / Add to current chat
+        // 如果是當前對話的訊息，且尚未存在於列表中，則加入 / Add to current chat if not exists
         if (message.conversationId === activeConversationId) {
-            set((state) => ({
-                messages: [...state.messages, message],
-            }));
+            set((state) => {
+                if (state.messages.some(m => m.id === message.id)) {
+                    return state; // 防重複 / Deduplication guard
+                }
+                return {
+                    messages: [...state.messages, message],
+                };
+            });
             // 自動標記已讀 / Auto mark as read
             get().markAsRead(message.conversationId);
         } else {

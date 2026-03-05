@@ -252,7 +252,7 @@ func isMember(conversationID, userID string) bool {
 
 func getConversationMemberIDs(conversationID string) []string {
 	rows, err := db.DB.Query(
-		`SELECT user_id FROM conversation_members WHERE conversation_id = $1`,
+		`SELECT DISTINCT user_id FROM conversation_members WHERE conversation_id = $1`,
 		conversationID,
 	)
 	if err != nil {
