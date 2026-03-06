@@ -1,0 +1,15 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  "#" {
+    send "docker exec project-manage-backend curl -s http://localhost:8080/api/v1/directories?clientId=73e25762-2ae3-4b30-8039-c49cb1fce8ba -H 'Authorization: Bearer ' > /root/curl_dir.log && cat /root/curl_dir.log\r"
+  }
+}
+expect "#"
+send "exit\r"
+expect eof

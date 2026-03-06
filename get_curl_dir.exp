@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn scp -o StrictHostKeyChecking=no root@54.255.186.244:/root/curl_dir.log ./curl_dir.log
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}

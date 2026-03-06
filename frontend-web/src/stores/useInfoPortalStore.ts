@@ -133,7 +133,8 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
     createDirectory: async (clientId, parentId, name) => {
         try {
             await api.post('/v1/directories', { clientId, parentId, name });
-            get().fetchDirectories(clientId, parentId || undefined);
+            const fetchParentId = parentId ? parentId : undefined;
+            get().fetchDirectories(clientId, fetchParentId);
         } catch (error) {
             console.error('Error creating directory', error);
         }

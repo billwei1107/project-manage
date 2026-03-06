@@ -1,0 +1,10 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "docker exec project-manage-postgres psql -U postgres -d erp_db -c 'SELECT id, \"name\", client_id, parent_id FROM infoportal_directories LIMIT 10;'"
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
