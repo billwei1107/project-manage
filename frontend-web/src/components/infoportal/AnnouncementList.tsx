@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 import { useInfoPortalStore } from '../../stores/useInfoPortalStore';
 import { useAuthStore } from '../../stores/useAuthStore';
-import axios from 'axios';
+import api from '../../api/axios';
 
 const AnnouncementList: React.FC = () => {
     const store = useInfoPortalStore();
@@ -28,7 +28,7 @@ const AnnouncementList: React.FC = () => {
     const handleCreate = async () => {
         if (!title.trim() || !content.trim()) return;
         try {
-            await axios.post('/api/v1/announcements', { title, content, type });
+            await api.post('/v1/announcements', { title, content, type });
             setOpenDialog(false);
             setTitle('');
             setContent('');

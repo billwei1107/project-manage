@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import axios from 'axios';
+import api from '../api/axios';
 
 interface Client {
     id: string;
@@ -82,7 +82,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
     fetchClients: async () => {
         set({ isLoading: true });
         try {
-            const res = await axios.get('/api/v1/clients');
+            const res = await api.get('/v1/clients');
             set({ clients: res.data });
         } catch (error) {
             console.error('Error fetching clients', error);
@@ -93,7 +93,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     createClient: async (clientData) => {
         try {
-            await axios.post('/api/v1/clients', clientData);
+            await api.post('/v1/clients', clientData);
             get().fetchClients();
         } catch (error) {
             console.error('Error creating client', error);
@@ -112,9 +112,9 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
         set({ isLoading: true });
         try {
             const url = parentId
-                ? `/api/v1/directories?clientId=${clientId}&parentId=${parentId}`
-                : `/api/v1/directories?clientId=${clientId}&parentId=`;
-            const res = await axios.get(url);
+                ? `/v1/directories?clientId=${clientId}&parentId=${parentId}`
+                : `/v1/directories?clientId=${clientId}&parentId=`;
+            const res = await api.get(url);
             set({ directories: res.data });
 
             // Auto fetch files if we are in a non-root context
@@ -132,7 +132,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     createDirectory: async (clientId, parentId, name) => {
         try {
-            await axios.post('/api/v1/directories', { clientId, parentId, name });
+            await api.post('/v1/directories', { clientId, parentId, name });
             get().fetchDirectories(clientId, parentId || undefined);
         } catch (error) {
             console.error('Error creating directory', error);
@@ -141,7 +141,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     renameDirectory: async (id, newName) => {
         try {
-            await axios.put(`/api/v1/directories/${id}`, { name: newName });
+            await api.put(`/v1/directories/${id}`, { name: newName });
             const { activeClient, activeDirectoryHistory } = get();
             if (activeClient) {
                 const parentId = activeDirectoryHistory.length > 0
@@ -156,7 +156,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     deleteDirectory: async (id) => {
         try {
-            await axios.delete(`/api/v1/directories/${id}`);
+            await api.delete(`/v1/directories/${id}`);
             const { activeClient, activeDirectoryHistory } = get();
             if (activeClient) {
                 const parentId = activeDirectoryHistory.length > 0
@@ -196,7 +196,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     fetchFiles: async (directoryId) => {
         try {
-            const res = await axios.get(`/api/v1/files?directoryId=${directoryId}`);
+            const res = await api.get(`/v1/files?directoryId=${directoryId}`);
             set({ files: res.data });
         } catch (error) {
             console.error('Error fetching files', error);
@@ -208,7 +208,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
         formData.append('directoryId', directoryId);
         formData.append('file', file);
         try {
-            await axios.post('/api/v1/files/upload', formData, {
+            await api.post('/v1/files/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             get().fetchFiles(directoryId);
@@ -219,7 +219,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     deleteFile: async (id) => {
         try {
-            await axios.delete(`/api/v1/files/${id}`);
+            await api.delete(`/v1/files/${id}`);
             const history = get().activeDirectoryHistory;
             if (history.length > 0) {
                 get().fetchFiles(history[history.length - 1].id);
@@ -231,7 +231,7 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
 
     fetchAnnouncements: async () => {
         try {
-            const res = await axios.get('/api/v1/announcements');
+            const res = await api.get('/v1/announcements');
             set({ announcements: res.data });
         } catch (error) {
             console.error('Error fetching announcements', error);

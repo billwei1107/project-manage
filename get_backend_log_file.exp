@@ -1,0 +1,29 @@
+#!/usr/bin/expect -f
+set timeout -1
+
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "docker logs project-manage-backend > /root/test_error.log"
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
+
+spawn scp -o StrictHostKeyChecking=no root@54.255.186.244:/root/test_error.log ./test_error.log
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
+
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "rm /root/test_error.log"
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}

@@ -17,7 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { useInfoPortalStore } from '../../stores/useInfoPortalStore';
-import axios from 'axios';
+import api from '../../api/axios';
 
 const ClientFileExplorer: React.FC = () => {
     const store = useInfoPortalStore();
@@ -107,7 +107,7 @@ const ClientFileExplorer: React.FC = () => {
     const handleShare = async () => {
         if (selectedItem?.type !== 'dir') return;
         try {
-            const res = await axios.post('/api/v1/share-links', {
+            const res = await api.post('/v1/share-links', {
                 directoryId: selectedItem.item.id,
                 expireDays: 7
             });
