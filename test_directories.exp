@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+
+expect "password:"
+send "NerssBiU56\r"
+
+expect "#"
+send "curl -s -X POST http://localhost:8081/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"loginId\": \"admin@erp.com\", \"password\": \"password\"}' > /root/test_token.json\r"
+
+expect "#"
+send "TOKEN=\$(cat /root/test_token.json | grep -o '\"token\":\"\[^\"\]*' | cut -d'\"' -f4)\r"
+
+expect "#"
+send "curl -v -X POST http://localhost:8081/api/v1/directories -H 'Content-Type: application/json' -H \"Authorization: Bearer \$TOKEN\" -d '{\"clientId\": \"d54c01d4-fe1a-4cce-aec9-6dbd4cdd207d\", \"parentId\": null, \"name\": \"API_Test_Dir_Local\"}' > /root/api_test_out.txt 2>&1\r"
+
+expect "#"
+send "cat /root/api_test_out.txt | grep -A 20 \"HTTP\"\r"
+
+expect "#"
+send "exit\r"
+expect eof

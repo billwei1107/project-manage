@@ -65,12 +65,33 @@ const ClientFileExplorer: React.FC = () => {
     // --- Image Preview ---
     const [previewImgUrl, setPreviewImgUrl] = useState<string | null>(null);
 
-    const handleFileClick = (file: any) => {
-        if (file.mimeType.startsWith('image/')) {
-            setPreviewImgUrl(`/api/v1/files/download/${file.id}`);
-        } else {
-            window.open(`/api/v1/files/download/${file.id}`, '_blank');
+    const handleFileClick = async (file: any) => {
+        try {
+            const res = await api.get(`/v1/files/download/${file.id}`, { responseType: 'blob' });
+            const url = window.URL.createObjectURL(new Blob([res.data]));
+
+            if (file.mimeType.startsWith('image/')) {
+                setPreviewImgUrl(url);
+            } else {
+                const link = document.createElement('a');
+                link.href = url;
+                link.setAttribute('download', file.originalName);
+                document.body.appendChild(link);
+                link.click();
+                link.parentNode?.removeChild(link);
+                setTimeout(() => window.URL.revokeObjectURL(url), 100);
+            }
+        } catch (error) {
+            console.error('Download error', error);
+            alert('檔案下載失敗');
         }
+    };
+
+    const handleClosePreview = () => {
+        if (previewImgUrl) {
+            window.URL.revokeObjectURL(previewImgUrl);
+        }
+        setPreviewImgUrl(null);
     };
 
     // --- Context Menu for Directory/File ---
@@ -376,13 +397,13 @@ const ClientFileExplorer: React.FC = () => {
             {/* Image Preview Modal */}
             <Dialog
                 open={!!previewImgUrl}
-                onClose={() => setPreviewImgUrl(null)}
+                onClose={handleClosePreview}
                 maxWidth="lg"
             >
                 <Box sx={{ position: 'relative', bgcolor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: 300, minHeight: 300 }}>
                     <IconButton
                         sx={{ position: 'absolute', top: 8, right: 8, color: 'white', bgcolor: 'rgba(0,0,0,0.5)' }}
-                        onClick={() => setPreviewImgUrl(null)}
+                        onClick={handleClosePreview}
                     >
                         <CloseIcon />
                     </IconButton>

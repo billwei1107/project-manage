@@ -30,7 +30,7 @@ public class ShareLinkController {
     @PostMapping
     public ResponseEntity<ShareLink> createShareLink(@RequestBody CreateShareLinkRequest request) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User creator = userRepository.findByEmail(auth.getName())
+        User creator = userRepository.findByUsernameOrEmployeeIdOrEmail(auth.getName(), auth.getName(), auth.getName())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         return ResponseEntity.ok(shareLinkService.createShareLink(

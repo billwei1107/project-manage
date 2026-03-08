@@ -1,0 +1,51 @@
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+root@54.255.186.244's password: 
+
+A newer release of "Amazon Linux" is available.
+  Version 2023.10.20260120:
+  Version 2023.10.20260202:
+  Version 2023.10.20260216:
+  Version 2023.10.20260302:
+Run "/usr/bin/dnf check-release-update" for full release and version update info
+   ,     #_
+   ~\_  ####_        Amazon Linux 2023
+  ~~  \_#####\
+  ~~     \###|
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+   ~~       V~' '->
+    ~~~         /
+      ~~._.   _/
+         _/ _/
+       _/m/'
+Last login: Sun Mar  8 09:44:59 2026 from 118.171.210.198
+cat /root/api_test_out.txt
+exit
+]0;root@ip-172-26-15-229:~[?2004h[root@ip-172-26-15-229 ~]# cat /root/api_test_out.txt
+[?2004lNote: Unnecessary use of -X 
+Note: or --request, POST is 
+Note: already inferred.
+* Host localhost:8081 was resolved.
+* IPv6: ::1
+* IPv4: 127.0.0.1
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0*   Trying [::1]:8081...
+* Connected to localhost (::1) port 8081
+* using HTTP/1.x
+> POST /api/v1/directories HTTP/1.1
+> Host: localhost:8081
+> User-Agent: curl/8.15.0
+> Accept: */*
+> Content-Type: application/json
+> Authorization: Bearer 
+> Content-Length: 100
+> 
+} [100 bytes data]
+* upload completely sent off: 100 bytes
+* Empty reply from server
+100   100    0     0  100   100      0  16092 --:--:-- --:--:-- --:--:-- 16666
+* shutting down connection #0
+curl: (52) Empty reply from server
+]0;root@ip-172-26-15-229:~[?2004h[root@ip-172-26-15-229 ~]# exit
+[?2004llogout
+Connection to 54.255.186.244 closed.

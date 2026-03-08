@@ -1,0 +1,13 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+
+expect "password:"
+send "NerssBiU56\r"
+
+expect "#"
+send "cat /root/api_test_out.txt\r"
+
+expect "#"
+send "exit\r"
+expect eof

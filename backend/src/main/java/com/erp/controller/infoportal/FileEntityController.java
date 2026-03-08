@@ -35,7 +35,7 @@ public class FileEntityController {
             @RequestParam("file") MultipartFile file) {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User uploader = userRepository.findByEmail(auth.getName())
+        User uploader = userRepository.findByUsernameOrEmployeeIdOrEmail(auth.getName(), auth.getName(), auth.getName())
                 .orElse(null); // Should exist if authenticated
 
         String uploaderId = (uploader != null) ? uploader.getId() : null;
