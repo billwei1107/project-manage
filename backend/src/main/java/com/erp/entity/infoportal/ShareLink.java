@@ -6,6 +6,8 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -30,13 +32,25 @@ public class ShareLink {
     @EqualsAndHashCode.Include
     private String id; // UseUUID as the token for sharing
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "directory_id", nullable = false)
     private Directory directory;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by", nullable = false)
     private User createdBy;
+
+    @JsonProperty("directoryId")
+    public String resolveDirectoryId() {
+        return directory != null ? directory.getId() : null;
+    }
+
+    @JsonProperty("createdById")
+    public String resolveCreatedById() {
+        return createdBy != null ? createdBy.getId() : null;
+    }
 
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;

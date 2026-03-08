@@ -6,10 +6,7 @@ expect "password:"
 send "NerssBiU56\r"
 
 expect "#"
-send "docker logs --tail 200 project-manage-backend > /root/backend.log\r"
-
-expect "#"
-send "cat /root/backend.log\r"
+send "curl -v -X POST http://localhost:8081/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"loginId\": \"admin@erp.com\", \"password\": \"password\"}'\r"
 
 expect "#"
 send "exit\r"

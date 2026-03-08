@@ -6,10 +6,7 @@ expect "password:"
 send "NerssBiU56\r"
 
 expect "#"
-send "docker logs --tail 200 project-manage-backend > /root/backend.log\r"
-
-expect "#"
-send "cat /root/backend.log\r"
+send "docker exec project-manage-backend sh -c 'grep -A 30 \"at com.erp.controller.infoportal.DirectoryController.createDirectory\" /app/logs/*.log || echo No Log Found'\r"
 
 expect "#"
 send "exit\r"

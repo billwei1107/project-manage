@@ -6,6 +6,8 @@ import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -30,13 +32,25 @@ public class FileEntity {
     @EqualsAndHashCode.Include
     private String id;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "directory_id", nullable = false)
     private Directory directory;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id")
     private User uploader;
+
+    @JsonProperty("directoryId")
+    public String resolveDirectoryId() {
+        return directory != null ? directory.getId() : null;
+    }
+
+    @JsonProperty("uploaderId")
+    public String resolveUploaderId() {
+        return uploader != null ? uploader.getId() : null;
+    }
 
     @Column(name = "original_name", nullable = false)
     private String originalName;

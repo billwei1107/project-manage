@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244
+expect "password:"
+send "NerssBiU56\r"
+expect "#"
+send "docker exec project-manage-backend tail -f /var/log/messages &> /dev/null &\r"
+send "curl -s -X POST http://localhost:8081/api/v1/auth/login -H 'Content-Type: application/json' -d '{\"loginId\": \"admin@erp.com\", \"password\": \"password\"}' > /root/token.json\r"
+expect "#"
+send "TOKEN=\$(cat /root/token.json | grep -o '\"token\":\"\[^\"\]*' | cut -d'\"' -f4)\r"
+expect "#"
+send "curl -v -X POST http://localhost:8081/api/v1/directories -H 'Content-Type: application/json' -H \"Authorization: Bearer \$TOKEN\" -d '{\"clientId\": \"d54c01d4-fe1a-4cce-aec9-6dbd4cdd207d\", \"parentId\": null, \"name\": \"TestDir2\"}'\r"
+expect "#"
+send "docker logs --tail 100 project-manage-backend > /root/500_err.log\r"
+expect "#"
+send "exit\r"
+expect eof
+
+spawn scp -o StrictHostKeyChecking=no root@54.255.186.244:/root/500_err.log ./500_err.log
+expect "password:"
+send "NerssBiU56\r"
+expect eof
