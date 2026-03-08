@@ -42,12 +42,12 @@ public class Directory {
     private Directory parent;
 
     @JsonProperty("clientId")
-    public String getClientId() {
+    public String resolveClientId() {
         return client != null ? client.getId() : null;
     }
 
     @JsonProperty("parentId")
-    public String getParentId() {
+    public String resolveParentId() {
         return parent != null ? parent.getId() : null;
     }
 

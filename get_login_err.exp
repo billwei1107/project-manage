@@ -1,0 +1,19 @@
+#!/usr/bin/expect -f
+set timeout -1
+spawn scp -o StrictHostKeyChecking=no root@54.255.186.244:/root/login_err.log ./login_err.log
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
+
+spawn ssh -o StrictHostKeyChecking=no root@54.255.186.244 "rm /root/login_err.log"
+expect {
+  "password:" {
+    send "NerssBiU56\r"
+    exp_continue
+  }
+  eof
+}
