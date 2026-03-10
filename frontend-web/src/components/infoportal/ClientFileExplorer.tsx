@@ -3,7 +3,7 @@ import {
     Box, Typography, List, ListItem, ListItemText, ListItemButton,
     Divider, IconButton, Breadcrumbs, Link, Button,
     Dialog, DialogTitle, DialogContent, DialogActions, TextField,
-    Menu, MenuItem, Grid, Card, CardContent
+    Menu, MenuItem, Grid, Card, CardContent, Tabs, Tab
 } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
@@ -21,6 +21,33 @@ import api from '../../api/axios';
 
 const ClientFileExplorer: React.FC = () => {
     const store = useInfoPortalStore();
+
+    const [activeTab, setActiveTab] = useState(0);
+    const [clientNotes, setClientNotes] = useState('');
+
+    useEffect(() => {
+        if (store.activeClient) {
+            setClientNotes(store.activeClient.notes || '');
+            setActiveTab(0);
+        }
+    }, [store.activeClient]);
+
+    const handleSaveNotes = async () => {
+        if (!store.activeClient) return;
+        try {
+            await store.updateClient(store.activeClient.id, {
+                name: store.activeClient.name,
+                contactPerson: store.activeClient.contactPerson,
+                phone: store.activeClient.phone,
+                email: store.activeClient.email,
+                address: store.activeClient.address,
+                notes: clientNotes
+            });
+            alert('標註已儲存');
+        } catch (error) {
+            alert('儲存失敗');
+        }
+    };
 
     useEffect(() => {
         store.fetchClients();
@@ -172,7 +199,7 @@ const ClientFileExplorer: React.FC = () => {
     return (
         <Box sx={{ display: 'flex', flex: 1, height: '100%', overflow: 'hidden' }}>
             {/* Left Sidebar: Clients List */}
-            <Box sx={{ width: 280, borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column' }}>
+            <Box sx={{ width: 220, borderRight: 1, borderColor: 'divider', display: 'flex', flexDirection: 'column' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2 }}>
                     <Typography variant="h6" sx={{ fontWeight: 'bold' }}>客戶清單</Typography>
                     <IconButton size="small" color="primary" onClick={() => setNewClientDialogOpen(true)}>
@@ -232,105 +259,139 @@ const ClientFileExplorer: React.FC = () => {
                             </Box>
                         </Box>
 
-                        {/* Breadcrumbs */}
-                        <Box sx={{ px: 3, py: 1.5, borderBottom: 1, borderColor: 'divider', bgcolor: '#fff' }}>
-                            <Breadcrumbs>
-                                <Link
-                                    component="button"
-                                    variant="body1"
-                                    onClick={() => store.navigateToBreadcrumb(-1)}
-                                    color={store.activeDirectoryHistory.length === 0 ? "text.primary" : "inherit"}
-                                >
-                                    根目錄
-                                </Link>
-                                {store.activeDirectoryHistory.map((dir, idx) => {
-                                    const isLast = idx === store.activeDirectoryHistory.length - 1;
-                                    return (
+                        {/* Tabs */}
+                        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'background.paper', px: 2 }}>
+                            <Tabs value={activeTab} onChange={(_e, v) => setActiveTab(v)}>
+                                <Tab label="需求/公告" />
+                                <Tab label="檔案存放" />
+                            </Tabs>
+                        </Box>
+
+                        {/* Tab Content 0: Notes */}
+                        {activeTab === 0 && (
+                            <Box sx={{ p: 4, flex: 1, overflowY: 'auto' }}>
+                                <TextField
+                                    label="該客戶的需求或是公告標註"
+                                    multiline
+                                    minRows={10}
+                                    fullWidth
+                                    variant="outlined"
+                                    value={clientNotes}
+                                    onChange={(e) => setClientNotes(e.target.value)}
+                                    sx={{ bgcolor: '#fff' }}
+                                />
+                                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+                                    <Button variant="contained" onClick={handleSaveNotes}>
+                                        儲存標註
+                                    </Button>
+                                </Box>
+                            </Box>
+                        )}
+
+                        {/* Tab Content 1: Files */}
+                        {activeTab === 1 && (
+                            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                                {/* Breadcrumbs */}
+                                <Box sx={{ px: 3, py: 1.5, borderBottom: 1, borderColor: 'divider', bgcolor: '#fff' }}>
+                                    <Breadcrumbs>
                                         <Link
-                                            key={dir.id}
                                             component="button"
                                             variant="body1"
-                                            onClick={() => !isLast && store.navigateToBreadcrumb(idx)}
-                                            color={isLast ? "text.primary" : "inherit"}
+                                            onClick={() => store.navigateToBreadcrumb(-1)}
+                                            color={store.activeDirectoryHistory.length === 0 ? "text.primary" : "inherit"}
                                         >
-                                            {dir.name}
+                                            根目錄
                                         </Link>
-                                    )
-                                })}
-                            </Breadcrumbs>
-                        </Box>
-
-                        {/* File Grid */}
-                        <Box sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
-                            <Grid container spacing={2}>
-                                {/* Folders */}
-                                {store.directories.map(dir => (
-                                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`dir-${dir.id}`}>
-                                        <Card
-                                            variant="outlined"
-                                            sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
-                                            onClick={() => store.enterDirectory(dir)}
-                                        >
-                                            <CardContent sx={{ display: 'flex', alignItems: 'center', p: 2, '&:last-child': { pb: 2 } }}>
-                                                <FolderIcon color="primary" sx={{ mr: 2, fontSize: 40 }} />
-                                                <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                                                    <Typography noWrap fontWeight="bold">{dir.name}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">資料夾</Typography>
-                                                </Box>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={(e) => handleMenuOpen(e, dir, 'dir')}
+                                        {store.activeDirectoryHistory.map((dir, idx) => {
+                                            const isLast = idx === store.activeDirectoryHistory.length - 1;
+                                            return (
+                                                <Link
+                                                    key={dir.id}
+                                                    component="button"
+                                                    variant="body1"
+                                                    onClick={() => !isLast && store.navigateToBreadcrumb(idx)}
+                                                    color={isLast ? "text.primary" : "inherit"}
                                                 >
-                                                    <MoreVertIcon />
-                                                </IconButton>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
+                                                    {dir.name}
+                                                </Link>
+                                            )
+                                        })}
+                                    </Breadcrumbs>
+                                </Box>
 
-                                {/* Files */}
-                                {store.files.map(file => (
-                                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`file-${file.id}`}>
-                                        <Card
-                                            variant="outlined"
-                                            sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
-                                            onClick={() => handleFileClick(file)}
-                                        >
-                                            <CardContent sx={{ display: 'flex', alignItems: 'center', p: 2, '&:last-child': { pb: 2 } }}>
-                                                {file.mimeType.startsWith('image/') ? (
-                                                    <ImageIcon color="success" sx={{ mr: 2, fontSize: 40 }} />
-                                                ) : file.mimeType.includes('pdf') ? (
-                                                    <PictureAsPdfIcon color="error" sx={{ mr: 2, fontSize: 40 }} />
-                                                ) : (
-                                                    <InsertDriveFileIcon color="action" sx={{ mr: 2, fontSize: 40 }} />
-                                                )}
-                                                <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                                                    <Typography noWrap fontWeight="500">{file.originalName}</Typography>
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {(file.fileSize / 1024).toFixed(1)} KB
-                                                    </Typography>
-                                                </Box>
-                                                <IconButton
-                                                    size="small"
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleMenuOpen(e, file, 'file');
-                                                    }}
+                                {/* File Grid */}
+                                <Box sx={{ flex: 1, overflowY: 'auto', p: 3 }}>
+                                    <Grid container spacing={2}>
+                                        {/* Folders */}
+                                        {store.directories.map(dir => (
+                                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`dir-${dir.id}`}>
+                                                <Card
+                                                    variant="outlined"
+                                                    sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                                                    onClick={() => store.enterDirectory(dir)}
                                                 >
-                                                    <MoreVertIcon />
-                                                </IconButton>
-                                            </CardContent>
-                                        </Card>
-                                    </Grid>
-                                ))}
+                                                    <CardContent sx={{ display: 'flex', alignItems: 'center', p: 2, '&:last-child': { pb: 2 } }}>
+                                                        <FolderIcon color="primary" sx={{ mr: 2, fontSize: 40 }} />
+                                                        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                                                            <Typography noWrap fontWeight="bold">{dir.name}</Typography>
+                                                            <Typography variant="caption" color="text.secondary">資料夾</Typography>
+                                                        </Box>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => handleMenuOpen(e, dir, 'dir')}
+                                                        >
+                                                            <MoreVertIcon />
+                                                        </IconButton>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
 
-                                {store.directories.length === 0 && store.files.length === 0 && (
-                                    <Box sx={{ width: '100%', py: 10, textAlign: 'center' }}>
-                                        <Typography color="text.secondary">此資料夾目前為空</Typography>
-                                    </Box>
-                                )}
-                            </Grid>
-                        </Box>
+                                        {/* Files */}
+                                        {store.files.map(file => (
+                                            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={`file-${file.id}`}>
+                                                <Card
+                                                    variant="outlined"
+                                                    sx={{ cursor: 'pointer', '&:hover': { bgcolor: 'action.hover' } }}
+                                                    onClick={() => handleFileClick(file)}
+                                                >
+                                                    <CardContent sx={{ display: 'flex', alignItems: 'center', p: 2, '&:last-child': { pb: 2 } }}>
+                                                        {file.mimeType.startsWith('image/') ? (
+                                                            <ImageIcon color="success" sx={{ mr: 2, fontSize: 40 }} />
+                                                        ) : file.mimeType.includes('pdf') ? (
+                                                            <PictureAsPdfIcon color="error" sx={{ mr: 2, fontSize: 40 }} />
+                                                        ) : (
+                                                            <InsertDriveFileIcon color="action" sx={{ mr: 2, fontSize: 40 }} />
+                                                        )}
+                                                        <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                                                            <Typography noWrap fontWeight="500">{file.originalName}</Typography>
+                                                            <Typography variant="caption" color="text.secondary">
+                                                                {(file.fileSize / 1024).toFixed(1)} KB
+                                                            </Typography>
+                                                        </Box>
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                handleMenuOpen(e, file, 'file');
+                                                            }}
+                                                        >
+                                                            <MoreVertIcon />
+                                                        </IconButton>
+                                                    </CardContent>
+                                                </Card>
+                                            </Grid>
+                                        ))}
+
+                                        {store.directories.length === 0 && store.files.length === 0 && (
+                                            <Box sx={{ width: '100%', py: 10, textAlign: 'center' }}>
+                                                <Typography color="text.secondary">此資料夾目前為空</Typography>
+                                            </Box>
+                                        )}
+                                    </Grid>
+                                </Box>
+                            </Box>
+                        )}
                     </>
                 )}
             </Box>

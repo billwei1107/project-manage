@@ -66,6 +66,7 @@ interface InfoPortalState {
 
     fetchAnnouncements: () => Promise<void>;
     createClient: (clientData: Omit<Client, 'id'>) => Promise<void>;
+    updateClient: (id: string, updateData: Partial<Client>) => Promise<void>;
 }
 
 export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
@@ -97,6 +98,21 @@ export const useInfoPortalStore = create<InfoPortalState>((set, get) => ({
             get().fetchClients();
         } catch (error) {
             console.error('Error creating client', error);
+            throw error;
+        }
+    },
+
+    updateClient: async (id, updateData) => {
+        try {
+            const res = await api.put(`/v1/clients/${id}`, updateData);
+            const updatedClient = res.data;
+            const clients = get().clients.map(c => c.id === id ? updatedClient : c);
+            set({ clients });
+            if (get().activeClient?.id === id) {
+                set({ activeClient: updatedClient });
+            }
+        } catch (error) {
+            console.error('Error updating client', error);
             throw error;
         }
     },
