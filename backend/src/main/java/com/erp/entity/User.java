@@ -62,6 +62,8 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
+    private String avatar;
+
     @Builder.Default
     @Column(name = "is_online", nullable = false, columnDefinition = "boolean default false")
     private boolean isOnline = false;

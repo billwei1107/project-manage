@@ -32,6 +32,11 @@ public class TaskController {
         return ResponseEntity.ok(taskService.getMyCalendarTasks());
     }
 
+    @GetMapping("/tasks/reminders")
+    public ResponseEntity<List<TaskResponse>> getReminders() {
+        return ResponseEntity.ok(taskService.getReminders());
+    }
+
     @PostMapping("/tasks")
     public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest request) {
         return ResponseEntity.ok(taskService.createTask(request));

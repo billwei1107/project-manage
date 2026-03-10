@@ -5,8 +5,12 @@ import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import com.erp.service.UserService;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +27,24 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserRepository userRepository;
+    private final UserService userService;
+
+    @PostMapping("/avatar")
+    public ResponseEntity<Void> uploadAvatar(@RequestParam("file") MultipartFile file) {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()
+                || "anonymousUser".equals(authentication.getPrincipal())) {
+            return ResponseEntity.status(401).build();
+        }
+
+        String loginId = authentication.getName();
+        User currentUser = userRepository.findByUsernameOrEmployeeIdOrEmail(loginId, loginId, loginId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        userService.updateAvatar(currentUser.getId(), file);
+        return ResponseEntity.ok().build();
+    }
 
     @GetMapping
     public ResponseEntity<List<UserInfo>> getAllUsers() {

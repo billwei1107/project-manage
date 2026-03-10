@@ -60,6 +60,26 @@ public class TaskService {
     }
 
     /**
+     * 獲取近期將到期或已逾期的任務 (用於通知提醒) / Get upcoming or overdue tasks for reminders
+     */
+    @Transactional(readOnly = true)
+    public List<TaskResponse> getReminders() {
+        User currentUser = getCurrentUser();
+        List<Project> myProjects = projectRepository.findByCreatorOrTeamContaining(currentUser, currentUser);
+
+        if (myProjects.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // Search for tasks due within the next 3 days, or overdue, excluding DONE tasks
+        java.time.LocalDateTime threshold = java.time.LocalDateTime.now().plusDays(3);
+
+        return taskRepository.findUpcomingAndOverdueTasks(myProjects, threshold).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Create new task / 建立新任務
      */
     public TaskResponse createTask(TaskRequest request) {

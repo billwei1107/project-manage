@@ -16,10 +16,13 @@ import {
     Avatar,
     Badge,
     useMediaQuery,
-    alpha,
     Menu,
     MenuItem,
-    Tooltip
+    Tooltip,
+    Divider,
+    ListSubheader,
+    Chip,
+    alpha
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -31,14 +34,16 @@ import MessageIcon from '@mui/icons-material/Message';
 import GroupIcon from '@mui/icons-material/Group';
 import InfoIcon from '@mui/icons-material/Info';
 import NotificationsIcon from '@mui/icons-material/Notifications';
-import SearchIcon from '@mui/icons-material/Search';
 import LogoutIcon from '@mui/icons-material/Logout';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
-import { useEffect } from 'react';
+import ProfileSettingsModal from '../components/common/ProfileSettingsModal';
+import { useEffect, useCallback } from 'react';
 import axiosInstance from '../api/axios';
 import { useMessengerStore } from '../stores/useMessengerStore';
+import { format, differenceInDays } from 'date-fns';
+import { zhTW } from 'date-fns/locale';
 
 /**
  * @file AdminLayout.tsx
@@ -91,7 +96,25 @@ export default function AdminLayout() {
     };
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
     const [pwModalOpen, setPwModalOpen] = useState(false);
+    const [profileModalOpen, setProfileModalOpen] = useState(false);
+    const [reminders, setReminders] = useState<any[]>([]);
+
+    const fetchReminders = useCallback(async () => {
+        try {
+            const res = await axiosInstance.get('/v1/tasks/reminders');
+            setReminders(res.data);
+        } catch (error) {
+            console.error("Failed to fetch reminders", error);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (user) {
+            fetchReminders();
+        }
+    }, [user, fetchReminders]);
 
     const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
@@ -101,6 +124,14 @@ export default function AdminLayout() {
         setAnchorEl(null);
     };
 
+    const handleNotifOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setNotifAnchorEl(event.currentTarget);
+    };
+
+    const handleNotifClose = () => {
+        setNotifAnchorEl(null);
+    };
+
     const handleOpenPwModal = () => {
         handleMenuClose();
         setPwModalOpen(true);
@@ -108,6 +139,15 @@ export default function AdminLayout() {
 
     const handleClosePwModal = () => {
         setPwModalOpen(false);
+    };
+
+    const handleOpenProfileModal = () => {
+        handleMenuClose();
+        setProfileModalOpen(true);
+    };
+
+    const handleCloseProfileModal = () => {
+        setProfileModalOpen(false);
     };
 
     const handleLogout = () => {
@@ -321,14 +361,65 @@ export default function AdminLayout() {
                     }}
                 >
                     <Toolbar sx={{ justifyContent: 'flex-end', gap: 2 }}>
-                        <IconButton>
-                            <SearchIcon />
-                        </IconButton>
-                        <IconButton>
-                            <Badge badgeContent={4} color="error">
+                        <IconButton onClick={handleNotifOpen}>
+                            <Badge badgeContent={reminders.length} color="error">
                                 <NotificationsIcon />
                             </Badge>
                         </IconButton>
+
+                        <Menu
+                            anchorEl={notifAnchorEl}
+                            open={Boolean(notifAnchorEl)}
+                            onClose={handleNotifClose}
+                            PaperProps={{
+                                elevation: 3,
+                                sx: { mt: 1.5, minWidth: 280, maxWidth: 350, maxHeight: 400 }
+                            }}
+                            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                        >
+                            <ListSubheader sx={{ bgcolor: 'background.paper', fontWeight: 'bold' }}>
+                                到期任務提醒 ({reminders.length})
+                            </ListSubheader>
+                            <Divider />
+                            {reminders.length === 0 ? (
+                                <MenuItem disabled>
+                                    <ListItemText primary="目前沒有即將到期的任務" />
+                                </MenuItem>
+                            ) : (
+                                reminders.map((task) => {
+                                    const isOverdue = new Date(task.deadline) < new Date();
+                                    const daysLeft = differenceInDays(new Date(task.deadline), new Date());
+
+                                    return (
+                                        <MenuItem
+                                            key={task.id}
+                                            onClick={() => {
+                                                handleNotifClose();
+                                                navigate(`/admin/projects/${task.projectId}`);
+                                            }}
+                                            sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
+                                        >
+                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 0.5 }}>
+                                                <Typography variant="subtitle2" noWrap sx={{ fontWeight: 600, flexGrow: 1, mr: 1 }}>
+                                                    {task.title}
+                                                </Typography>
+                                                <Chip
+                                                    size="small"
+                                                    label={isOverdue ? '已逾期' : `剩餘 ${daysLeft} 天`}
+                                                    color={isOverdue ? 'error' : 'warning'}
+                                                    sx={{ height: 20, fontSize: '0.7rem' }}
+                                                />
+                                            </Box>
+                                            <Typography variant="caption" color="text.secondary">
+                                                到期日: {format(new Date(task.deadline), 'yyyy/MM/dd HH:mm', { locale: zhTW })}
+                                            </Typography>
+                                        </MenuItem>
+                                    );
+                                })
+                            )}
+                        </Menu>
+
                         <Avatar
                             src={user?.avatar}
                             alt={user?.name}
@@ -348,6 +439,10 @@ export default function AdminLayout() {
                             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                         >
+                            <MenuItem onClick={handleOpenProfileModal}>
+                                <ListItemIcon sx={{ minWidth: 28 }}><ManageAccountsIcon fontSize="small" /></ListItemIcon>
+                                <ListItemText primary="個人設定" />
+                            </MenuItem>
                             <MenuItem onClick={handleOpenPwModal}>
                                 <ListItemIcon sx={{ minWidth: 28 }}><ManageAccountsIcon fontSize="small" /></ListItemIcon>
                                 <ListItemText primary="修改密碼" />
@@ -430,6 +525,7 @@ export default function AdminLayout() {
 
             {/* Modals */}
             <ChangePasswordModal open={pwModalOpen} onClose={handleClosePwModal} />
+            <ProfileSettingsModal open={profileModalOpen} onClose={handleCloseProfileModal} />
         </Box>
     );
 }
