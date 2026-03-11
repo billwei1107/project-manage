@@ -82,7 +82,16 @@ export default function ProfileSettingsModal({ open, onClose }: Props) {
                     <Box sx={{ position: 'relative' }}>
                         <Avatar
                             src={user.avatar}
-                            sx={{ width: 100, height: 100, fontSize: '3rem', bgcolor: 'primary.main' }}
+                            onClick={!isUploading ? handleAvatarClick : undefined}
+                            sx={{
+                                width: 100,
+                                height: 100,
+                                fontSize: '3rem',
+                                bgcolor: 'primary.main',
+                                cursor: isUploading ? 'default' : 'pointer',
+                                transition: 'opacity 0.2s',
+                                '&:hover': { opacity: isUploading ? 1 : 0.8 }
+                            }}
                         >
                             {user.name.charAt(0)}
                         </Avatar>
