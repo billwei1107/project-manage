@@ -16,21 +16,21 @@ import com.erp.entity.Project;
  */
 @Repository
 public interface TaskRepository extends JpaRepository<Task, String> {
-    List<Task> findByProjectId(String projectId);
+        List<Task> findByProjectId(String projectId);
 
-    Integer countByProjectId(String projectId);
+        Integer countByProjectId(String projectId);
 
-    Integer countByProjectIdAndStatus(String projectId, com.erp.entity.TaskStatus status);
+        Integer countByProjectIdAndStatus(String projectId, com.erp.entity.TaskStatus status);
 
-    List<Task> findByProjectIn(List<Project> projects);
+        List<Task> findByProjectIn(List<Project> projects);
 
-    @org.springframework.data.jpa.repository.Query("SELECT t FROM Task t " +
-            "WHERE t.project IN :projects " +
-            "AND t.status != 'DONE' " +
-            "AND t.dueDate IS NOT NULL " +
-            "AND t.dueDate <= :thresholdDate " +
-            "ORDER BY t.dueDate ASC")
-    List<Task> findUpcomingAndOverdueTasks(
-            @org.springframework.data.repository.query.Param("projects") List<Project> projects,
-            @org.springframework.data.repository.query.Param("thresholdDate") java.time.LocalDateTime thresholdDate);
+        @org.springframework.data.jpa.repository.Query("SELECT t FROM Task t " +
+                        "WHERE t.project IN :projects " +
+                        "AND t.status != 'DONE' " +
+                        "AND t.deadline IS NOT NULL " +
+                        "AND t.deadline <= :thresholdDate " +
+                        "ORDER BY t.deadline ASC")
+        List<Task> findUpcomingAndOverdueTasks(
+                        @org.springframework.data.repository.query.Param("projects") List<Project> projects,
+                        @org.springframework.data.repository.query.Param("thresholdDate") java.time.LocalDateTime thresholdDate);
 }
