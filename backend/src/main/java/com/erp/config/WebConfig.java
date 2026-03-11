@@ -28,5 +28,10 @@ public class WebConfig implements WebMvcConfigurer {
         // Expose the uploads directory so receipts can be accessed directly
         registry.addResourceHandler("/api/v1/finance/receipts/**")
                 .addResourceLocations("file:uploads/");
+
+        // Expose avatar directory through the /api path to avoid Nginx /uploads/
+        // conflict
+        registry.addResourceHandler("/api/v1/users/avatars/**")
+                .addResourceLocations("file:uploads/avatars/");
     }
 }
