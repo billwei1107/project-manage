@@ -7,6 +7,7 @@ import {
     Stack,
     IconButton
 } from '@mui/material';
+import Grid from '@mui/material/Grid2';
 import {
     Add as AddIcon,
 } from '@mui/icons-material';
@@ -20,6 +21,7 @@ import AddProjectModal from '../../components/projects/AddProjectModal';
 import { projectApi } from '../../api/projects';
 import TaskRowCard from '../../components/projects/TaskRowCard';
 import type { TaskItem } from '../../components/projects/TaskRowCard';
+import TaskKanbanCard from '../../components/projects/TaskKanbanCard';
 
 const MOCK_TASKS: TaskItem[] = [
     { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done' },
@@ -27,11 +29,21 @@ const MOCK_TASKS: TaskItem[] = [
     { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress' },
     { id: '4', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review' },
     { id: '5', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress' },
+    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review' },
+    { id: '10', name: 'UI Login + Registration (+ other screens)', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress' }
 ];
 
 const MOCK_BACKLOG: TaskItem[] = [
-    { id: '6', name: 'Animation for buttons', estimate: '6h', spentTime: '0h', priority: 'medium', status: 'todo' },
-    { id: '7', name: 'Preloader', estimate: '2d', spentTime: '0h', priority: 'low', status: 'todo' },
+    { id: '6', name: 'Animation for buttons', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo' },
+    { id: '7', name: 'Preloader', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo' },
+    { id: '9', name: 'Animation for Landing page', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo' }
+];
+
+const KANBAN_COLUMNS = [
+    { id: 'todo', label: '待處理' },
+    { id: 'in_progress', label: '進行中' },
+    { id: 'in_review', label: '審核中' },
+    { id: 'done', label: '已完成' }
 ];
 
 export default function ProjectList() {
@@ -40,6 +52,7 @@ export default function ProjectList() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [viewMode, setViewMode] = useState<'list' | 'board'>('board'); // Defaulting to board as per new request
 
     useEffect(() => {
         fetchProjects();
@@ -79,8 +92,101 @@ export default function ProjectList() {
         );
     }
 
+    const renderKanbanBoard = () => {
+        return (
+            <Box>
+                {/* Board Headers */}
+                <Grid container spacing={3} sx={{ mb: 3 }}>
+                    {KANBAN_COLUMNS.map(col => (
+                        <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={col.id}>
+                            <Box sx={{ bgcolor: 'white', borderRadius: '24px', py: 0.5, px: 0.5, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
+                                <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '24px', py: 1.5 }}>
+                                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                        {col.label}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Grid>
+                    ))}
+                </Grid>
+
+                {/* Active Tasks Banner */}
+                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
+                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                        進行中的任務
+                    </Typography>
+                </Box>
+
+                {/* Active Tasks Board Content */}
+                <Grid container spacing={3} sx={{ mb: 4, alignItems: 'flex-start' }}>
+                    {KANBAN_COLUMNS.map(col => {
+                        const colTasks = MOCK_TASKS.filter(t => t.status === col.id);
+                        return (
+                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`active-${col.id}`}>
+                                <Stack spacing={2}>
+                                    {colTasks.map(task => <TaskKanbanCard key={task.id} task={task} />)}
+                                </Stack>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+
+                {/* Backlog Banner */}
+                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
+                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                        待辦事項
+                    </Typography>
+                </Box>
+
+                {/* Backlog Board Content */}
+                <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
+                    {KANBAN_COLUMNS.map(col => {
+                        const colTasks = MOCK_BACKLOG.filter(t => t.status === col.id);
+                        return (
+                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`backlog-${col.id}`}>
+                                <Stack spacing={2}>
+                                    {colTasks.map(task => <TaskKanbanCard key={task.id} task={task} />)}
+                                </Stack>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+            </Box>
+        );
+    };
+
+    const renderListBoard = () => {
+        return (
+            <Box>
+                {/* Active Tasks Group */}
+                <Box sx={{ mb: 4 }}>
+                    <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            進行中的任務
+                        </Typography>
+                    </Box>
+                    <Stack spacing={2}>
+                        {MOCK_TASKS.map(t => <TaskRowCard key={t.id} task={t} />)}
+                    </Stack>
+                </Box>
+
+                {/* Backlog Group */}
+                <Box sx={{ mb: 4 }}>
+                    <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            待辦事項
+                        </Typography>
+                    </Box>
+                    <Stack spacing={2}>
+                        {MOCK_BACKLOG.map(t => <TaskRowCard key={t.id} task={t} />)}
+                    </Stack>
+                </Box>
+            </Box>
+        );
+    };
+
     return (
-        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1400, margin: '0 auto' }}>
+        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1600, margin: '0 auto' }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
 
                 {/* Left Sidebar: Current Projects */}
@@ -143,7 +249,7 @@ export default function ProjectList() {
                 </Box>
 
                 {/* Right Content: Tasks for selected project */}
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                         <Typography sx={{ color: '#0A1629', fontSize: 36, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
                             專案列表
@@ -170,17 +276,33 @@ export default function ProjectList() {
                         </Button>
                     </Box>
 
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                         <Typography sx={{ color: '#0A1629', fontSize: 22, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
                             任務列表
                         </Typography>
 
                         <Box sx={{ display: 'flex', gap: 1 }}>
-                            <IconButton sx={{ bgcolor: 'white', borderRadius: 2, border: '1px solid #3F8CFF', color: '#3F8CFF' }}>
+                            <IconButton
+                                onClick={() => setViewMode('list')}
+                                sx={{
+                                    bgcolor: 'white',
+                                    borderRadius: 2,
+                                    border: viewMode === 'list' ? '1px solid #3F8CFF' : 'none',
+                                    color: viewMode === 'list' ? '#3F8CFF' : '#7D8592'
+                                }}
+                            >
                                 <ViewListIcon />
                             </IconButton>
-                            <IconButton sx={{ bgcolor: 'white', borderRadius: 2 }}>
-                                <ViewColumnIcon sx={{ color: '#7D8592' }} />
+                            <IconButton
+                                onClick={() => setViewMode('board')}
+                                sx={{
+                                    bgcolor: 'white',
+                                    borderRadius: 2,
+                                    border: viewMode === 'board' ? '1px solid #3F8CFF' : 'none',
+                                    color: viewMode === 'board' ? '#3F8CFF' : '#7D8592'
+                                }}
+                            >
+                                <ViewColumnIcon />
                             </IconButton>
                             <IconButton sx={{ bgcolor: 'white', borderRadius: 2 }}>
                                 <FilterAltIcon sx={{ color: '#7D8592' }} />
@@ -188,29 +310,7 @@ export default function ProjectList() {
                         </Box>
                     </Box>
 
-                    {/* Active Tasks Group */}
-                    <Box sx={{ mb: 4 }}>
-                        <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
-                            <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                                進行中的任務
-                            </Typography>
-                        </Box>
-                        <Stack spacing={2}>
-                            {MOCK_TASKS.map(t => <TaskRowCard key={t.id} task={t} />)}
-                        </Stack>
-                    </Box>
-
-                    {/* Backlog Group */}
-                    <Box sx={{ mb: 4 }}>
-                        <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
-                            <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                                待辦事項
-                            </Typography>
-                        </Box>
-                        <Stack spacing={2}>
-                            {MOCK_BACKLOG.map(t => <TaskRowCard key={t.id} task={t} />)}
-                        </Stack>
-                    </Box>
+                    {viewMode === 'list' ? renderListBoard() : renderKanbanBoard()}
                 </Box>
             </Box>
 
