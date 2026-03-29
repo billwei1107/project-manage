@@ -1,73 +1,47 @@
 import {
     Box,
     Grid,
-    Paper,
     Typography,
-    Avatar,
-    IconButton,
-    LinearProgress,
-    Chip,
+    Button,
     CircularProgress,
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { projectApi } from '../api/projects';
 import type { Project } from '../types/project';
-import { useTheme, alpha } from '@mui/material/styles';
-import {
-    TrendingUp,
-    TrendingDown,
-    MoreVert,
-    AccessTime,
-    CheckCircleOutline
-} from '@mui/icons-material';
-import {
-    AreaChart,
-    Area,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    ResponsiveContainer
-} from 'recharts';
+import AddIcon from '@mui/icons-material/Add';
+import WorkloadCard from '../components/dashboard/WorkloadCard';
+import ProjectRowCard from '../components/dashboard/ProjectRowCard';
+import NearestEvents from '../components/dashboard/NearestEvents';
+import ActivityStream from '../components/dashboard/ActivityStream';
 
 /**
  * @file Dashboard.tsx
- * @description Modern CRM Dashboard
- * @description_en Dashboard with stats, charts, and activity feed
- * @description_zh 現代化 CRM 儀表板，包含統計數據、圖表與活動動態
+ * @description Modern CRM Dashboard - Refactored for Figma Match
+ * @description_en Dashboard with workload, active projects, and stream
+ * @description_zh 現代化 CRM 儀表板，符合 Figma 視覺設計
  */
 
-// Mock Data for Charts
-const REVENUE_DATA = [
-    { name: 'Jan', value: 4000 },
-    { name: 'Feb', value: 3000 },
-    { name: 'Mar', value: 2000 },
-    { name: 'Apr', value: 2780 },
-    { name: 'May', value: 1890 },
-    { name: 'Jun', value: 2390 },
-    { name: 'Jul', value: 3490 },
-    { name: 'Aug', value: 4000 },
-    { name: 'Sep', value: 3000 },
-    { name: 'Oct', value: 2000 },
-    { name: 'Nov', value: 2780 },
-    { name: 'Dec', value: 3890 },
+const MOCK_WORKLOAD = [
+    { name: 'Shawn Stone', role: 'UI/UX Designer', level: 'Middle', progress: 45, color: '#3F8CFF' },
+    { name: 'Randy Delgado', role: 'UX Designer', level: 'Junior', progress: 60, color: '#0AC947' },
+    { name: 'Emily Jones', role: 'Developer', level: 'Senior', progress: 85, color: '#FFBD21' },
+    { name: 'Jasson Pan', role: 'Project Manager', level: 'Middle', progress: 30, color: '#E78175' },
 ];
 
-const ACTIVITY_DATA = [
-    { id: 1, user: 'Alice', action: '建立了新專案', target: '行銷活動', time: '2 小時前', avatar: 'A' },
-    { id: 2, user: 'Bob', action: '留言於', target: 'Logo 設計', time: '4 小時前', avatar: 'B' },
-    { id: 3, user: 'Charlie', action: '完成了任務', target: '線框圖繪製', time: '5 小時前', avatar: 'C' },
-    { id: 4, user: 'David', action: '上傳了檔案至', target: '伺服器設定', time: '1 天前', avatar: 'D' },
+const MOCK_EVENTS = [
+    { time: '10:30 AM', title: 'Presentation of the new department' },
+    { time: '11:00 AM', title: "Anna's Birthday" },
+    { time: '02:00 PM', title: "Ray's Birthday" },
+];
+
+const MOCK_ACTIVITIES = [
+    { user: 'Shawn Stone', action: 'updated the status of', target: 'Mind Map', time: 'Just now' },
+    { user: 'Randy Delgado', action: 'attached files to', target: 'Project Medical App', time: '2h ago' },
+    { user: 'Emily Jones', action: 'left a comment on', target: 'Food Delivery Service', time: '3h ago' },
+    { user: 'Jasson Pan', action: 'completed task', target: 'UI Components', time: '1d ago' },
 ];
 
 export default function Dashboard() {
-    const theme = useTheme();
-    const [stats, setStats] = useState({
-        activeProjects: 0,
-        totalRevenue: 0,
-        completedProjects: 0,
-        avgProgress: 0,
-    });
     const [recentProjects, setRecentProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -79,23 +53,7 @@ export default function Dashboard() {
         try {
             const response = await projectApi.getProjects();
             const projects = response.data;
-
-            // Calculate Stats
             const active = projects.filter(p => p.status !== 'DONE');
-            const done = projects.filter(p => p.status === 'DONE');
-
-            const revenue = projects.reduce((sum: number, p: Project) => sum + (p.budget || 0), 0);
-            const progressSum = active.reduce((sum: number, p: Project) => sum + (p.progress || 0), 0);
-            const avg = active.length > 0 ? Math.round(progressSum / active.length) : 0;
-
-            setStats({
-                activeProjects: active.length,
-                totalRevenue: revenue,
-                completedProjects: done.length,
-                avgProgress: avg,
-            });
-
-            // Get recent/active projects for list
             setRecentProjects(active.slice(0, 5));
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
@@ -104,242 +62,109 @@ export default function Dashboard() {
         }
     };
 
-    const StatCard = ({ title, value, trend, percent, color, icon }: any) => (
-        <Paper
-            sx={{
-                p: 3,
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                background: `linear-gradient(135deg, ${alpha(color, 0.1)} 0%, ${alpha('#FFFFFF', 0.4)} 100%)`,
-                border: `1px solid ${alpha(color, 0.2)}`,
-            }}
-        >
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <Box>
-                    <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1, fontWeight: 600 }}>
-                        {title}
-                    </Typography>
-                    <Typography variant="h4" sx={{ fontWeight: 800, color: 'text.primary' }}>
-                        {value}
-                    </Typography>
-                </Box>
-                <Avatar
-                    sx={{
-                        bgcolor: alpha(color, 0.2),
-                        color: color,
-                        width: 48,
-                        height: 48,
-                        borderRadius: 3
-                    }}
-                >
-                    {icon}
-                </Avatar>
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 2, gap: 1 }}>
-                {trend === 'up' ? (
-                    <TrendingUp sx={{ color: 'success.main', fontSize: 20 }} />
-                ) : (
-                    <TrendingDown sx={{ color: 'error.main', fontSize: 20 }} />
-                )}
-                <Typography
-                    variant="body2"
-                    sx={{
-                        color: trend === 'up' ? 'success.main' : 'error.main',
-                        fontWeight: 700
-                    }}
-                >
-                    {percent}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    與上月相比
-                </Typography>
-            </Box>
-        </Paper>
-    );
-
     if (loading) {
         return <Box sx={{ p: 3, display: 'flex', justifyContent: 'center' }}><CircularProgress /></Box>;
     }
 
     return (
-        <Box>
-            <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="h4" sx={{ fontWeight: 800 }}>
-                    總覽
-                </Typography>
-                <Chip label="Realtime Data" color="primary" variant="outlined" sx={{ fontWeight: 600 }} />
+        <Box sx={{ p: { xs: 2, md: 3 } }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 5 }}>
+                <Box>
+                    <Typography sx={{ color: '#0A1629', fontSize: { xs: 24, md: 32 }, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
+                        Welcome back, Evan!
+                    </Typography>
+                    <Typography sx={{ color: '#7D8592', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', mt: 0.5 }}>
+                        Dashboard
+                    </Typography>
+                </Box>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    sx={{
+                        bgcolor: '#3F8CFF',
+                        color: '#fff',
+                        borderRadius: '14px',
+                        px: { xs: 2, md: 3 },
+                        py: 1.5,
+                        boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                        fontWeight: 800,
+                        fontFamily: 'Nunito Sans',
+                        textTransform: 'none',
+                        fontSize: 16
+                    }}
+                >
+                    Add New Project
+                </Button>
             </Box>
 
-            <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard
-                        title="活躍專案總數"
-                        value={stats.activeProjects}
-                        trend="up"
-                        percent="+2.6%"
-                        color={theme.palette.primary.main}
-                        icon={<FolderIcon />}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard
-                        title="總營收"
-                        value={`$${stats.totalRevenue.toLocaleString()}`}
-                        trend="up"
-                        percent="+12.4%"
-                        color={theme.palette.success.main}
-                        icon={<MonetizationOnIcon />}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard
-                        title="已完成專案"
-                        value={stats.completedProjects}
-                        trend="up"
-                        percent="+5%"
-                        color={theme.palette.warning.main}
-                        icon={<CheckCircleOutline />}
-                    />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                    <StatCard
-                        title="平均進度 (效率)"
-                        value={`${stats.avgProgress}%`}
-                        trend="up"
-                        percent="+5%"
-                        color={theme.palette.secondary.main}
-                        icon={<AccessTime />}
-                    />
-                </Grid>
-            </Grid>
-
-            <Grid container spacing={3}>
-                {/* Revenue Chart */}
+            <Grid container spacing={4}>
                 <Grid size={{ xs: 12, lg: 8 }}>
-                    <Paper sx={{ p: 3, height: 440 }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>營收分析</Typography>
-                            <IconButton size="small"><MoreVert /></IconButton>
-                        </Box>
-                        <ResponsiveContainer width="100%" height="90%">
-                            <AreaChart data={REVENUE_DATA}>
-                                <defs>
-                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor={theme.palette.primary.main} stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor={theme.palette.primary.main} stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={theme.palette.divider} />
-                                <XAxis
-                                    dataKey="name"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
-                                    dy={10}
-                                />
-                                <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: theme.palette.text.secondary, fontSize: 12 }}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: 8,
-                                        border: 'none',
-                                        boxShadow: theme.shadows[3]
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="value"
-                                    stroke={theme.palette.primary.main}
-                                    strokeWidth={3}
-                                    fillOpacity={1}
-                                    fill="url(#colorValue)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
-                    </Paper>
-                </Grid>
-
-                {/* Recent Activity */}
-                <Grid size={{ xs: 12, lg: 4 }}>
-                    <Paper sx={{ p: 3, height: 440, overflow: 'auto' }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3 }}>
-                            <Typography variant="h6" sx={{ fontWeight: 700 }}>近期活動</Typography>
-                        </Box>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                            {ACTIVITY_DATA.map((item) => (
-                                <Box key={item.id} sx={{ display: 'flex', gap: 2 }}>
-                                    <Box sx={{ position: 'relative' }}>
-                                        <Avatar sx={{ width: 40, height: 40, bgcolor: theme.palette.primary.light, color: 'white', fontWeight: 700 }}>
-                                            {item.avatar}
-                                        </Avatar>
-                                        <Box
-                                            sx={{
-                                                position: 'absolute',
-                                                bottom: 0,
-                                                right: -4,
-                                                width: 12,
-                                                height: 12,
-                                                bgcolor: 'success.main',
-                                                borderRadius: '50%',
-                                                border: '2px solid white'
-                                            }}
-                                        />
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary' }}>
-                                            {item.user} <Typography component="span" variant="body2" color="text.secondary">{item.action}</Typography> {item.target}
-                                        </Typography>
-                                        <Typography variant="caption" color="text.disabled">
-                                            {item.time}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            ))}
-                        </Box>
-
-                        <Box sx={{ mt: 4 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2 }}>
-                                進行中專案進度
+                    {/* Workload Section */}
+                    <Box sx={{ mb: 5 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
+                                Workload
                             </Typography>
-                            {recentProjects.map((project) => (
-                                <Box key={project.id} sx={{ mb: 2 }}>
-                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                        <Typography variant="caption" fontWeight={600}>{project.title}</Typography>
-                                        <Typography variant="caption" fontWeight={600}>{project.progress}%</Typography>
-                                    </Box>
-                                    <LinearProgress variant="determinate" value={project.progress} color="primary" sx={{ height: 6, borderRadius: 3 }} />
-                                </Box>
+                            <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
+                                View All
+                            </Typography>
+                        </Box>
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 3,
+                            overflowX: 'auto',
+                            pb: 2,
+                            '&::-webkit-scrollbar': { display: 'none' }
+                        }}>
+                            {MOCK_WORKLOAD.map((w, i) => (
+                                <WorkloadCard key={i} {...w} />
                             ))}
-                            {recentProjects.length === 0 && (
-                                <Typography variant="body2" color="text.secondary">暫無進行中專案</Typography>
+                        </Box>
+                    </Box>
+
+                    {/* Projects Section */}
+                    <Box sx={{ mb: 4 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
+                                Projects
+                            </Typography>
+                        </Box>
+                        <Box>
+                            {recentProjects.length > 0 ? recentProjects.map((project, idx) => (
+                                <ProjectRowCard
+                                    key={project.id}
+                                    pn={`PN0001${idx}${4}`}
+                                    title={project.title}
+                                    progressType={project.progress > 70 ? 'High' : (project.progress > 30 ? 'Medium' : 'Low')}
+                                    progressColor={project.progress > 70 ? '#0AC947' : (project.progress > 30 ? '#FFBD21' : '#E78175')}
+                                    allTasks={Math.floor(Math.random() * 50) + 10}
+                                    activeTasks={Math.floor(Math.random() * 20) + 5}
+                                    assignees={[
+                                        { name: 'A' }, { name: 'B' }, { name: 'C' }
+                                    ]}
+                                />
+                            )) : (
+                                <Box sx={{
+                                    p: 4,
+                                    bgcolor: '#fff',
+                                    borderRadius: '24px',
+                                    textAlign: 'center',
+                                    border: '1px dashed #7D8592'
+                                }}>
+                                    <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                                        No active projects right now.
+                                    </Typography>
+                                </Box>
                             )}
                         </Box>
-                    </Paper>
+                    </Box>
+                </Grid>
+
+                <Grid size={{ xs: 12, lg: 4 }}>
+                    <NearestEvents events={MOCK_EVENTS} />
+                    <ActivityStream activities={MOCK_ACTIVITIES} />
                 </Grid>
             </Grid>
         </Box>
     );
-}
-
-// Additional icons for stats
-function FolderIcon() {
-    return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z" />
-        </svg>
-    )
-}
-
-function MonetizationOnIcon() {
-    return (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.15-1.46-3.32-3.49h2.13c.25 1.1 1.13 1.77 2.44 1.77 1.51 0 2.54-.8 2.54-1.84 0-.85-.45-1.54-2.29-1.96-2.29-.62-3.83-1.63-3.83-3.77 0-1.66 1.15-3.08 3.12-3.48V3h2.67v1.63c1.37.28 2.65 1.19 3.06 2.94h-2.18c-.37-.92-1.37-1.48-2.31-1.48-1.28 0-2.17.73-2.17 1.6 0 .7.49 1.25 2.11 1.63 2.56.71 4.01 1.68 4.01 3.93 0 1.83-1.35 3.29-3.31 3.47z" />
-        </svg>
-    )
 }

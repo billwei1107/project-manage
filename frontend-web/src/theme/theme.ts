@@ -9,35 +9,35 @@ import { createTheme, alpha } from '@mui/material/styles';
 
 // Color Palette
 const PRIMARY = {
-    main: '#2563EB', // Vibrant Blue
-    light: '#60A5FA',
-    dark: '#1E40AF',
+    main: '#3F8CFF', // Figma Blue
+    light: '#B0D4FF',
+    dark: '#233862',
     contrastText: '#ffffff',
 };
 
 const SECONDARY = {
-    main: '#7C3AED', // Purple
-    light: '#A78BFA',
-    dark: '#5B21B6',
+    main: '#7D8592', // Greyish text color used as secondary
+    light: '#EBF3FF',
+    dark: '#434253',
     contrastText: '#ffffff',
 };
 
 const SUCCESS = {
-    main: '#10B981', // Emerald
-    light: '#34D399',
-    dark: '#059669',
+    main: '#0AC947', // Figma Green
+    light: '#A3E8B6',
+    dark: '#078F32',
 };
 
 const WARNING = {
-    main: '#F59E0B', // Amber
-    light: '#FBBF24',
-    dark: '#D97706',
+    main: '#FFBD21', // Figma Yellow
+    light: '#FDC748',
+    dark: '#E5B137',
 };
 
 const ERROR = {
-    main: '#EF4444', // Red
-    light: '#F87171',
-    dark: '#B91C1C',
+    main: '#E78175', // Figma Red
+    light: '#F3BFB9',
+    dark: '#C95A4C',
 };
 
 const GREY = {
@@ -62,12 +62,12 @@ export const theme = createTheme({
         warning: WARNING,
         error: ERROR,
         text: {
-            primary: GREY[800],
-            secondary: GREY[500],
-            disabled: GREY[400],
+            primary: '#0A1629',
+            secondary: '#7D8592',
+            disabled: '#91929E',
         },
         background: {
-            default: '#F9FAFB', // Very light grey
+            default: '#F4F9FD', // Figma background
             paper: '#FFFFFF',
         },
         divider: alpha(GREY[500], 0.24),
@@ -81,7 +81,7 @@ export const theme = createTheme({
         },
     },
     typography: {
-        fontFamily: "'Inter', 'Public Sans', sans-serif",
+        fontFamily: "'Nunito Sans', 'Inter', 'Public Sans', sans-serif",
         h1: { fontWeight: 800, fontSize: '4rem' },
         h2: { fontWeight: 800, fontSize: '3rem' },
         h3: { fontWeight: 700, fontSize: '2.25rem' },
@@ -94,7 +94,7 @@ export const theme = createTheme({
         body2: { fontSize: '0.875rem', lineHeight: 1.57 },
     },
     shape: {
-        borderRadius: 16, // Larger border radius for modern feel
+        borderRadius: 14, // Figma standard for cards
     },
     components: {
         MuiCssBaseline: {
@@ -107,7 +107,7 @@ export const theme = createTheme({
                 },
                 body: {
                     minHeight: '100vh',
-                    backgroundColor: '#F9FAFB',
+                    backgroundColor: '#F4F9FD',
                 },
                 '#root': {
                     minHeight: '100vh',
@@ -119,8 +119,8 @@ export const theme = createTheme({
         MuiCard: {
             styleOverrides: {
                 root: {
-                    boxShadow: '0px 0px 2px 0px rgba(145, 158, 171, 0.2), 0px 12px 24px -4px rgba(145, 158, 171, 0.12)',
-                    borderRadius: 16,
+                    boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)',
+                    borderRadius: 24,
                     position: 'relative',
                     zIndex: 0, // Fix stacking context
                 },
@@ -165,7 +165,8 @@ export const theme = createTheme({
         MuiDrawer: {
             styleOverrides: {
                 paper: {
-                    borderRight: `1px dashed ${alpha(GREY[500], 0.2)}`, // Modern dashed border
+                    borderRight: 'none', // Figma design doesn't have a border
+                    boxShadow: '1px 0px 10px rgba(195, 203, 214, 0.15)', // Add subtle shadow instead
                     backgroundColor: '#FFFFFF',
                 }
             }
