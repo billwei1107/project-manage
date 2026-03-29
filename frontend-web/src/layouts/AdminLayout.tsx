@@ -35,7 +35,7 @@ import { useMessengerStore } from '../stores/useMessengerStore';
 import { format, differenceInDays } from 'date-fns';
 import { zhTW } from 'date-fns/locale';
 
-import Sidebar, { NavItem } from '../components/layout/Sidebar';
+import Sidebar, { type NavItem } from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
 
 const DRAWER_WIDTH = 280;

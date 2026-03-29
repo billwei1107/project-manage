@@ -23,8 +23,8 @@ public class AccountService {
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
 
-        // TODO: Define better in application properties or constants
-        private static final String DEFAULT_PASSWORD = "ERP@123456";
+        @org.springframework.beans.factory.annotation.Value("${app.default-password:ERP@123456}")
+        private String defaultPassword;
 
         public List<AuthResponse.UserInfo> getAllUsers() {
                 return userRepository.findAll().stream()
@@ -66,7 +66,7 @@ public class AccountService {
                 }
 
                 // Use default password
-                String encodedPassword = passwordEncoder.encode(DEFAULT_PASSWORD);
+                String encodedPassword = passwordEncoder.encode(defaultPassword);
 
                 User user = User.builder()
                                 .name(newUserData.getName())
@@ -96,7 +96,7 @@ public class AccountService {
                 User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("User not found: " + userId));
 
-                user.setPassword(passwordEncoder.encode(DEFAULT_PASSWORD));
+                user.setPassword(passwordEncoder.encode(defaultPassword));
                 user.setDefaultPassword(true);
 
                 User savedUser = userRepository.save(user);

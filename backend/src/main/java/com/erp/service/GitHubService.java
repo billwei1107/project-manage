@@ -87,6 +87,7 @@ public class GitHubService {
     /**
      * Add a collaborator to an organization's repository
      */
+    @SuppressWarnings("deprecation")
     public void addCollaboratorToRepo(String repoName, String githubUsername,
             org.kohsuke.github.GHOrganization.Permission permission) throws IOException {
         if (organizationName == null || organizationName.isEmpty()) {
