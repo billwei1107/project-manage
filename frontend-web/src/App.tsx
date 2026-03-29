@@ -18,6 +18,7 @@ import EmployeeList from './pages/employees/EmployeeList';
 import Messenger from './pages/messenger/Messenger';
 import InfoPortal from './pages/infoportal/InfoPortal';
 import PublicUploadPortal from './pages/infoportal/PublicUploadPortal';
+import NearestEventsPage from './pages/events/NearestEventsPage';
 
 /**
  * @file App.tsx
@@ -57,6 +58,7 @@ function App() {
               <Route path="employees" element={<EmployeeList />} />
               <Route path="info-portal" element={<InfoPortal />} />
               <Route path="accounts" element={<AccountManagement />} />
+              <Route path="events" element={<NearestEventsPage />} />
             </Route>
 
             <Route path="/client" element={<ClientLayout />}>

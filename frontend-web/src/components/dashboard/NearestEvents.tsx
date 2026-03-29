@@ -1,5 +1,6 @@
 import { Box, Typography, alpha } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import { useNavigate } from 'react-router-dom';
 
 interface EventItem {
     time: string;
@@ -7,6 +8,8 @@ interface EventItem {
 }
 
 export default function NearestEvents({ events }: { events: EventItem[] }) {
+    const navigate = useNavigate();
+
     return (
         <Box sx={{
             bgcolor: '#FFFFFF',
@@ -17,9 +20,11 @@ export default function NearestEvents({ events }: { events: EventItem[] }) {
         }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
-                    Nearest Events
+                    近期活動
                 </Typography>
-                <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
+                <Typography
+                    onClick={() => navigate('/admin/events')}
+                    sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer', '&:hover': { color: '#3F8CFF' } }}>
                     View All
                 </Typography>
             </Box>
