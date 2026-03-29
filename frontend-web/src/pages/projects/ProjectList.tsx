@@ -18,7 +18,8 @@ import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../types/project';
 import AddProjectModal from '../../components/projects/AddProjectModal';
 import { projectApi } from '../../api/projects';
-import TaskRowCard, { TaskItem } from '../../components/projects/TaskRowCard';
+import TaskRowCard from '../../components/projects/TaskRowCard';
+import type { TaskItem } from '../../components/projects/TaskRowCard';
 
 const MOCK_TASKS: TaskItem[] = [
     { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done' },
