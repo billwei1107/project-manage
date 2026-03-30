@@ -13,6 +13,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import { useNavigate } from 'react-router-dom';
 import ApproveTaskModal from '../../components/projects/ApproveTaskModal';
+import LogTimeModal from '../../components/projects/LogTimeModal';
 import ProjectContextSidebar from '../../components/projects/ProjectContextSidebar';
 
 export default function TaskDetails() {
@@ -20,6 +21,7 @@ export default function TaskDetails() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [status, setStatus] = useState('In Review');
     const [isApproveModalOpen, setApproveModalOpen] = useState(false);
+    const [isLogTimeModalOpen, setLogTimeModalOpen] = useState(false);
     const openStatus = Boolean(anchorEl);
 
     const handleStatusClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -361,6 +363,7 @@ export default function TaskDetails() {
                             <Button
                                 variant="contained"
                                 startIcon={<AccessTimeIcon />}
+                                onClick={() => setLogTimeModalOpen(true)}
                                 sx={{
                                     bgcolor: '#3F8CFF',
                                     borderRadius: '14px',
@@ -400,6 +403,15 @@ export default function TaskDetails() {
                 open={isApproveModalOpen}
                 onClose={() => setApproveModalOpen(false)}
                 onApprove={handleConfirmApprove}
+            />
+
+            {/* Log Time Modal */}
+            <LogTimeModal
+                open={isLogTimeModalOpen}
+                onClose={() => setLogTimeModalOpen(false)}
+                onSave={(data) => {
+                    console.log('Saved time log:', data);
+                }}
             />
         </Box>
     );
