@@ -22,6 +22,7 @@ import AddProjectModal from '../../components/projects/AddProjectModal';
 import { projectApi } from '../../api/projects';
 import TaskRowCard from '../../components/projects/TaskRowCard';
 import type { TaskItem } from '../../components/projects/TaskRowCard';
+import TaskFilterDrawer from '../../components/projects/TaskFilterDrawer';
 
 import {
     DndContext,
@@ -86,6 +87,7 @@ export default function ProjectList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [viewMode, setViewMode] = useState<'list' | 'board' | 'timeline'>('timeline');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Board Data State
     const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
@@ -467,7 +469,10 @@ export default function ProjectList() {
                             >
                                 <FormatLineSpacingIcon sx={{ transform: 'rotate(90deg)' }} />
                             </IconButton>
-                            <IconButton sx={{ bgcolor: 'white', borderRadius: 2 }}>
+                            <IconButton
+                                onClick={() => setIsFilterOpen(true)}
+                                sx={{ bgcolor: 'white', borderRadius: 2 }}
+                            >
                                 <FilterAltIcon sx={{ color: '#7D8592' }} />
                             </IconButton>
                         </Box>
@@ -476,6 +481,8 @@ export default function ProjectList() {
                     {viewMode === 'list' && renderListBoard()}
                     {viewMode === 'board' && renderKanbanBoard()}
                     {viewMode === 'timeline' && renderTimelineBoard()}
+
+                    <TaskFilterDrawer open={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
                 </Box>
             </Box>
 
