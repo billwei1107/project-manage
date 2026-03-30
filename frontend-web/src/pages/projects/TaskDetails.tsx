@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Box, Typography, Button, IconButton, Grid, Avatar, AvatarGroup, Chip, Stack, CircularProgress, Divider, Menu, MenuItem
+    Box, Typography, Button, IconButton, Grid, Avatar, Chip, Stack, CircularProgress, Divider, Menu, MenuItem
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -13,6 +13,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import { useNavigate } from 'react-router-dom';
 import ApproveTaskModal from '../../components/projects/ApproveTaskModal';
+import ProjectContextSidebar from '../../components/projects/ProjectContextSidebar';
 
 export default function TaskDetails() {
     const navigate = useNavigate();
@@ -99,81 +100,7 @@ export default function TaskDetails() {
 
                 {/* === LEFT COLUMN: Project Info === */}
                 <Grid size={{ xs: 12, lg: 3 }}>
-                    <Box sx={{ bgcolor: 'white', borderRadius: '24px', p: 3, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)', position: 'relative' }}>
-
-                        <IconButton sx={{ position: 'absolute', top: 16, right: 16, bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
-                            <EditOutlinedIcon sx={{ color: '#0A1629' }} />
-                        </IconButton>
-
-                        <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                            Project Number
-                        </Typography>
-                        <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', mb: 3 }}>
-                            PN0001245
-                        </Typography>
-
-                        <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 700, mb: 1 }}>
-                            Description
-                        </Typography>
-                        <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', opacity: 0.7, lineHeight: 1.5, mb: 3 }}>
-                            App for maintaining your medical record, making appointments with a doctor, storing prescriptions
-                        </Typography>
-
-                        <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                            Reporter
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                            <Avatar src="https://placehold.co/24x24" sx={{ width: 24, height: 24, mr: 1 }} />
-                            <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans' }}>
-                                Evan Yates
-                            </Typography>
-                        </Box>
-
-                        <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                            Assignees
-                        </Typography>
-                        <Box sx={{ mb: 3 }}>
-                            <AvatarGroup max={4} sx={{ justifyContent: 'flex-end', '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 12, border: '2px solid white' } }}>
-                                <Avatar src="https://placehold.co/24x24" />
-                                <Avatar src="https://placehold.co/24x24" />
-                                <Avatar src="https://placehold.co/24x24" />
-                                <Avatar sx={{ bgcolor: '#3F8CFF', color: 'white' }}>+2</Avatar>
-                            </AvatarGroup>
-                        </Box>
-
-                        <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                            Priority
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                            <Typography sx={{ color: '#FFBD21', mr: 0.5 }}>↑</Typography>
-                            <Typography sx={{ color: '#FFBD21', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                                Medium
-                            </Typography>
-                        </Box>
-
-                        <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                            Dead Line
-                        </Typography>
-                        <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', mb: 4 }}>
-                            Feb 23, 2020
-                        </Typography>
-
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
-                            <CalendarMonthOutlinedIcon sx={{ color: '#7D8592', fontSize: 20 }} />
-                            <Typography sx={{ color: '#7D8592', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
-                                Created May 28, 2020
-                            </Typography>
-                        </Box>
-
-                        <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
-                            <IconButton sx={{ bgcolor: 'rgba(109, 93, 211, 0.10)', borderRadius: '14px', width: 44, height: 44 }}>
-                                <AttachFileIcon sx={{ color: '#6D5DD3', transform: 'rotate(45deg)' }} />
-                            </IconButton>
-                            <IconButton sx={{ bgcolor: 'rgba(33, 192, 230, 0.10)', borderRadius: '14px', width: 44, height: 44 }}>
-                                <LinkIcon sx={{ color: '#21C0E6' }} />
-                            </IconButton>
-                        </Stack>
-                    </Box>
+                    <ProjectContextSidebar />
                 </Grid>
 
                 {/* === MIDDLE COLUMN: Task Details === */}
