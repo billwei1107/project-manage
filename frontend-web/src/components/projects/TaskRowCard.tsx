@@ -2,7 +2,6 @@ import { Box, Typography, Avatar, IconButton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 /**
  * @file TaskRowCard.tsx
@@ -20,16 +19,16 @@ export interface TaskItem {
 }
 
 const statusConfigs = {
-    done: { label: '已完成', color: '#00D097', bgcolor: '#E0F9F2' },
-    in_progress: { label: '進行中', color: '#3F8CFF', bgcolor: 'rgba(63, 140, 255, 0.12)' },
-    in_review: { label: '審核中', color: '#C418E6', bgcolor: 'rgba(196, 24, 230, 0.11)' },
-    todo: { label: '待處理', color: '#7D8592', bgcolor: 'rgba(125, 133, 146, 0.14)' },
+    done: { label: 'Done', color: '#00D097', bgcolor: '#E0F9F2' },
+    in_progress: { label: 'In Progress', color: '#3F8CFF', bgcolor: 'rgba(63, 140, 255, 0.12)' },
+    in_review: { label: 'In Review', color: '#C418E6', bgcolor: 'rgba(196, 24, 230, 0.11)' },
+    todo: { label: 'To Do', color: '#7D8592', bgcolor: 'rgba(125, 133, 146, 0.14)' },
 };
 
 const priorityConfigs = {
-    low: { label: '低', color: '#0AC947', icon: ArrowDownwardIcon },
-    medium: { label: '中', color: '#FFBD21', icon: ArrowUpwardIcon },
-    high: { label: '高', color: '#F76659', icon: ArrowUpwardIcon },
+    low: { label: 'Low', color: '#0AC947', icon: ArrowDownwardIcon },
+    medium: { label: 'Medium', color: '#FFBD21', icon: ArrowUpwardIcon },
+    high: { label: 'High', color: '#F76659', icon: ArrowUpwardIcon },
 };
 
 export default function TaskRowCard({ task }: { task: TaskItem }) {
@@ -51,9 +50,9 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Task Name */}
             <Box sx={{ flex: 2, minWidth: 150 }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    任務名稱
+                    Task Name
                 </Typography>
-                <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
+                <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 400 }}>
                     {task.name}
                 </Typography>
             </Box>
@@ -61,7 +60,7 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Estimate */}
             <Box sx={{ flex: 1, minWidth: 80, display: { xs: 'none', sm: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    預估時間
+                    Estimate
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans' }}>
                     {task.estimate}
@@ -71,7 +70,7 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Spent Time */}
             <Box sx={{ flex: 1, minWidth: 80, display: { xs: 'none', md: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    花費時間
+                    Spent Time
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans' }}>
                     {task.spentTime}
@@ -81,15 +80,15 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Assignee */}
             <Box sx={{ flex: 1, minWidth: 60, display: { xs: 'none', sm: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    負責人
+                    Assignee
                 </Typography>
-                <Avatar src={task.assigneeAvatar} sx={{ width: 28, height: 28 }} />
+                <Avatar src={task.assigneeAvatar} sx={{ width: 24, height: 24 }} />
             </Box>
 
             {/* Priority */}
             <Box sx={{ flex: 1, minWidth: 80 }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    優先級
+                    Priority
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <PriorityIcon sx={{ color: pConf.color, fontSize: 16 }} />
@@ -120,11 +119,7 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Check Circle */}
             <Box sx={{ ml: 'auto' }}>
                 <IconButton>
-                    {task.status === 'done' ? (
-                        <CheckCircleIcon sx={{ color: '#3F8CFF' }} />
-                    ) : (
-                        <RadioButtonUncheckedIcon sx={{ color: 'rgba(125, 133, 146, 0.4)' }} />
-                    )}
+                    <RadioButtonUncheckedIcon sx={{ color: task.status === 'done' ? '#3F8CFF' : 'rgba(125, 133, 146, 0.4)' }} />
                 </IconButton>
             </Box>
         </Box>

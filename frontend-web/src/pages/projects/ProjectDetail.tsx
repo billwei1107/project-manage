@@ -11,6 +11,9 @@ import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
 import FormatLineSpacingIcon from '@mui/icons-material/FormatLineSpacing';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import { Collapse } from '@mui/material';
 
 import { projectApi } from '../../api/projects';
 import type { Project } from '../../api/projects';
@@ -41,17 +44,18 @@ export interface ProjectTask {
     startDay?: number;
     duration?: number;
     assignee?: { name: string; avatar: string; };
+    group?: string; // e.g. 'Design', 'Development'
 }
 
 const mockAssignee = { name: 'Evan Yates', avatar: 'https://placehold.co/24x24' };
 
 const INITIAL_TASKS: ProjectTask[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2, assignee: mockAssignee },
-    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2, assignee: mockAssignee },
-    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 8, duration: 4, assignee: mockAssignee },
-    { id: '4', name: 'UX Login + Registration', estimate: '2d', spentTime: '3h 15m', priority: 'low', status: 'todo', section: 'backlog', startDay: 7, duration: 4, assignee: mockAssignee },
-    { id: '5', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5, assignee: mockAssignee },
-    { id: '6', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 10, duration: 4, assignee: mockAssignee },
+    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2, assignee: mockAssignee, group: 'Design' },
+    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2, assignee: mockAssignee, group: 'Design' },
+    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 8, duration: 4, assignee: mockAssignee, group: 'Design' },
+    { id: '4', name: 'UX Login + Registration', estimate: '2d', spentTime: '3h 15m', priority: 'low', status: 'todo', section: 'active', startDay: 7, duration: 4, assignee: mockAssignee, group: 'Design' },
+    { id: '5', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5, assignee: mockAssignee, group: 'Design' },
+    { id: '6', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 10, duration: 4, assignee: mockAssignee, group: 'Design' },
     { id: '7', name: 'Animation for buttons', estimate: '6h', spentTime: '0h', priority: 'medium', status: 'todo', section: 'backlog', startDay: 13, duration: 1, assignee: mockAssignee },
     { id: '8', name: 'Preloader', estimate: '2d', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 14, duration: 2, assignee: mockAssignee }
 ];
@@ -77,6 +81,7 @@ export default function ProjectDetail() {
     // Tasks State
     const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
     const [activeId, setActiveId] = useState<string | null>(null);
+    const [collapsedGroups, setCollapsedGroups] = useState<string[]>(['Development']);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -170,6 +175,43 @@ export default function ProjectDetail() {
         const activeTasks = tasks.filter(t => t.section === 'active');
         const backlogTasks = tasks.filter(t => t.section === 'backlog');
 
+        const toggleGroup = (groupName: string) => {
+            setCollapsedGroups(prev => prev.includes(groupName) ? prev.filter(g => g !== groupName) : [...prev, groupName]);
+        };
+
+        const renderTaskGroup = (groupName: string, groupTasks: ProjectTask[]) => {
+            const isCollapsed = collapsedGroups.includes(groupName);
+            return (
+                <Box key={groupName} sx={{ mb: 4 }}>
+                    <Box
+                        sx={{ display: 'flex', alignItems: 'center', mb: 2, cursor: 'pointer' }}
+                        onClick={() => toggleGroup(groupName)}
+                    >
+                        {isCollapsed ? <KeyboardArrowDownIcon sx={{ color: '#3F8CFF', mr: 1 }} /> : <KeyboardArrowUpIcon sx={{ color: '#3F8CFF', mr: 1 }} />}
+                        <Typography sx={{ color: '#3F8CFF', fontSize: 16, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
+                            {groupName} ({groupTasks.length} issues)
+                        </Typography>
+                    </Box>
+                    <Collapse in={!isCollapsed}>
+                        <Stack spacing={2}>
+                            {groupTasks.map(t => <TaskRowCard key={t.id} task={t as any} />)}
+                        </Stack>
+                    </Collapse>
+                </Box>
+            );
+        };
+
+        const activeGroups: Record<string, ProjectTask[]> = {};
+        const activeUngrouped: ProjectTask[] = [];
+        activeTasks.forEach(t => {
+            if (t.group) {
+                if (!activeGroups[t.group]) activeGroups[t.group] = [];
+                activeGroups[t.group].push(t);
+            } else {
+                activeUngrouped.push(t);
+            }
+        });
+
         return (
             <Box>
                 {/* Header Row similar to Figma */}
@@ -178,9 +220,16 @@ export default function ProjectDetail() {
                         Active Tasks
                     </Typography>
                 </Box>
-                <Stack spacing={2} sx={{ mb: 4 }}>
-                    {activeTasks.map(t => <TaskRowCard key={t.id} task={t as any} />)}
-                </Stack>
+
+                {Object.entries(activeGroups).map(([groupName, groupTasks]) =>
+                    renderTaskGroup(groupName, groupTasks)
+                )}
+
+                {activeUngrouped.length > 0 && (
+                    <Stack spacing={2} sx={{ mb: 4 }}>
+                        {activeUngrouped.map(t => <TaskRowCard key={t.id} task={t as any} />)}
+                    </Stack>
+                )}
 
                 <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
                     <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
