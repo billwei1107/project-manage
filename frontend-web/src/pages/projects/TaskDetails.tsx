@@ -1,5 +1,6 @@
+import React, { useState } from 'react';
 import {
-    Box, Typography, Button, IconButton, Grid, Avatar, AvatarGroup, Chip, Stack, CircularProgress, Divider
+    Box, Typography, Button, IconButton, Grid, Avatar, AvatarGroup, Chip, Stack, CircularProgress, Divider, Menu, MenuItem
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
@@ -14,6 +15,30 @@ import { useNavigate } from 'react-router-dom';
 
 export default function TaskDetails() {
     const navigate = useNavigate();
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [status, setStatus] = useState('In Review');
+    const openStatus = Boolean(anchorEl);
+
+    const handleStatusClick = (event: React.MouseEvent<HTMLDivElement>) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleStatusClose = (newStatus?: string) => {
+        setAnchorEl(null);
+        if (typeof newStatus === 'string') {
+            setStatus(newStatus);
+        }
+    };
+
+    const getStatusStyles = (statusStr: string) => {
+        switch (statusStr) {
+            case 'To Do': return { color: '#7D8592', bgcolor: 'rgba(125, 133, 146, 0.11)', dot: 'transparent' };
+            case 'In Progress': return { color: '#3F8CFF', bgcolor: 'rgba(63, 140, 255, 0.11)', dot: '#3F8CFF' };
+            case 'In Review': return { color: '#C418E6', bgcolor: 'rgba(196, 24, 230, 0.11)', dot: '#C418E6' };
+            case 'Done': return { color: '#0AC947', bgcolor: 'rgba(10, 201, 71, 0.11)', dot: 'transparent' };
+            default: return { color: '#7D8592', bgcolor: 'transparent', dot: 'transparent' };
+        }
+    };
 
     return (
         <Box sx={{ flexGrow: 1, p: { xs: 2, md: 4 } }}>
@@ -122,12 +147,21 @@ export default function TaskDetails() {
                             Feb 23, 2020
                         </Typography>
 
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
                             <CalendarMonthOutlinedIcon sx={{ color: '#7D8592', fontSize: 20 }} />
                             <Typography sx={{ color: '#7D8592', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
                                 Created May 28, 2020
                             </Typography>
                         </Box>
+
+                        <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
+                            <IconButton sx={{ bgcolor: 'rgba(109, 93, 211, 0.10)', borderRadius: '14px', width: 44, height: 44 }}>
+                                <AttachFileIcon sx={{ color: '#6D5DD3', transform: 'rotate(45deg)' }} />
+                            </IconButton>
+                            <IconButton sx={{ bgcolor: 'rgba(33, 192, 230, 0.10)', borderRadius: '14px', width: 44, height: 44 }}>
+                                <LinkIcon sx={{ color: '#21C0E6' }} />
+                            </IconButton>
+                        </Stack>
                     </Box>
                 </Grid>
 
@@ -152,12 +186,65 @@ export default function TaskDetails() {
                                     UX Login + Registration
                                 </Typography>
                             </Box>
-                            <Box sx={{ bgcolor: 'rgba(196, 24, 230, 0.11)', borderRadius: '8px', px: 2, py: 0.5, display: 'flex', alignItems: 'center' }}>
-                                <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: '#C418E6', mr: 1 }} />
-                                <Typography sx={{ color: '#C418E6', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                                    In Review
-                                </Typography>
-                                <KeyboardArrowDownIcon sx={{ color: '#C418E6', ml: 0.5, fontSize: 16 }} />
+                            <Box>
+                                <Box
+                                    onClick={handleStatusClick}
+                                    sx={{
+                                        bgcolor: getStatusStyles(status).bgcolor,
+                                        borderRadius: '8px',
+                                        px: 2,
+                                        py: 0.5,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        cursor: 'pointer'
+                                    }}
+                                >
+                                    {getStatusStyles(status).dot !== 'transparent' && (
+                                        <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: getStatusStyles(status).dot, mr: 1 }} />
+                                    )}
+                                    <Typography sx={{ color: getStatusStyles(status).color, fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                                        {status}
+                                    </Typography>
+                                    <KeyboardArrowDownIcon sx={{ color: getStatusStyles(status).color, ml: 0.5, fontSize: 16 }} />
+                                </Box>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={openStatus}
+                                    onClose={() => handleStatusClose()}
+                                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                                    sx={{
+                                        '& .MuiPaper-root': {
+                                            borderRadius: '14px',
+                                            boxShadow: '0px 6px 58px rgba(121, 144, 173, 0.20)',
+                                            mt: 1,
+                                            width: 140
+                                        }
+                                    }}
+                                >
+                                    {['To Do', 'In Progress', 'In Review', 'Done'].map((opt) => (
+                                        <MenuItem
+                                            key={opt}
+                                            onClick={() => handleStatusClose(opt)}
+                                            sx={{
+                                                fontSize: 12,
+                                                fontFamily: 'Nunito Sans',
+                                                fontWeight: 600,
+                                                color: status === opt ? '#0A1629' : '#7D8592',
+                                                bgcolor: status === opt ? 'rgba(63, 140, 255, 0.12)' : 'transparent',
+                                                borderRadius: '8px',
+                                                mx: 1,
+                                                my: 0.5,
+                                                '&:hover': {
+                                                    bgcolor: 'rgba(63, 140, 255, 0.12)',
+                                                    color: '#0A1629'
+                                                }
+                                            }}
+                                        >
+                                            {opt}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
                             </Box>
                         </Box>
 
