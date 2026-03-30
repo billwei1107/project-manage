@@ -49,18 +49,27 @@ export interface ProjectTask extends TaskItem {
     section: SectionType;
     startDay?: number;
     duration?: number;
+    assignee?: {
+        name: string;
+        avatar: string;
+    };
 }
 
+const mockAssignee = {
+    name: 'Oscar Holloway',
+    avatar: 'https://placehold.co/24x24'
+};
+
 const INITIAL_TASKS: ProjectTask[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2 },
-    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2 },
-    { id: '3', name: 'UX Login + Registration', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 7, duration: 4 },
-    { id: '4', name: 'UI Login + Registration (+ other screens)', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5 },
-    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review', section: 'active', startDay: 14, duration: 3 },
-    { id: '10', name: 'Moodboard', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress', section: 'active', startDay: 8, duration: 4 },
-    { id: '6', name: 'Research reports (presentation for client)', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 2 },
-    { id: '7', name: 'UI Kit', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 13, duration: 1 },
-    { id: '9', name: 'Testing', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 3 }
+    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2, assignee: mockAssignee },
+    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2, assignee: mockAssignee },
+    { id: '3', name: 'UX Login + Registration', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 7, duration: 4, assignee: mockAssignee },
+    { id: '4', name: 'UI Login + Registration (+ other screens)', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5, assignee: mockAssignee },
+    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review', section: 'active', startDay: 14, duration: 3, assignee: mockAssignee },
+    { id: '10', name: 'Moodboard', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress', section: 'active', startDay: 8, duration: 4, assignee: mockAssignee },
+    { id: '6', name: 'Research reports (presentation for client)', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 2, assignee: mockAssignee },
+    { id: '7', name: 'UI Kit', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 13, duration: 1, assignee: mockAssignee },
+    { id: '9', name: 'Testing', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 3, assignee: mockAssignee }
 ];
 
 const KANBAN_COLUMNS = [
@@ -233,7 +242,7 @@ export default function ProjectList() {
                     {/* Board Headers */}
                     <Grid container spacing={3} sx={{ mb: 3 }}>
                         {KANBAN_COLUMNS.map(col => (
-                            <Grid item xs={12} sm={6} lg={3} key={col.id}>
+                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={col.id}>
                                 <Box sx={{ bgcolor: 'white', borderRadius: '24px', py: 0.5, px: 0.5, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
                                     <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '24px', py: 1.5 }}>
                                         <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
@@ -257,7 +266,7 @@ export default function ProjectList() {
                         {KANBAN_COLUMNS.map(col => {
                             const colTasks = tasks.filter(t => t.status === col.id && t.section === 'active');
                             return (
-                                <Grid item xs={12} sm={6} lg={3} key={`active-${col.id}`}>
+                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`active-${col.id}`}>
                                     <DroppableKanbanColumn id={`active-${col.id}`} tasks={colTasks} />
                                 </Grid>
                             )
@@ -276,7 +285,7 @@ export default function ProjectList() {
                         {KANBAN_COLUMNS.map(col => {
                             const colTasks = tasks.filter(t => t.status === col.id && t.section === 'backlog');
                             return (
-                                <Grid item xs={12} sm={6} lg={3} key={`backlog-${col.id}`}>
+                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`backlog-${col.id}`}>
                                     <DroppableKanbanColumn id={`backlog-${col.id}`} tasks={colTasks} />
                                 </Grid>
                             )

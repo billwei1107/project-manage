@@ -1,4 +1,6 @@
-import { Box, Typography, Stack, IconButton } from '@mui/material';
+import { Box, Typography, Stack, Tooltip, tooltipClasses } from '@mui/material';
+import type { TooltipProps } from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -12,6 +14,26 @@ import type { ProjectTask } from '../../pages/projects/ProjectList';
 interface Props {
     tasks: ProjectTask[];
 }
+
+const TimelineTooltip = styled(({ className, ...props }: TooltipProps) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(() => ({
+    [`& .${tooltipClasses.tooltip}`]: {
+        backgroundColor: '#ffffff',
+        color: '#0A1629',
+        maxWidth: 220,
+        border: '1px solid #E6EBF5',
+        boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)',
+        borderRadius: '14px',
+        padding: '12px 16px',
+    },
+    [`& .${tooltipClasses.arrow}`]: {
+        color: '#ffffff',
+        "&::before": {
+            border: '1px solid #E6EBF5',
+        }
+    },
+}));
 
 export default function TaskTimelineBoard({ tasks }: Props) {
     const DAYS_COUNT = 30; // Figma 顯示 20-30 天
@@ -70,7 +92,7 @@ export default function TaskTimelineBoard({ tasks }: Props) {
 
                 {/* Tasks Rows */}
                 <Box sx={{ display: 'flex', flexDirection: 'column', width: 'max-content', minWidth: '100%' }}>
-                    {tasks.map((task, index) => {
+                    {tasks.map((task) => {
                         const sDay = task.startDay || 1;
                         const duration = task.duration || 1;
 
@@ -94,13 +116,42 @@ export default function TaskTimelineBoard({ tasks }: Props) {
                                             const day = idx + 1;
                                             const isActive = day >= sDay && day < sDay + duration;
 
-                                            return (
-                                                <Box key={day} sx={{
+                                            const tooltipContent = isActive && task.assignee ? (
+                                                <Box sx={{ width: 156 }}>
+                                                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 700, mb: 1 }}>
+                                                        Assignee
+                                                    </Typography>
+                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                                        <img
+                                                            src={task.assignee.avatar}
+                                                            alt={task.assignee.name}
+                                                            style={{ width: 24, height: 24, borderRadius: '50%', outline: '2px solid white' }}
+                                                        />
+                                                        <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 400 }}>
+                                                            {task.assignee.name}
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                            ) : null;
+
+                                            const blockBox = (
+                                                <Box sx={{
                                                     width: 28, height: 44,
                                                     bgcolor: isActive ? '#A7CAFF' : '#F4F9FD',
                                                     borderRadius: '7px',
-                                                    flexShrink: 0
+                                                    flexShrink: 0,
+                                                    cursor: isActive ? 'pointer' : 'default'
                                                 }} />
+                                            );
+
+                                            return (
+                                                <Box key={day}>
+                                                    {isActive && tooltipContent ? (
+                                                        <TimelineTooltip title={tooltipContent} placement="top" arrow>
+                                                            {blockBox}
+                                                        </TimelineTooltip>
+                                                    ) : blockBox}
+                                                </Box>
                                             );
                                         })}
                                     </Stack>
