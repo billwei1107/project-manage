@@ -12,11 +12,13 @@ import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import { useNavigate } from 'react-router-dom';
+import ApproveTaskModal from '../../components/projects/ApproveTaskModal';
 
 export default function TaskDetails() {
     const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [status, setStatus] = useState('In Review');
+    const [isApproveModalOpen, setApproveModalOpen] = useState(false);
     const openStatus = Boolean(anchorEl);
 
     const handleStatusClick = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -26,8 +28,17 @@ export default function TaskDetails() {
     const handleStatusClose = (newStatus?: string) => {
         setAnchorEl(null);
         if (typeof newStatus === 'string') {
-            setStatus(newStatus);
+            if (newStatus === 'Done' && status !== 'Done') {
+                setApproveModalOpen(true);
+            } else {
+                setStatus(newStatus);
+            }
         }
+    };
+
+    const handleConfirmApprove = () => {
+        setStatus('Done');
+        setApproveModalOpen(false);
     };
 
     const getStatusStyles = (statusStr: string) => {
@@ -456,6 +467,13 @@ export default function TaskDetails() {
                 </Grid>
 
             </Grid>
+
+            {/* Approve Task Confirmation Modal */}
+            <ApproveTaskModal
+                open={isApproveModalOpen}
+                onClose={() => setApproveModalOpen(false)}
+                onApprove={handleConfirmApprove}
+            />
         </Box>
     );
 }
