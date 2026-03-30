@@ -1,0 +1,128 @@
+import { Box, Typography, Stack, IconButton } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import type { ProjectTask } from '../../pages/projects/ProjectList';
+
+/**
+ * @file TaskTimelineBoard.tsx
+ * @description 專案的第二週/月等 Timeline 甘特圖視圖 / Timeline Gantt chart view for projects
+ */
+
+interface Props {
+    tasks: ProjectTask[];
+}
+
+export default function TaskTimelineBoard({ tasks }: Props) {
+    const DAYS_COUNT = 30; // Figma 顯示 20-30 天
+
+    return (
+        <Box sx={{
+            bgcolor: 'white',
+            borderRadius: '24px',
+            boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+        }}>
+            <Box sx={{ overflowX: 'auto', overflowY: 'auto', maxHeight: 600 }}>
+                {/* Header Row */}
+                <Box sx={{ display: 'flex', width: 'max-content', minWidth: '100%', borderBottom: '1px solid #E6EBF5' }}>
+                    {/* Sticky Left Header */}
+                    <Box sx={{
+                        position: 'sticky', left: 0, zIndex: 2, bgcolor: 'white',
+                        width: 216, borderRight: '1px solid #E6EBF5',
+                        p: 2, pt: 3, flexShrink: 0
+                    }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+                            <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                All Tasks
+                            </Typography>
+                            <KeyboardArrowDownIcon sx={{ color: '#0A1629' }} />
+                        </Box>
+                        <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', mt: 0.5 }}>
+                            {tasks.length} issues
+                        </Typography>
+                    </Box>
+
+                    {/* Scrollable Right Header */}
+                    <Box sx={{ p: 2 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 2 }}>
+                            First month (September)
+                        </Typography>
+                        <Stack direction="row" spacing={0.5}>
+                            {Array.from({ length: DAYS_COUNT }).map((_, idx) => (
+                                <Box key={idx} sx={{
+                                    width: 28, height: 28,
+                                    bgcolor: '#F4F9FD',
+                                    borderRadius: '7px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    flexShrink: 0
+                                }}>
+                                    <Typography sx={{ color: '#7D8593', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                        {idx + 1}
+                                    </Typography>
+                                </Box>
+                            ))}
+                        </Stack>
+                    </Box>
+                </Box>
+
+                {/* Tasks Rows */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', width: 'max-content', minWidth: '100%' }}>
+                    {tasks.map((task, index) => {
+                        const sDay = task.startDay || 1;
+                        const duration = task.duration || 1;
+
+                        return (
+                            <Box key={task.id} sx={{ display: 'flex', borderBottom: '1px solid #E6EBF5' }}>
+                                {/* Sticky Left Task Name */}
+                                <Box sx={{
+                                    position: 'sticky', left: 0, zIndex: 1, bgcolor: 'white',
+                                    width: 216, borderRight: '1px solid #E6EBF5', flexShrink: 0,
+                                    height: 60, display: 'flex', alignItems: 'center', px: 3
+                                }}>
+                                    <Typography noWrap sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans' }}>
+                                        {task.name}
+                                    </Typography>
+                                </Box>
+
+                                {/* Task Timeline Blocks */}
+                                <Box sx={{ p: 2, height: 60, display: 'flex', alignItems: 'center' }}>
+                                    <Stack direction="row" spacing={0.5}>
+                                        {Array.from({ length: DAYS_COUNT }).map((_, idx) => {
+                                            const day = idx + 1;
+                                            const isActive = day >= sDay && day < sDay + duration;
+
+                                            return (
+                                                <Box key={day} sx={{
+                                                    width: 28, height: 44,
+                                                    bgcolor: isActive ? '#A7CAFF' : '#F4F9FD',
+                                                    borderRadius: '7px',
+                                                    flexShrink: 0
+                                                }} />
+                                            );
+                                        })}
+                                    </Stack>
+                                </Box>
+                            </Box>
+                        );
+                    })}
+
+                    {/* Bottom Scroll Controls Track (Visual only, aligned with timeline) */}
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 2 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', paddingLeft: '216px' }}>
+                            <Box sx={{ width: 300, height: 8, bgcolor: '#D3DBEB', borderRadius: 4, position: 'relative', ml: 2 }}>
+                                <Box sx={{ width: 100, height: 8, bgcolor: '#C9CCD1', borderRadius: 4, position: 'absolute', left: 20 }} />
+                            </Box>
+                            <Stack direction="row" spacing={1} sx={{ mr: 2 }}>
+                                <ArrowBackIcon sx={{ color: '#C9CCD1', fontSize: 20 }} />
+                                <ArrowForwardIcon sx={{ color: '#3F8CFF', fontSize: 20 }} />
+                            </Stack>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+        </Box>
+    );
+}

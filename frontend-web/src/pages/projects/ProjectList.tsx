@@ -5,15 +5,16 @@ import {
     Button,
     CircularProgress,
     Stack,
-    IconButton
+    IconButton,
+    Grid
 } from '@mui/material';
-import { Grid } from '@mui/material';
 import {
     Add as AddIcon,
 } from '@mui/icons-material';
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewColumnIcon from '@mui/icons-material/ViewColumn';
+import FormatLineSpacingIcon from '@mui/icons-material/FormatLineSpacing'; // Represents the timeline toggle icon
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../types/project';
@@ -40,24 +41,26 @@ import type {
 import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
 import DroppableKanbanColumn from '../../components/projects/DroppableKanbanColumn';
 import TaskKanbanCard from '../../components/projects/TaskKanbanCard';
+import TaskTimelineBoard from '../../components/projects/TaskTimelineBoard';
 
 type SectionType = 'active' | 'backlog';
 
 export interface ProjectTask extends TaskItem {
     section: SectionType;
+    startDay?: number;
+    duration?: number;
 }
 
 const INITIAL_TASKS: ProjectTask[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active' },
-    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active' },
-    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active' },
-    { id: '4', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active' },
-    { id: '5', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active' },
-    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review', section: 'active' },
-    { id: '10', name: 'UI Login + Registration (+ other screens)', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress', section: 'active' },
-    { id: '6', name: 'Animation for buttons', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' },
-    { id: '7', name: 'Preloader', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' },
-    { id: '9', name: 'Animation for Landing page', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' }
+    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2 },
+    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2 },
+    { id: '3', name: 'UX Login + Registration', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 7, duration: 4 },
+    { id: '4', name: 'UI Login + Registration (+ other screens)', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5 },
+    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review', section: 'active', startDay: 14, duration: 3 },
+    { id: '10', name: 'Moodboard', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress', section: 'active', startDay: 8, duration: 4 },
+    { id: '6', name: 'Research reports (presentation for client)', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 2 },
+    { id: '7', name: 'UI Kit', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 13, duration: 1 },
+    { id: '9', name: 'Testing', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 12, duration: 3 }
 ];
 
 const KANBAN_COLUMNS = [
@@ -73,7 +76,7 @@ export default function ProjectList() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<'list' | 'board'>('board');
+    const [viewMode, setViewMode] = useState<'list' | 'board' | 'timeline'>('timeline');
 
     // Board Data State
     const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
@@ -160,7 +163,8 @@ export default function ProjectList() {
             return;
         }
 
-        const [overSection, overStatus] = overContainer.split('-') as [SectionType, string];
+        const overSectionStr = overContainer.split('-')[0];
+        const overStatusStr = overContainer.split('-')[1];
 
         setTasks((prev) => {
             // Move object
@@ -169,13 +173,11 @@ export default function ProjectList() {
             if (activeAbsIndex > -1) {
                 returnTasks[activeAbsIndex] = {
                     ...returnTasks[activeAbsIndex],
-                    section: overSection,
-                    status: overStatus as any
+                    section: overSectionStr as SectionType,
+                    status: overStatusStr as any
                 };
             }
 
-            // Reordering logic mapping is tricky with mixed states, 
-            // arrayMove will handle local sorting in dragEnd.
             return returnTasks;
         });
     };
@@ -231,7 +233,7 @@ export default function ProjectList() {
                     {/* Board Headers */}
                     <Grid container spacing={3} sx={{ mb: 3 }}>
                         {KANBAN_COLUMNS.map(col => (
-                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={col.id}>
+                            <Grid item xs={12} sm={6} lg={3} key={col.id}>
                                 <Box sx={{ bgcolor: 'white', borderRadius: '24px', py: 0.5, px: 0.5, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
                                     <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '24px', py: 1.5 }}>
                                         <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
@@ -255,7 +257,7 @@ export default function ProjectList() {
                         {KANBAN_COLUMNS.map(col => {
                             const colTasks = tasks.filter(t => t.status === col.id && t.section === 'active');
                             return (
-                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`active-${col.id}`}>
+                                <Grid item xs={12} sm={6} lg={3} key={`active-${col.id}`}>
                                     <DroppableKanbanColumn id={`active-${col.id}`} tasks={colTasks} />
                                 </Grid>
                             )
@@ -274,7 +276,7 @@ export default function ProjectList() {
                         {KANBAN_COLUMNS.map(col => {
                             const colTasks = tasks.filter(t => t.status === col.id && t.section === 'backlog');
                             return (
-                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`backlog-${col.id}`}>
+                                <Grid item xs={12} sm={6} lg={3} key={`backlog-${col.id}`}>
                                     <DroppableKanbanColumn id={`backlog-${col.id}`} tasks={colTasks} />
                                 </Grid>
                             )
@@ -320,6 +322,10 @@ export default function ProjectList() {
                 </Box>
             </Box>
         );
+    };
+
+    const renderTimelineBoard = () => {
+        return <TaskTimelineBoard tasks={tasks} />;
     };
 
     return (
@@ -441,13 +447,26 @@ export default function ProjectList() {
                             >
                                 <ViewColumnIcon />
                             </IconButton>
+                            <IconButton
+                                onClick={() => setViewMode('timeline')}
+                                sx={{
+                                    bgcolor: 'white',
+                                    borderRadius: 2,
+                                    border: viewMode === 'timeline' ? '1px solid #3F8CFF' : 'none',
+                                    color: viewMode === 'timeline' ? '#3F8CFF' : '#7D8592'
+                                }}
+                            >
+                                <FormatLineSpacingIcon sx={{ transform: 'rotate(90deg)' }} />
+                            </IconButton>
                             <IconButton sx={{ bgcolor: 'white', borderRadius: 2 }}>
                                 <FilterAltIcon sx={{ color: '#7D8592' }} />
                             </IconButton>
                         </Box>
                     </Box>
 
-                    {viewMode === 'list' ? renderListBoard() : renderKanbanBoard()}
+                    {viewMode === 'list' && renderListBoard()}
+                    {viewMode === 'board' && renderKanbanBoard()}
+                    {viewMode === 'timeline' && renderTimelineBoard()}
                 </Box>
             </Box>
 
