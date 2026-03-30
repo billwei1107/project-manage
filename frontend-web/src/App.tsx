@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProjectList from './pages/projects/ProjectList';
 import ProjectDetail from './pages/projects/ProjectDetail';
+import TaskDetails from './pages/projects/TaskDetails';
 import AccountManagement from './pages/admin/AccountManagement';
 import Calendar from './pages/calendar/Calendar';
 import { Finance } from './pages/finance/Finance'; // Import the Finance component
@@ -52,6 +53,7 @@ function App() {
               <Route index element={<Dashboard />} />
               <Route path="projects" element={<ProjectList />} />
               <Route path="projects/:id" element={<ProjectDetail />} />
+              <Route path="projects/task-details" element={<TaskDetails />} />
               <Route path="calendar" element={<Calendar />} />
               <Route path="finance" element={<Finance />} /> {/* Add Route for Finance */}
               <Route path="messenger" element={<Messenger />} />
