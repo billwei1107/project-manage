@@ -5,9 +5,9 @@ import {
     Button,
     CircularProgress,
     Stack,
-    IconButton,
-    Grid
+    IconButton
 } from '@mui/material';
+import { Grid } from '@mui/material';
 import {
     Add as AddIcon,
 } from '@mui/icons-material';
@@ -21,22 +21,43 @@ import AddProjectModal from '../../components/projects/AddProjectModal';
 import { projectApi } from '../../api/projects';
 import TaskRowCard from '../../components/projects/TaskRowCard';
 import type { TaskItem } from '../../components/projects/TaskRowCard';
+
+import {
+    DndContext,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragOverlay,
+    defaultDropAnimationSideEffects
+} from '@dnd-kit/core';
+import type {
+    DragStartEvent,
+    DragOverEvent,
+    DragEndEvent
+} from '@dnd-kit/core';
+import { sortableKeyboardCoordinates, arrayMove } from '@dnd-kit/sortable';
+import DroppableKanbanColumn from '../../components/projects/DroppableKanbanColumn';
 import TaskKanbanCard from '../../components/projects/TaskKanbanCard';
 
-const MOCK_TASKS: TaskItem[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done' },
-    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress' },
-    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress' },
-    { id: '4', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review' },
-    { id: '5', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress' },
-    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review' },
-    { id: '10', name: 'UI Login + Registration (+ other screens)', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress' }
-];
+type SectionType = 'active' | 'backlog';
 
-const MOCK_BACKLOG: TaskItem[] = [
-    { id: '6', name: 'Animation for buttons', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo' },
-    { id: '7', name: 'Preloader', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo' },
-    { id: '9', name: 'Animation for Landing page', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo' }
+export interface ProjectTask extends TaskItem {
+    section: SectionType;
+}
+
+const INITIAL_TASKS: ProjectTask[] = [
+    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active' },
+    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active' },
+    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active' },
+    { id: '4', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active' },
+    { id: '5', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active' },
+    { id: '8', name: 'Research reports (presentation for client)', estimate: '6h', spentTime: '4h', priority: 'low', status: 'in_review', section: 'active' },
+    { id: '10', name: 'UI Login + Registration (+ other screens)', estimate: '1d 6h', spentTime: '1d', priority: 'medium', status: 'in_progress', section: 'active' },
+    { id: '6', name: 'Animation for buttons', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' },
+    { id: '7', name: 'Preloader', estimate: '6h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' },
+    { id: '9', name: 'Animation for Landing page', estimate: '8h', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog' }
 ];
 
 const KANBAN_COLUMNS = [
@@ -52,7 +73,22 @@ export default function ProjectList() {
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
-    const [viewMode, setViewMode] = useState<'list' | 'board'>('board'); // Defaulting to board as per new request
+    const [viewMode, setViewMode] = useState<'list' | 'board'>('board');
+
+    // Board Data State
+    const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
+    const [activeId, setActiveId] = useState<string | null>(null);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 5, // minimum drag distance before firing
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     useEffect(() => {
         fetchProjects();
@@ -84,6 +120,94 @@ export default function ProjectList() {
         }
     };
 
+    // --- Dnd-Kit Handlers ---
+
+    // Find absolute container ID (e.g. "active-todo" or actual task id)
+    const findContainer = (id: string | null) => {
+        if (!id) return null;
+        if (id.includes('-')) {
+            // It's a column container id like 'active-todo'
+            const [section, status] = id.split('-');
+            if (['active', 'backlog'].includes(section) && KANBAN_COLUMNS.some(c => c.id === status)) {
+                return id;
+            }
+        }
+        // It's a task id, find its current container
+        const task = tasks.find(t => t.id === id);
+        if (task) {
+            return `${task.section}-${task.status}`;
+        }
+        return null;
+    };
+
+    const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        setActiveId(active.id as string);
+    };
+
+    const handleDragOver = (event: DragOverEvent) => {
+        const { active, over } = event;
+        const overId = over?.id;
+
+        if (!overId || active.id === overId) {
+            return;
+        }
+
+        const activeContainer = findContainer(active.id as string);
+        const overContainer = findContainer(overId as string);
+
+        if (!activeContainer || !overContainer || activeContainer === overContainer) {
+            return;
+        }
+
+        const [overSection, overStatus] = overContainer.split('-') as [SectionType, string];
+
+        setTasks((prev) => {
+            // Move object
+            const returnTasks = [...prev];
+            const activeAbsIndex = returnTasks.findIndex(t => t.id === active.id);
+            if (activeAbsIndex > -1) {
+                returnTasks[activeAbsIndex] = {
+                    ...returnTasks[activeAbsIndex],
+                    section: overSection,
+                    status: overStatus as any
+                };
+            }
+
+            // Reordering logic mapping is tricky with mixed states, 
+            // arrayMove will handle local sorting in dragEnd.
+            return returnTasks;
+        });
+    };
+
+    const handleDragEnd = (event: DragEndEvent) => {
+        const { active, over } = event;
+        setActiveId(null);
+
+        if (!over) {
+            return;
+        }
+
+        const activeContainer = findContainer(active.id as string);
+        const overContainer = findContainer(over.id as string);
+
+        if (!activeContainer || !overContainer || activeContainer !== overContainer) {
+            return;
+        }
+
+        const activeIndex = tasks.findIndex(t => t.id === active.id);
+        const overIndex = tasks.findIndex(t => t.id === over.id);
+
+        if (activeIndex !== overIndex) {
+            setTasks((items) => arrayMove(items, activeIndex, overIndex));
+        }
+    };
+
+    const dropAnimation = {
+        sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: '0.5' } } }),
+    };
+
+
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
@@ -93,69 +217,82 @@ export default function ProjectList() {
     }
 
     const renderKanbanBoard = () => {
+        const activeItem = activeId ? tasks.find(t => t.id === activeId) : null;
+
         return (
-            <Box>
-                {/* Board Headers */}
-                <Grid container spacing={3} sx={{ mb: 3 }}>
-                    {KANBAN_COLUMNS.map(col => (
-                        <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={col.id}>
-                            <Box sx={{ bgcolor: 'white', borderRadius: '24px', py: 0.5, px: 0.5, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
-                                <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '24px', py: 1.5 }}>
-                                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                                        {col.label}
-                                    </Typography>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCorners}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragEnd={handleDragEnd}
+            >
+                <Box>
+                    {/* Board Headers */}
+                    <Grid container spacing={3} sx={{ mb: 3 }}>
+                        {KANBAN_COLUMNS.map(col => (
+                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={col.id}>
+                                <Box sx={{ bgcolor: 'white', borderRadius: '24px', py: 0.5, px: 0.5, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
+                                    <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '24px', py: 1.5 }}>
+                                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                            {col.label}
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Grid>
-                    ))}
-                </Grid>
+                            </Grid>
+                        ))}
+                    </Grid>
 
-                {/* Active Tasks Banner */}
-                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
-                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                        進行中的任務
-                    </Typography>
+                    {/* Active Tasks Banner */}
+                    <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            進行中的任務
+                        </Typography>
+                    </Box>
+
+                    {/* Active Tasks Board Content */}
+                    <Grid container spacing={3} sx={{ mb: 4, alignItems: 'flex-start' }}>
+                        {KANBAN_COLUMNS.map(col => {
+                            const colTasks = tasks.filter(t => t.status === col.id && t.section === 'active');
+                            return (
+                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`active-${col.id}`}>
+                                    <DroppableKanbanColumn id={`active-${col.id}`} tasks={colTasks} />
+                                </Grid>
+                            )
+                        })}
+                    </Grid>
+
+                    {/* Backlog Banner */}
+                    <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            待辦事項
+                        </Typography>
+                    </Box>
+
+                    {/* Backlog Board Content */}
+                    <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
+                        {KANBAN_COLUMNS.map(col => {
+                            const colTasks = tasks.filter(t => t.status === col.id && t.section === 'backlog');
+                            return (
+                                <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`backlog-${col.id}`}>
+                                    <DroppableKanbanColumn id={`backlog-${col.id}`} tasks={colTasks} />
+                                </Grid>
+                            )
+                        })}
+                    </Grid>
                 </Box>
 
-                {/* Active Tasks Board Content */}
-                <Grid container spacing={3} sx={{ mb: 4, alignItems: 'flex-start' }}>
-                    {KANBAN_COLUMNS.map(col => {
-                        const colTasks = MOCK_TASKS.filter(t => t.status === col.id);
-                        return (
-                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`active-${col.id}`}>
-                                <Stack spacing={2}>
-                                    {colTasks.map(task => <TaskKanbanCard key={task.id} task={task} />)}
-                                </Stack>
-                            </Grid>
-                        )
-                    })}
-                </Grid>
-
-                {/* Backlog Banner */}
-                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 3 }}>
-                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                        待辦事項
-                    </Typography>
-                </Box>
-
-                {/* Backlog Board Content */}
-                <Grid container spacing={3} sx={{ alignItems: 'flex-start' }}>
-                    {KANBAN_COLUMNS.map(col => {
-                        const colTasks = MOCK_BACKLOG.filter(t => t.status === col.id);
-                        return (
-                            <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={`backlog-${col.id}`}>
-                                <Stack spacing={2}>
-                                    {colTasks.map(task => <TaskKanbanCard key={task.id} task={task} />)}
-                                </Stack>
-                            </Grid>
-                        )
-                    })}
-                </Grid>
-            </Box>
+                <DragOverlay dropAnimation={dropAnimation}>
+                    {activeItem ? <TaskKanbanCard task={activeItem} /> : null}
+                </DragOverlay>
+            </DndContext>
         );
     };
 
     const renderListBoard = () => {
+        const activeTasks = tasks.filter(t => t.section === 'active');
+        const backlogTasks = tasks.filter(t => t.section === 'backlog');
+
         return (
             <Box>
                 {/* Active Tasks Group */}
@@ -166,7 +303,7 @@ export default function ProjectList() {
                         </Typography>
                     </Box>
                     <Stack spacing={2}>
-                        {MOCK_TASKS.map(t => <TaskRowCard key={t.id} task={t} />)}
+                        {activeTasks.map(t => <TaskRowCard key={t.id} task={t} />)}
                     </Stack>
                 </Box>
 
@@ -178,7 +315,7 @@ export default function ProjectList() {
                         </Typography>
                     </Box>
                     <Stack spacing={2}>
-                        {MOCK_BACKLOG.map(t => <TaskRowCard key={t.id} task={t} />)}
+                        {backlogTasks.map(t => <TaskRowCard key={t.id} task={t} />)}
                     </Stack>
                 </Box>
             </Box>
