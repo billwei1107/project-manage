@@ -95,11 +95,15 @@ public class TaskService {
         Task task = Task.builder()
                 .title(request.getTitle())
                 .status(request.getStatus() != null ? request.getStatus() : TaskStatus.TODO)
+                .priority(request.getPriority() != null ? request.getPriority() : com.erp.entity.TaskPriority.MEDIUM)
                 .orderIndex(request.getOrderIndex() != null ? request.getOrderIndex() : 0)
                 .deadline(request.getDeadline())
                 .description(request.getDescription())
                 .project(project)
                 .assignee(assignee)
+                .reporter(getCurrentUser())
+                .estimateMinutes(request.getEstimateMinutes() != null ? request.getEstimateMinutes() : 0)
+                .spentMinutes(request.getSpentMinutes() != null ? request.getSpentMinutes() : 0)
                 .build();
 
         Task savedTask = taskRepository.save(task);
@@ -127,6 +131,15 @@ public class TaskService {
         }
         if (request.getDescription() != null) {
             task.setDescription(request.getDescription());
+        }
+        if (request.getPriority() != null) {
+            task.setPriority(request.getPriority());
+        }
+        if (request.getEstimateMinutes() != null) {
+            task.setEstimateMinutes(request.getEstimateMinutes());
+        }
+        if (request.getSpentMinutes() != null) {
+            task.setSpentMinutes(request.getSpentMinutes());
         }
 
         // Handle assignee update (allow setting to null)
@@ -174,13 +187,26 @@ public class TaskService {
                     .build();
         }
 
+        TaskResponse.AssigneeInfo reporterInfo = null;
+        if (task.getReporter() != null) {
+            reporterInfo = TaskResponse.AssigneeInfo.builder()
+                    .id(task.getReporter().getId())
+                    .name(task.getReporter().getName())
+                    .email(task.getReporter().getEmail())
+                    .build();
+        }
+
         return TaskResponse.builder()
                 .id(task.getId())
                 .title(task.getTitle())
                 .status(task.getStatus())
+                .priority(task.getPriority())
                 .orderIndex(task.getOrderIndex())
                 .projectId(task.getProject().getId())
                 .assignee(assigneeInfo)
+                .reporter(reporterInfo)
+                .estimateMinutes(task.getEstimateMinutes())
+                .spentMinutes(task.getSpentMinutes())
                 .deadline(task.getDeadline())
                 .description(task.getDescription())
                 .createdAt(task.getCreatedAt())

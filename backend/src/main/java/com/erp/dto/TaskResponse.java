@@ -1,5 +1,6 @@
 package com.erp.dto;
 
+import com.erp.entity.TaskPriority;
 import com.erp.entity.TaskStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,6 +30,10 @@ public class TaskResponse {
     private LocalDateTime updatedAt;
     private LocalDateTime deadline;
     private String description;
+    private TaskPriority priority;
+    private AssigneeInfo reporter;
+    private Integer estimateMinutes;
+    private Integer spentMinutes;
 
     @Data
     @Builder

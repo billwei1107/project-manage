@@ -61,4 +61,18 @@ public class Task {
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private TaskPriority priority;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reporter_id")
+    private User reporter;
+
+    @Column(name = "estimate_minutes")
+    private Integer estimateMinutes;
+
+    @Column(name = "spent_minutes")
+    private Integer spentMinutes;
 }
