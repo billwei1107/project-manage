@@ -1,0 +1,11 @@
+
+> frontend-web@0.0.0 build
+> tsc -b && vite build
+
+src/components/messenger/ChatArea.tsx(13,10): error TS1484: 'Message' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
+src/components/messenger/ChatArea.tsx(96,40): error TS6133: 'i' is declared but its value is never read.
+src/components/messenger/ConversationsList.tsx(1,8): error TS6133: 'React' is declared but its value is never read.
+src/components/messenger/ConversationsList.tsx(2,39): error TS6133: 'InputBase' is declared but its value is never read.
+src/components/messenger/ConversationsList.tsx(2,113): error TS6133: 'ListItemText' is declared but its value is never read.
+src/components/messenger/ConversationsList.tsx(2,127): error TS6133: 'Divider' is declared but its value is never read.
+src/components/messenger/ConversationsList.tsx(7,10): error TS1484: 'ConversationItem' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
