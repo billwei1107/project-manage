@@ -33,9 +33,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(
+    public ResponseEntity<?> authenticate(
             @RequestBody AuthRequest request) {
-        return ResponseEntity.ok(authService.authenticate(request));
+        try {
+            return ResponseEntity.ok(authService.authenticate(request));
+        } catch (org.springframework.security.authentication.BadCredentialsException e) {
+            return ResponseEntity.status(401).body(ApiResponse.error("帳號或密碼錯誤 / Invalid credentials"));
+        } catch (java.util.NoSuchElementException e) {
+            return ResponseEntity.status(401).body(ApiResponse.error("找不到此使用者 / User not found"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(ApiResponse.error("登入發生伺服器錯誤: " + e.getMessage()));
+        }
     }
 
     @GetMapping("/me")

@@ -29,6 +29,7 @@ public class DataSeeder implements CommandLineRunner {
         if (userRepository.count() == 0) {
             User admin = User.builder()
                     .name("Admin")
+                    .username("admin")
                     .email("admin@erp.com")
                     .password(passwordEncoder.encode(adminPassword))
                     .role(User.Role.ADMIN)
