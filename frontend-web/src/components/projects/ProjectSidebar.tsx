@@ -1,6 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { KeyboardArrowDown, ChevronRight } from '@mui/icons-material';
-import { ProjectEntry } from '../../pages/projects/dummyData';
+import type { ProjectEntry } from '../../pages/projects/dummyData';
 
 interface ProjectSidebarProps {
     projects: ProjectEntry[];

@@ -1,6 +1,6 @@
 import { Box, Typography, Avatar } from '@mui/material';
 import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
-import { Task } from '../../pages/projects/dummyData';
+import type { Task } from '../../pages/projects/dummyData';
 
 export default function TaskCard({ task }: { task: Task }) {
     return (

@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { Task } from '../../pages/projects/dummyData';
+import type { Task } from '../../pages/projects/dummyData';
 import TaskCard from './TaskCard';
 
 interface TaskBoardProps {
