@@ -1,133 +1,110 @@
-import { useState, useEffect } from 'react';
-import { Box, Typography, Button, CircularProgress, Grid, Card, CardContent, CardActions, Chip } from '@mui/material';
-import { Add as AddIcon, ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
-import type { Project } from '../../api/projects';
+import { useState } from 'react';
+import { Box, Typography, Button } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { projectApi } from '../../api/projects';
 import AddProjectModal from '../../components/projects/AddProjectModal';
 
+// 引入新建立的元件與假資料
+import ProjectSidebar from '../../components/projects/ProjectSidebar';
+import TaskBoard from '../../components/projects/TaskBoard';
+import { dummyProjects, dummyTasks } from './dummyData';
+
 export default function ProjectList() {
-    const navigate = useNavigate();
-    const [projects, setProjects] = useState<Project[]>([]);
-    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
-    useEffect(() => {
-        fetchProjects();
-    }, []);
-
-    const fetchProjects = async () => {
-        try {
-            setLoading(true);
-            const response = await projectApi.getProjects();
-            setProjects(response.data);
-        } catch (err: any) {
-            console.error('Failed to fetch projects:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
+    
+    // 使用中文假資料以便預覽 UI
+    const [activeProjectId, setActiveProjectId] = useState<string>(dummyProjects[0].id);
 
     const handleSaveProject = async (projectData: any) => {
         try {
-            const response = await projectApi.createProject(projectData);
-            setProjects([...projects, response.data]);
+            await projectApi.createProject(projectData);
             setIsModalOpen(false);
+            // 此處後續可以串接 real data state
         } catch (err) {
             console.error('Failed to save project:', err);
             alert('儲存失敗 (Failed to save)');
         }
     };
 
-    if (loading) {
-        return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
     return (
-        <Box sx={{ p: { xs: 2, md: 4 }, maxWidth: 1600, margin: '0 auto' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
-                <Typography sx={{ color: '#0A1629', fontSize: 36, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                    專案列表 (Projects)
+        <Box sx={{ 
+            p: { xs: 2, md: 3 }, 
+            height: 'calc(100vh - 64px)', // 扣掉頂部 Navbar 的大約高度，使內容填滿並防止全頁滾動
+            display: 'flex', 
+            flexDirection: 'column', 
+            bgcolor: '#F4F9FD', 
+            overflow: 'hidden' 
+        }}>
+            
+            {/* Header */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexShrink: 0 }}>
+                <Typography sx={{ color: '#0A1629', fontSize: { xs: 24, md: 36 }, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                    專案 (Projects)
                 </Typography>
-                <Button
-                    variant="contained"
-                    startIcon={<AddIcon />}
-                    onClick={() => setIsModalOpen(true)}
-                    sx={{
-                        bgcolor: '#3F8CFF',
-                        color: '#fff',
-                        borderRadius: '14px',
-                        px: 3,
-                        height: 48,
-                        boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
-                        fontWeight: 700,
-                        fontFamily: 'Nunito Sans',
-                        textTransform: 'none',
-                        fontSize: 16
-                    }}
-                >
-                    新增專案
-                </Button>
+
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        onClick={() => setIsModalOpen(true)}
+                        sx={{
+                            bgcolor: '#3F8CFF',
+                            color: '#fff',
+                            borderRadius: '14px',
+                            px: 3,
+                            height: 48,
+                            boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                            fontWeight: 700,
+                            fontFamily: 'Nunito Sans',
+                            textTransform: 'none',
+                            fontSize: 16,
+                            '&:hover': {
+                                bgcolor: '#2e75e6'
+                            }
+                        }}
+                    >
+                        新增專案 (Add Project)
+                    </Button>
+                </Box>
             </Box>
 
-            <Grid container spacing={3}>
-                {projects.map((project) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={project.id}>
-                        <Card sx={{ borderRadius: '24px', boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)', height: '100%', display: 'flex', flexDirection: 'column' }}>
-                            <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
-                                    <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans' }}>
-                                        PN{project.id ? project.id.substring(0, 7) : '0001245'}
-                                    </Typography>
-                                    <Chip
-                                        label={project.status === 'IN_PROGRESS' ? '進行中' : '已完成'}
-                                        size="small"
-                                        sx={{
-                                            bgcolor: project.status === 'IN_PROGRESS' ? 'rgba(63, 140, 255, 0.1)' : 'rgba(10, 201, 71, 0.1)',
-                                            color: project.status === 'IN_PROGRESS' ? '#3F8CFF' : '#0AC947',
-                                            fontWeight: 700,
-                                            fontFamily: 'Nunito Sans',
-                                            borderRadius: '8px'
-                                        }}
-                                    />
+            {/* Main Content Area: Sidebar + Kanban Board */}
+            <Box sx={{ display: 'flex', gap: 3, flex: 1, overflow: 'hidden' }}>
+                {/* 側邊專案列表 */}
+                <Box sx={{ display: { xs: 'none', md: 'block' }, height: '100%' }}>
+                    <ProjectSidebar 
+                        projects={dummyProjects} 
+                        activeProjectId={activeProjectId} 
+                        onSelectProject={setActiveProjectId} 
+                    />
+                </Box>
+
+                {/* 任務看板 */}
+                <Box sx={{ flex: 1, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                    {/* Header line for Tasks */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                        <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                            任務 (Tasks)
+                        </Typography>
+                        
+                        {/* Fake Toolbar Icons */}
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <Box sx={{ width: 48, height: 48, bgcolor: 'white', borderRadius: '14px', boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', mb: 1, position: 'relative' }}>
+                                    <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 6 }} />
+                                    <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 12 }} />
                                 </Box>
-                                <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1 }}>
-                                    {project.title}
-                                </Typography>
-                                <Typography sx={{ color: '#7D8592', fontSize: 14, fontFamily: 'Nunito Sans', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
-                                    {project.description || '暫無描述...'}
-                                </Typography>
-                            </CardContent>
-                            <CardActions sx={{ px: 3, pb: 3, pt: 0 }}>
-                                <Button
-                                    fullWidth
-                                    variant="outlined"
-                                    endIcon={<ArrowForwardIcon />}
-                                    onClick={() => navigate(`/admin/projects/${project.id}`)}
-                                    sx={{
-                                        borderRadius: '12px',
-                                        textTransform: 'none',
-                                        fontFamily: 'Nunito Sans',
-                                        fontWeight: 700,
-                                        borderColor: '#E6EDF5',
-                                        color: '#3F8CFF',
-                                        '&:hover': {
-                                            borderColor: '#3F8CFF',
-                                            bgcolor: 'rgba(63, 140, 255, 0.04)'
-                                        }
-                                    }}
-                                >
-                                    進入專案
-                                </Button>
-                            </CardActions>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
+                            </Box>
+                            <Box sx={{ width: 48, height: 48, bgcolor: 'white', border: '1px solid #3F8CFF', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Box sx={{ width: 16, height: 16, borderRadius: '4px', border: '2px solid #3F8CFF' }} />
+                            </Box>
+                        </Box>
+                    </Box>
+
+                    {/* 看板的主體，傳入當前選中專案的假 tasks 資料 */}
+                    <TaskBoard tasks={dummyTasks} />
+                </Box>
+            </Box>
 
             {/* 新增專案彈窗 */}
             <AddProjectModal
