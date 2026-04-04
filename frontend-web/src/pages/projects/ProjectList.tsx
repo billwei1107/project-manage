@@ -29,15 +29,14 @@ export default function ProjectList() {
     return (
         <Box sx={{ 
             p: { xs: 2, md: 3 }, 
-            height: 'calc(100vh - 64px)', // 扣掉頂部 Navbar 的大約高度，使內容填滿並防止全頁滾動
+            minHeight: 'calc(100vh - 64px)',
             display: 'flex', 
             flexDirection: 'column', 
-            bgcolor: '#F4F9FD', 
-            overflow: 'hidden' 
+            bgcolor: '#F4F9FD'
         }}>
             
             {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexShrink: 0 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography sx={{ color: '#0A1629', fontSize: { xs: 24, md: 36 }, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
                     專案 (Projects)
                 </Typography>
@@ -69,9 +68,9 @@ export default function ProjectList() {
             </Box>
 
             {/* Main Content Area: Sidebar + Kanban Board */}
-            <Box sx={{ display: 'flex', gap: 3, flex: 1, overflow: 'hidden' }}>
+            <Box sx={{ display: 'flex', gap: 3, flex: 1, alignItems: 'flex-start' }}>
                 {/* 側邊專案列表 */}
-                <Box sx={{ display: { xs: 'none', md: 'block' }, height: '100%' }}>
+                <Box sx={{ display: { xs: 'none', md: 'block' }, position: 'sticky', top: 24 }}>
                     <ProjectSidebar 
                         projects={dummyProjects} 
                         activeProjectId={activeProjectId} 
@@ -80,7 +79,7 @@ export default function ProjectList() {
                 </Box>
 
                 {/* 任務看板 */}
-                <Box sx={{ flex: 1, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                     {/* Header line for Tasks */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>

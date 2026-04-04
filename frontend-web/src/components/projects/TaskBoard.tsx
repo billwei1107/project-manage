@@ -49,7 +49,7 @@ export default function TaskBoard({ tasks }: TaskBoardProps) {
     );
 
     return (
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3, overflowY: 'auto' }}>
+        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Header / Tools area could go here */}
             
             <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', pb: 2 }}>

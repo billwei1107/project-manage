@@ -20,7 +20,7 @@ export default function ProjectSidebar({ projects, activeProjectId, onSelectProj
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column',
-                height: '100%' // Fill the parent flex height
+                maxHeight: 'calc(100vh - 120px)' // Constrain height for sticky scrolling
             }}
         >
             {/* Header */}
