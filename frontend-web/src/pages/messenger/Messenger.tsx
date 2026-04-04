@@ -45,17 +45,17 @@ export default function Messenger() {
     };
 
     return (
-        <Box className="flex flex-col h-full w-full bg-[#F4F9FD] p-6 lg:p-8" sx={{ minHeight: 'calc(100vh - 64px)' }}>
+        <Box className="flex flex-col h-full w-full bg-[#F4F9FD] p-6 lg:px-12 lg:py-8" sx={{ minHeight: 'calc(100vh - 64px)' }}>
             
-            {/* Page Header Area (Mirrors the absolute top left "Messenger" text from design) */}
-            <Box className="mb-6 flex justify-between items-center">
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#0A1629', fontFamily: 'Nunito Sans' }}>
+            {/* Page Header Area */}
+            <Box className="mb-8 mt-2 flex justify-between items-center">
+                <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 36, fontFamily: 'Nunito Sans, system-ui, sans-serif' }}>
                     訊息中心
                 </Typography>
             </Box>
 
             {/* Main Messenger UI Card */}
-            <Box className="flex flex-1 rounded-3xl overflow-hidden bg-white shadow-[0px_6px_58px_rgba(195.86,203.28,214.36,0.1)]">
+            <Box className="flex flex-1 rounded-[24px] overflow-hidden bg-white shadow-[0px_6px_58px_rgba(195.86,203.28,214.36,0.1)]">
                 
                 {/* Left Side: Conversations */}
                 <ConversationsList
@@ -79,7 +79,7 @@ export default function Messenger() {
                         />
                     </Box>
                 ) : (
-                    <Box className="flex-1 flex flex-col items-center justify-center text-[#7D8592] bg-white border-l border-[#E6EBF5] rounded-r-3xl">
+                    <Box className="flex-1 flex flex-col items-center justify-center text-[#7D8592] bg-white rounded-r-[24px]">
                         <Avatar sx={{ width: 80, height: 80, bgcolor: '#F4F9FD', color: '#3F8CFF', mb: 3 }}>
                             💬
                         </Avatar>

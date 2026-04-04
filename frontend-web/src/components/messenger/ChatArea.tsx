@@ -9,15 +9,7 @@ import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DownloadIcon from '@mui/icons-material/Download';
 import type { Message as MessageType } from '../../stores/useMessengerStore';
-
-/**
- * @file ChatArea.tsx
- * @description Messenger 右側的聊天區域元件 / Chat Area Component
- * @description_en Main chat area displaying messages and message input
- * @description_zh Messenger 右側聊天主畫面，顯示歷史訊息與文字輸入框
- */
 
 interface ChatAreaProps {
     conversationId: string;
@@ -63,7 +55,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
             {/* Header */}
             <Box className="flex items-center justify-between px-8 py-5 border-b border-[#E6EBF5]">
                 <Box className="flex items-center gap-4">
-                    <Avatar sx={{ width: 48, height: 48, bgcolor: '#F5BD78' }}>
+                    <Avatar sx={{ width: 44, height: 44, bgcolor: '#F5BD78' }}>
                         {conversationName.charAt(0)}
                     </Avatar>
                     <Box>
@@ -71,21 +63,21 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                         <Typography sx={{ color: '#91929E', fontSize: 14 }}>對話成員</Typography>
                     </Box>
                 </Box>
-                <Box className="flex gap-3">
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: 3, width: 40, height: 40 }}>
+                <Box className="flex gap-4">
+                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <SearchIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: 3, width: 40, height: 40 }}>
+                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <PushPinIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: 3, width: 40, height: 40 }}>
+                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <MoreVertIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
                 </Box>
             </Box>
 
             {/* Chat History */}
-            <Box sx={{ flex: 1, overflowY: 'auto', p: 4, display: 'flex', flexDirection: 'column', gap: 3 }} className="custom-scrollbar">
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 8, display: 'flex', flexDirection: 'column', gap: 4 }} className="custom-scrollbar">
                 {isLoading ? (
                     <Box className="flex justify-center py-8"><CircularProgress /></Box>
                 ) : messages.length === 0 ? (
@@ -93,47 +85,55 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                         尚未有任何通訊紀錄
                     </Box>
                 ) : (
-                    messages.map((msg) => {
+                    messages.map((msg, index) => {
                         const isOwn = msg.senderId === currentUserId;
+                        const showDateDivider = index === 0 || new Date(msg.createdAt).toDateString() !== new Date(messages[index - 1].createdAt).toDateString();
+                        
                         return (
-                            <Box key={msg.id} className={`flex items-start gap-4 ${isOwn ? 'flex-row-reverse' : ''}`}>
-                                <Avatar sx={{ width: 40, height: 40, bgcolor: isOwn ? '#3F8CFF' : '#E78175' }}>
-                                    {isOwn ? '我' : msg.senderName?.charAt(0) || 'U'}
-                                </Avatar>
-                                <Box className={`flex flex-col max-w-[70%] ${isOwn ? 'items-end' : 'items-start'}`}>
-                                    <Box className={`flex items-baseline gap-2 mb-1 ${isOwn ? 'flex-row-reverse' : ''}`}>
-                                        <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
-                                            {isOwn ? '我' : msg.senderName || '未知使用者'}
-                                        </Typography>
-                                        <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 600 }}>
-                                            {formatChatTime(msg.createdAt)}
-                                        </Typography>
-                                    </Box>
-                                    
-                                    <Box sx={{
-                                        px: 3, py: 2,
-                                        bgcolor: isOwn ? '#3F8CFF' : '#F4F9FD',
-                                        color: isOwn ? 'white' : '#0A1629',
-                                        borderRadius: 3,
-                                        borderTopRightRadius: isOwn ? 4 : 24,
-                                        borderTopLeftRadius: !isOwn ? 4 : 24
-                                    }}>
-                                        {msg.messageType === 'IMAGE' && msg.fileUrl ? (
-                                            <img src={msg.fileUrl} alt="attachment" style={{ maxWidth: '100%', borderRadius: 8, cursor: 'pointer' }} onClick={()=>window.open(msg.fileUrl, '_blank')} />
-                                        ) : msg.messageType === 'FILE' && msg.fileUrl ? (
-                                            <Box className="flex items-center gap-2 cursor-pointer" onClick={()=>window.open(msg.fileUrl, '_blank')}>
-                                                <InsertDriveFileIcon />
-                                                <Typography>{msg.fileName || '檔案'}</Typography>
-                                                <DownloadIcon />
-                                            </Box>
-                                        ) : (
-                                            <Typography sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 15, opacity: isOwn ? 1 : 0.8 }}>
-                                                {msg.content}
+                            <React.Fragment key={msg.id}>
+                                {showDateDivider && (
+                                    <Box className="flex justify-center my-4">
+                                        <Box sx={{ bgcolor: 'white', borderRadius: '20px', border: '1px solid #E6EBF5', px: 3, py: 0.5, boxShadow: '0px 2px 16px rgba(195.86, 203.28, 214.36, 0.10)' }}>
+                                            <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600 }}>
+                                                {formatDateDivider(msg.createdAt)}
                                             </Typography>
-                                        )}
+                                        </Box>
+                                    </Box>
+                                )}
+                                
+                                <Box className="flex items-start gap-4">
+                                    <Avatar sx={{ width: 40, height: 40, bgcolor: isOwn ? '#3F8CFF' : '#E78175' }}>
+                                        {isOwn ? '我' : msg.senderName?.charAt(0) || 'U'}
+                                    </Avatar>
+                                    <Box className="flex flex-col flex-1">
+                                        <Box className="flex items-center gap-2 mb-1">
+                                            <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
+                                                {isOwn ? '我' : msg.senderName || '未知使用者'}
+                                            </Typography>
+                                            <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600 }}>
+                                                {formatChatTime(msg.createdAt)}
+                                            </Typography>
+                                        </Box>
+                                        
+                                        <Box sx={{ maxWidth: '80%' }}>
+                                            {msg.messageType === 'IMAGE' && msg.fileUrl ? (
+                                                <img src={msg.fileUrl} alt="attachment" style={{ maxWidth: '100%', borderRadius: 8, cursor: 'pointer', marginTop: 8 }} onClick={()=>window.open(msg.fileUrl, '_blank')} />
+                                            ) : msg.messageType === 'FILE' && msg.fileUrl ? (
+                                                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, p: 1.5, pr: 3, bgcolor: 'rgba(21, 192, 230, 0.1)', borderRadius: '10px', mt: 1, cursor: 'pointer' }} onClick={()=>window.open(msg.fileUrl, '_blank')}>
+                                                    <InsertDriveFileIcon sx={{ color: '#15C0E6' }} />
+                                                    <Typography sx={{ color: '#15C0E6', fontWeight: 600, fontSize: 16 }}>
+                                                        {msg.fileName || '檔案附加'}
+                                                    </Typography>
+                                                </Box>
+                                            ) : (
+                                                <Typography sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 16, color: '#0A1629', opacity: 0.7, lineHeight: 1.5, mt: 0.5 }}>
+                                                    {msg.content}
+                                                </Typography>
+                                            )}
+                                        </Box>
                                     </Box>
                                 </Box>
-                            </Box>
+                            </React.Fragment>
                         );
                     })
                 )}
@@ -141,42 +141,52 @@ export default function ChatArea({ conversationId, conversationName, messages, c
             </Box>
 
             {/* Input Form */}
-            <Box className="p-6 bg-white">
-                <Box className="flex items-center border border-[#D8E0F0] rounded-2xl shadow-[0px_1px_2px_rgba(183,200,224,0.22)] overflow-hidden">
-                    <Box className="flex gap-2 px-3">
-                        <IconButton size="small" sx={{ color: '#6D5DD3' }} onClick={() => fileInputRef.current?.click()} disabled={isSubmitting}>
-                            <AttachFileIcon />
-                        </IconButton>
-                        <IconButton size="small" sx={{ color: '#3F8CFF' }}>
-                            <InsertLinkIcon />
-                        </IconButton>
-                        <IconButton size="small" sx={{ color: '#3F8CFF' }}>
-                            <AlternateEmailIcon />
-                        </IconButton>
-                    </Box>
+            <Box sx={{ p: 4, pt: 2, bgcolor: 'white' }}>
+                <Box className="flex items-center" sx={{ 
+                    border: '1px solid #D8E0F0', 
+                    borderRadius: '14px', 
+                    bgcolor: 'white', 
+                    boxShadow: '0px 1px 2px rgba(183.68, 200.04, 224.46, 0.22)', 
+                    height: 56,
+                    px: 1
+                }}>
+                    <IconButton sx={{ color: '#6D5DD3' }} onClick={() => fileInputRef.current?.click()} disabled={isSubmitting}>
+                        <AttachFileIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: '#3F8CFF' }}>
+                        <InsertLinkIcon />
+                    </IconButton>
+                    <IconButton sx={{ color: '#3F8CFF' }}>
+                        <AlternateEmailIcon />
+                    </IconButton>
+                    
                     <InputBase
-                        sx={{ ml: 1, flex: 1, fontSize: 15, color: '#0A1629', py: 1.5 }}
+                        sx={{ ml: 2, flex: 1, fontSize: 16, color: '#0A1629' }}
                         placeholder="請在這裡輸入您的訊息..."
-                        inputProps={{ 'aria-label': '請在這裡輸入您的訊息...' }}
                         value={inputStr}
                         onChange={e => setInputStr(e.target.value)}
                         onKeyDown={handleKeyDown}
                         disabled={isSubmitting}
-                        multiline
-                        maxRows={3}
                     />
-                    <Box className="flex gap-2 px-3 items-center">
-                        <IconButton size="small" sx={{ color: '#FDC748' }}>
-                            <SentimentSatisfiedAltIcon />
-                        </IconButton>
-                        <IconButton 
-                            sx={{ bgcolor: '#3F8CFF', color: 'white', borderRadius: 3, width: 44, height: 44, '&:hover': { bgcolor: '#2670e8' } }} 
-                            onClick={handleSend}
-                            disabled={!inputStr.trim() || isSubmitting}
-                        >
-                            <SendIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
+                    
+                    <IconButton sx={{ color: '#FDC748', mr: 1 }}>
+                        <SentimentSatisfiedAltIcon />
+                    </IconButton>
+                    <IconButton 
+                        sx={{ 
+                            bgcolor: '#3F8CFF', 
+                            color: 'white', 
+                            borderRadius: '14px', 
+                            width: 44, 
+                            height: 44, 
+                            boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                            '&:hover': { bgcolor: '#2670e8' } 
+                        }} 
+                        onClick={handleSend}
+                        disabled={!inputStr.trim() || isSubmitting}
+                    >
+                        <SendIcon fontSize="small" />
+                    </IconButton>
                 </Box>
             </Box>
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} />
@@ -190,4 +200,12 @@ function formatChatTime(dateStr: string): string {
     const h = d.getHours() % 12 || 12;
     const m = d.getMinutes().toString().padStart(2, '0');
     return `${h}:${m} ${ampm}`;
+}
+
+function formatDateDivider(dateStr: string): string {
+    const d = new Date(dateStr);
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+    return `${m}月${day}日 ${days[d.getDay()]}`;
 }

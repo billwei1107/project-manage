@@ -2,16 +2,9 @@ import { useState } from 'react';
 import { Box, Typography, IconButton, Avatar, Badge, List, ListItem, ListItemButton, ListItemAvatar, Collapse } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import type { ConversationItem } from '../../stores/useMessengerStore';
-
-/**
- * @file ConversationsList.tsx
- * @description Messenger 左側的對話清單元件 / Conversations List Component
- * @description_en Sidebar component for Messenger to display groups and direct messages
- * @description_zh Messenger 左側的對話清單，用來顯示群組與直接對話列表
- */
 
 interface ConversationsListProps {
     conversations: ConversationItem[];
@@ -36,7 +29,7 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
 
     return (
         <Box sx={{
-            width: 340,
+            width: 360,
             borderRight: '1px solid #E6EBF5',
             display: 'flex',
             flexDirection: 'column',
@@ -46,28 +39,28 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
             overflow: 'hidden'
         }}>
             {/* Header */}
-            <Box className="flex items-center justify-between p-6">
-                <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A1629' }}>
+            <Box className="flex items-center justify-between px-6 py-6 border-b border-[#E6EBF5]">
+                <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 18 }}>
                     對話列表
                 </Typography>
                 <Box className="flex gap-2">
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: 2 }} size="small">
+                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '12px' }} size="small">
                         <SearchIcon fontSize="small" sx={{ color: '#0A1629' }} />
                     </IconButton>
-                    <IconButton sx={{ bgcolor: '#3F8CFF', borderRadius: 2, color: 'white', '&:hover': { bgcolor: '#2670e8' } }} size="small" onClick={onNewChat}>
+                    <IconButton sx={{ bgcolor: '#3F8CFF', borderRadius: '12px', color: 'white', '&:hover': { bgcolor: '#2670e8' } }} size="small" onClick={onNewChat}>
                         <AddIcon fontSize="small" />
                     </IconButton>
                 </Box>
             </Box>
 
             {/* List */}
-            <Box sx={{ flex: 1, overflowY: 'auto' }} className="px-3 pb-4 custom-scrollbar">
+            <Box sx={{ flex: 1, overflowY: 'auto' }} className="pb-4 custom-scrollbar">
                 
                 {/* 群組 / Groups */}
-                <Box className="mb-2">
-                    <Box className="flex items-center px-4 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setGroupsOpen(!groupsOpen)}>
-                        {groupsOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-                        <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 14 }}>群組 ({groups.length})</Typography>
+                <Box className="mt-4">
+                    <Box className="flex items-center px-6 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setGroupsOpen(!groupsOpen)}>
+                        {groupsOpen ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
+                        <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 16 }}>群組</Typography>
                     </Box>
                     <Collapse in={groupsOpen}>
                         <List disablePadding>
@@ -86,10 +79,10 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
                 </Box>
 
                 {/* 個人訊息 / Direct Messages */}
-                <Box>
-                    <Box className="flex items-center px-4 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setDirectsOpen(!directsOpen)}>
-                        {directsOpen ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
-                        <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 14 }}>個人訊息 ({directs.length})</Typography>
+                <Box className="mt-2">
+                    <Box className="flex items-center px-6 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setDirectsOpen(!directsOpen)}>
+                        {directsOpen ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
+                        <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 16 }}>個人訊息</Typography>
                     </Box>
                     <Collapse in={directsOpen}>
                         <List disablePadding>
@@ -114,13 +107,12 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
 
 function ConversationListItem({ conv, isActive, name, time, onClick }: any) {
     return (
-        <ListItem disablePadding sx={{ mb: 0.5 }}>
+        <ListItem disablePadding sx={{ px: 2, mb: 0.5 }}>
             <ListItemButton
                 onClick={onClick}
                 sx={{
-                    borderRadius: 3,
+                    borderRadius: '14px',
                     bgcolor: isActive ? '#F4F9FD' : 'transparent',
-                    borderLeft: isActive ? '4px solid #3F8CFF' : '4px solid transparent',
                     pl: 2,
                     pr: 2,
                     py: 1.5,
@@ -128,25 +120,26 @@ function ConversationListItem({ conv, isActive, name, time, onClick }: any) {
                     '&:hover': { bgcolor: '#F4F9FD' }
                 }}
             >
-                <ListItemAvatar sx={{ minWidth: 48 }}>
+                <ListItemAvatar sx={{ minWidth: 54 }}>
                     <Badge
-                        badgeContent={conv.unreadCount}
+                        badgeContent={conv.unreadCount > 0 ? (conv.unreadCount > 99 ? '99+' : conv.unreadCount) : null}
                         sx={{
                             '& .MuiBadge-badge': {
                                 bgcolor: '#F65160',
                                 color: 'white',
-                                fontWeight: 600,
-                                fontSize: '0.65rem',
-                                minWidth: 18,
-                                height: 18,
-                                borderRadius: 9,
+                                fontWeight: 700,
+                                fontSize: '0.7rem',
+                                minWidth: 20,
+                                height: 20,
+                                borderRadius: 10,
                                 border: '2px solid white',
-                                top: 4,
-                                right: 4
+                                top: 5,
+                                right: 5,
+                                padding: '0 4px',
                             }
                         }}
                     >
-                        <Avatar sx={{ width: 40, height: 40, bgcolor: conv.type === 'GROUP' ? '#28D196' : '#E78175' }}>
+                        <Avatar sx={{ width: 40, height: 40, bgcolor: conv.type === 'GROUP' ? '#28D196' : '#63A2FF' }}>
                             {name.charAt(0)}
                         </Avatar>
                     </Badge>
@@ -154,15 +147,15 @@ function ConversationListItem({ conv, isActive, name, time, onClick }: any) {
                 
                 <Box sx={{ flex: 1, overflow: 'hidden' }}>
                     <Box className="flex justify-between items-center mb-0.5">
-                        <Typography noWrap sx={{ fontWeight: 700, color: '#0A1629', fontSize: 15 }}>
+                        <Typography noWrap sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
                             {name}
                         </Typography>
-                        <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 600, flexShrink: 0, ml: 1 }}>
+                        <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600, flexShrink: 0, ml: 1 }}>
                             {time}
                         </Typography>
                     </Box>
-                    <Typography noWrap sx={{ color: '#7D8592', fontSize: 13, fontWeight: conv.unreadCount > 0 ? 600 : 400 }}>
-                        {conv.lastMessage || '尚無訊息'}
+                    <Typography noWrap sx={{ color: '#91929E', fontSize: 14, fontWeight: conv.unreadCount > 0 ? 600 : 400 }}>
+                        {conv.lastMessage || '尚無訊息...'}
                     </Typography>
                 </Box>
             </ListItemButton>
