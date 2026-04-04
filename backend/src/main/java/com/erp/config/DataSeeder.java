@@ -21,8 +21,8 @@ public class DataSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${app.admin.password:password}")
-    private String adminPassword;
+    // 暫時強制綁定密碼為 password 以排除遠端 .env 干擾
+    private String adminPassword = "password";
 
     @Override
     public void run(String... args) throws Exception {
