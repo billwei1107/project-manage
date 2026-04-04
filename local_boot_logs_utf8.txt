@@ -1,0 +1,50 @@
+﻿Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0
+2026-04-03T13:12:36.602Z  INFO 1 --- [project-manage-backend] [           main] com.erp.config.DataMigrationRunner       : Data Migration completed. Migrated 0 legacy users.
+Hibernate: 
+    select
+        count(*) 
+    from
+        finance_categories fc1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2026-04-03T13:12:37.544Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-03T13:12:37.545Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-03T13:12:37.548Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0

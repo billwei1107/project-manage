@@ -1,0 +1,25 @@
+#!/usr/bin/expect -f
+
+set timeout 120
+set password "NerssBiU56"
+set host "54.255.186.244"
+set user "root"
+
+spawn ssh -o StrictHostKeyChecking=no $user@$host
+
+expect "password:"
+send "$password\r"
+
+expect "#"
+send "cd /root/project-manage && docker compose build backend\r"
+
+expect "#"
+send "docker compose up -d backend\r"
+
+expect "#"
+send "docker compose logs -f backend | head -n 100\r"
+
+expect "#"
+send "exit\r"
+
+interact

@@ -1,0 +1,177 @@
+﻿
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.2)
+
+2026-04-03T13:10:55.245Z  INFO 1 --- [project-manage-backend] [           main] com.erp.ErpApplication                   : Starting ErpApplication v0.0.1-SNAPSHOT using Java 21.0.10 with PID 1 (/app/app.jar started by root in /app)
+2026-04-03T13:10:55.306Z  INFO 1 --- [project-manage-backend] [           main] com.erp.ErpApplication                   : No active profile set, falling back to 1 default profile: "default"
+2026-04-03T13:11:14.113Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-03T13:11:14.122Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-04-03T13:11:16.512Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 2293 ms. Found 11 JPA repository interfaces.
+2026-04-03T13:11:16.610Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2026-04-03T13:11:16.681Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+2026-04-03T13:11:16.930Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.UserRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:16.991Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.infoportal.AnnouncementRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:16.992Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.infoportal.ShareLinkRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:16.999Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.infoportal.DirectoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.001Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.infoportal.FileEntityRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.002Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.infoportal.ClientRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.003Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.ProjectRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.004Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.FinancialRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.005Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.TaskRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.006Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.FinanceCategoryRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.006Z  INFO 1 --- [project-manage-backend] [           main] .RepositoryConfigurationExtensionSupport : Spring Data Redis - Could not safely identify store assignment for repository candidate interface com.erp.repository.EventRepository; If you want this repository to be a Redis repository, consider annotating your entities with one of these annotations: org.springframework.data.redis.core.RedisHash (preferred), or consider extending one of the following types with your repository: org.springframework.data.keyvalue.repository.KeyValueRepository
+2026-04-03T13:11:17.064Z  INFO 1 --- [project-manage-backend] [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 223 ms. Found 0 Redis repository interfaces.
+2026-04-03T13:11:26.669Z  INFO 1 --- [project-manage-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8081 (http)
+2026-04-03T13:11:27.080Z  INFO 1 --- [project-manage-backend] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-03T13:11:27.082Z  INFO 1 --- [project-manage-backend] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.18]
+2026-04-03T13:11:27.725Z  INFO 1 --- [project-manage-backend] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-03T13:11:27.795Z  INFO 1 --- [project-manage-backend] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 31434 ms
+2026-04-03T13:11:29.964Z  INFO 1 --- [project-manage-backend] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-04-03T13:11:30.843Z  INFO 1 --- [project-manage-backend] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.1.Final
+2026-04-03T13:11:31.313Z  INFO 1 --- [project-manage-backend] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-04-03T13:11:34.431Z  INFO 1 --- [project-manage-backend] [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-04-03T13:11:34.844Z  INFO 1 --- [project-manage-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-04-03T13:11:37.544Z  INFO 1 --- [project-manage-backend] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@3a9c11fb
+2026-04-03T13:11:37.548Z  INFO 1 --- [project-manage-backend] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-04-03T13:11:37.876Z  WARN 1 --- [project-manage-backend] [           main] org.hibernate.orm.deprecation            : HHH90000025: PostgreSQLDialect does not need to be specified explicitly using 'hibernate.dialect' (remove the property setting and it will be selected by default)
+2026-04-03T13:11:58.195Z  INFO 1 --- [project-manage-backend] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-04-03T13:12:00.265Z  INFO 1 --- [project-manage-backend] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-04-03T13:12:07.707Z  INFO 1 --- [project-manage-backend] [           main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-04-03T13:12:14.523Z  INFO 1 --- [project-manage-backend] [           main] c.e.s.infoportal.FileEntityService       : InfoPortal upload directory configured at /app/uploads/info-portal
+2026-04-03T13:12:16.358Z  INFO 1 --- [project-manage-backend] [           main] com.erp.service.FileUploadService        : Upload directory configured at /app/uploads
+2026-04-03T13:12:19.309Z  WARN 1 --- [project-manage-backend] [           main] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-04-03T13:12:24.265Z  INFO 1 --- [project-manage-backend] [           main] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2a882681, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@525b999, org.springframework.security.web.context.SecurityContextHolderFilter@250988e5, org.springframework.security.web.header.HeaderWriterFilter@61c8139a, org.springframework.web.filter.CorsFilter@12f4b3a2, org.springframework.security.web.authentication.logout.LogoutFilter@688e2e8d, com.erp.config.security.JwtAuthenticationFilter@1aa64998, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1502cd38, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3662dc9b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@36af93ca, org.springframework.security.web.session.SessionManagementFilter@344ab465, org.springframework.security.web.access.ExceptionTranslationFilter@a632ae0, org.springframework.security.web.access.intercept.AuthorizationFilter@35645453]
+2026-04-03T13:12:35.244Z  INFO 1 --- [project-manage-backend] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8081 (http) with context path ''
+2026-04-03T13:12:35.554Z  INFO 1 --- [project-manage-backend] [           main] com.erp.ErpApplication                   : Started ErpApplication in 108.477 seconds (process running for 120.312)
+2026-04-03T13:12:35.627Z  INFO 1 --- [project-manage-backend] [           main] com.erp.config.DataMigrationRunner       : Starting Data Migration Runner to fix legacy Employee IDs...
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0
+2026-04-03T13:12:36.602Z  INFO 1 --- [project-manage-backend] [           main] com.erp.config.DataMigrationRunner       : Data Migration completed. Migrated 0 legacy users.
+Hibernate: 
+    select
+        count(*) 
+    from
+        finance_categories fc1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        users u1_0
+2026-04-03T13:12:37.544Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-03T13:12:37.545Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-03T13:12:37.548Z  INFO 1 --- [project-manage-backend] [nio-8081-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 3 ms
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0 
+    where
+        u1_0.username=? 
+        or u1_0.employee_id=? 
+        or u1_0.email=?
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.avatar,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.employee_id,
+        u1_0.github_username,
+        u1_0.is_default_password,
+        u1_0.is_online,
+        u1_0.last_login_at,
+        u1_0.name,
+        u1_0.password,
+        u1_0.role,
+        u1_0.updated_at,
+        u1_0.username 
+    from
+        users u1_0

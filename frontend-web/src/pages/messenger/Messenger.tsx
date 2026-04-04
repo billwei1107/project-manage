@@ -45,17 +45,17 @@ export default function Messenger() {
     };
 
     return (
-        <Box className="flex flex-col h-full w-full bg-[#F4F9FD] p-6 lg:px-12 lg:py-8" sx={{ minHeight: 'calc(100vh - 64px)' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', bgcolor: '#F4F9FD', px: { xs: 3, lg: 6 }, py: { xs: 3, lg: 4 }, minHeight: 'calc(100vh - 64px)' }}>
             
             {/* Page Header Area */}
-            <Box className="mb-8 mt-2 flex justify-between items-center">
+            <Box sx={{ mb: 4, mt: 1, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 36, fontFamily: 'Nunito Sans, system-ui, sans-serif' }}>
                     訊息中心
                 </Typography>
             </Box>
 
             {/* Main Messenger UI Card */}
-            <Box className="flex flex-1 rounded-[24px] overflow-hidden bg-white shadow-[0px_6px_58px_rgba(195.86,203.28,214.36,0.1)]">
+            <Box sx={{ display: 'flex', flex: 1, borderRadius: '24px', overflow: 'hidden', bgcolor: 'white', boxShadow: '0px 6px 58px rgba(195.86,203.28,214.36,0.1)' }}>
                 
                 {/* Left Side: Conversations */}
                 <ConversationsList
@@ -68,7 +68,7 @@ export default function Messenger() {
                 
                 {/* Right Side: Chat Area or Placeholder */}
                 {activeConversationId ? (
-                    <Box className="flex-1 flex flex-col">
+                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                         <ChatArea
                             conversationId={activeConversationId}
                             conversationName={getConversationName(conversations.find(c => c.id === activeConversationId)!)}
@@ -79,7 +79,7 @@ export default function Messenger() {
                         />
                     </Box>
                 ) : (
-                    <Box className="flex-1 flex flex-col items-center justify-center text-[#7D8592] bg-white rounded-r-[24px]">
+                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#7D8592', bgcolor: 'white', borderTopRightRadius: '24px', borderBottomRightRadius: '24px' }}>
                         <Avatar sx={{ width: 80, height: 80, bgcolor: '#F4F9FD', color: '#3F8CFF', mb: 3 }}>
                             💬
                         </Avatar>

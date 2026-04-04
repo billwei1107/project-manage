@@ -53,8 +53,8 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     return (
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', bgcolor: 'white', borderTopRightRadius: 24, borderBottomRightRadius: 24, overflow: 'hidden' }}>
             {/* Header */}
-            <Box className="flex items-center justify-between px-8 py-5 border-b border-[#E6EBF5]">
-                <Box className="flex items-center gap-4">
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 4, py: 2.5, borderBottom: '1px solid #E6EBF5' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <Avatar sx={{ width: 44, height: 44, bgcolor: '#F5BD78' }}>
                         {conversationName.charAt(0)}
                     </Avatar>
@@ -63,7 +63,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                         <Typography sx={{ color: '#91929E', fontSize: 14 }}>對話成員</Typography>
                     </Box>
                 </Box>
-                <Box className="flex gap-4">
+                <Box sx={{ display: 'flex', gap: 2 }}>
                     <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <SearchIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
@@ -77,11 +77,11 @@ export default function ChatArea({ conversationId, conversationName, messages, c
             </Box>
 
             {/* Chat History */}
-            <Box sx={{ flex: 1, overflowY: 'auto', p: 8, display: 'flex', flexDirection: 'column', gap: 4 }} className="custom-scrollbar">
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 4, display: 'flex', flexDirection: 'column', gap: 2 }} className="custom-scrollbar">
                 {isLoading ? (
-                    <Box className="flex justify-center py-8"><CircularProgress /></Box>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
                 ) : messages.length === 0 ? (
-                    <Box className="flex justify-center text-[#7D8592] py-8">
+                    <Box sx={{ display: 'flex', justifyContent: 'center', color: '#7D8592', py: 4 }}>
                         尚未有任何通訊紀錄
                     </Box>
                 ) : (
@@ -92,7 +92,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                         return (
                             <React.Fragment key={msg.id}>
                                 {showDateDivider && (
-                                    <Box className="flex justify-center my-4">
+                                    <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
                                         <Box sx={{ bgcolor: 'white', borderRadius: '20px', border: '1px solid #E6EBF5', px: 3, py: 0.5, boxShadow: '0px 2px 16px rgba(195.86, 203.28, 214.36, 0.10)' }}>
                                             <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600 }}>
                                                 {formatDateDivider(msg.createdAt)}
@@ -101,12 +101,12 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                                     </Box>
                                 )}
                                 
-                                <Box className="flex items-start gap-4">
+                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                                     <Avatar sx={{ width: 40, height: 40, bgcolor: isOwn ? '#3F8CFF' : '#E78175' }}>
                                         {isOwn ? '我' : msg.senderName?.charAt(0) || 'U'}
                                     </Avatar>
-                                    <Box className="flex flex-col flex-1">
-                                        <Box className="flex items-center gap-2 mb-1">
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                             <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
                                                 {isOwn ? '我' : msg.senderName || '未知使用者'}
                                             </Typography>
@@ -142,7 +142,8 @@ export default function ChatArea({ conversationId, conversationName, messages, c
 
             {/* Input Form */}
             <Box sx={{ p: 4, pt: 2, bgcolor: 'white' }}>
-                <Box className="flex items-center" sx={{ 
+                <Box sx={{ 
+                    display: 'flex', alignItems: 'center',
                     border: '1px solid #D8E0F0', 
                     borderRadius: '14px', 
                     bgcolor: 'white', 

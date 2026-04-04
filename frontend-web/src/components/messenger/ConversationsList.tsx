@@ -39,11 +39,11 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
             overflow: 'hidden'
         }}>
             {/* Header */}
-            <Box className="flex items-center justify-between px-6 py-6 border-b border-[#E6EBF5]">
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 3, py: 3, borderBottom: '1px solid #E6EBF5' }}>
                 <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 18 }}>
                     對話列表
                 </Typography>
-                <Box className="flex gap-2">
+                <Box sx={{ display: 'flex', gap: 1 }}>
                     <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '12px' }} size="small">
                         <SearchIcon fontSize="small" sx={{ color: '#0A1629' }} />
                     </IconButton>
@@ -54,11 +54,11 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
             </Box>
 
             {/* List */}
-            <Box sx={{ flex: 1, overflowY: 'auto' }} className="pb-4 custom-scrollbar">
+            <Box sx={{ flex: 1, overflowY: 'auto', pb: 2 }} className="custom-scrollbar">
                 
                 {/* 群組 / Groups */}
-                <Box className="mt-4">
-                    <Box className="flex items-center px-6 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setGroupsOpen(!groupsOpen)}>
+                <Box sx={{ mt: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', px: 3, py: 1, cursor: 'pointer', color: '#3F8CFF' }} onClick={() => setGroupsOpen(!groupsOpen)}>
                         {groupsOpen ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
                         <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 16 }}>群組</Typography>
                     </Box>
@@ -79,8 +79,8 @@ export default function ConversationsList({ conversations, activeId, onSelect, o
                 </Box>
 
                 {/* 個人訊息 / Direct Messages */}
-                <Box className="mt-2">
-                    <Box className="flex items-center px-6 py-2 cursor-pointer text-[#3F8CFF]" onClick={() => setDirectsOpen(!directsOpen)}>
+                <Box sx={{ mt: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', px: 3, py: 1, cursor: 'pointer', color: '#3F8CFF' }} onClick={() => setDirectsOpen(!directsOpen)}>
                         {directsOpen ? <KeyboardArrowUpIcon fontSize="small" /> : <KeyboardArrowDownIcon fontSize="small" />}
                         <Typography sx={{ fontWeight: 600, ml: 1, fontSize: 16 }}>個人訊息</Typography>
                     </Box>
@@ -146,7 +146,7 @@ function ConversationListItem({ conv, isActive, name, time, onClick }: any) {
                 </ListItemAvatar>
                 
                 <Box sx={{ flex: 1, overflow: 'hidden' }}>
-                    <Box className="flex justify-between items-center mb-0.5">
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.5 }}>
                         <Typography noWrap sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
                             {name}
                         </Typography>
