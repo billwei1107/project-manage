@@ -43,8 +43,8 @@ jobs:
             git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
           fi
 
-          # 3. Stop old containers (Force Clean)
-          echo "Force stopping old containers..."
+          # 3. Stop old containers
+          echo "Stopping old containers..."
           docker compose -f docker/compose.yaml down --remove-orphans || true
           docker system prune -f || true
 
