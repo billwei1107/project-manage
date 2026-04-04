@@ -26,7 +26,9 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() == 0) {
+        var adminOpt = userRepository.findByEmail("admin@erp.com");
+
+        if (adminOpt.isEmpty()) {
             User admin = User.builder()
                     .name("Admin")
                     .username("admin")
@@ -36,9 +38,32 @@ public class DataSeeder implements CommandLineRunner {
                     .createdAt(java.time.LocalDateTime.now())
                     .updatedAt(java.time.LocalDateTime.now())
                     .build();
-
             userRepository.save(admin);
-            System.out.println("Default Admin User Created: admin@erp.com / password");
+            System.out.println("[DataSeeder] Default Admin User Created: admin@erp.com / (configured password)");
+        } else {
+            // Ensure existing admin has correct username and password
+            User admin = adminOpt.get();
+            boolean updated = false;
+
+            if (admin.getUsername() == null || admin.getUsername().isEmpty()) {
+                admin.setUsername("admin");
+                updated = true;
+            }
+
+            // Sync admin password with configured value if it doesn't match
+            // This handles: (1) password set with different APP_ADMIN_PASSWORD
+            //               (2) isDefaultPassword flag incorrectly set by DB migration
+            if (!passwordEncoder.matches(adminPassword, admin.getPassword())) {
+                admin.setPassword(passwordEncoder.encode(adminPassword));
+                admin.setDefaultPassword(true);
+                updated = true;
+                System.out.println("[DataSeeder] Admin password synced with configured value");
+            }
+
+            if (updated) {
+                userRepository.save(admin);
+                System.out.println("[DataSeeder] Admin User updated");
+            }
         }
     }
 }
