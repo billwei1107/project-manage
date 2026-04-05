@@ -3,8 +3,6 @@ import {
     Box,
     Typography,
     Button,
-    useTheme,
-    alpha,
     IconButton,
 } from '@mui/material';
 import {
@@ -37,7 +35,6 @@ import AddEventModal from '../../components/calendar/AddEventModal';
  */
 
 export default function Calendar() {
-    const theme = useTheme();
     const { events, tasks, fetchEvents } = useEventStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);

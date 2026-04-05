@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { Box, Typography, Avatar, IconButton, InputBase, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import PushPinIcon from '@mui/icons-material/PushPin';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import InsertLinkIcon from '@mui/icons-material/InsertLink';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
