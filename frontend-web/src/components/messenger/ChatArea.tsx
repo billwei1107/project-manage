@@ -8,7 +8,8 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PushPinIcon from '@mui/icons-material/PushPin';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
+import Badge from '@mui/material/Badge';
 import type { Message as MessageType } from '../../stores/useMessengerStore';
 
 interface ChatAreaProps {
@@ -55,12 +56,37 @@ export default function ChatArea({ conversationId, conversationName, messages, c
             {/* Header */}
             <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 4, py: 2.5, borderBottom: '1px solid #E6EBF5' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Avatar sx={{ width: 44, height: 44, bgcolor: '#F5BD78' }}>
-                        {conversationName.charAt(0)}
-                    </Avatar>
+                    <Badge
+                        overlap="circular"
+                        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                        variant="dot"
+                        sx={{
+                            '& .MuiBadge-badge': {
+                                backgroundColor: '#0AC947',
+                                color: '#0AC947',
+                                boxShadow: '0 0 0 2px white',
+                                width: 12,
+                                height: 12,
+                                borderRadius: '50%',
+                                '&::after': {
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    borderRadius: '50%',
+                                    content: '""',
+                                },
+                            }
+                        }}
+                    >
+                        <Avatar sx={{ width: 44, height: 44, bgcolor: '#F5BD78' }} src={conversationName === 'Oscar Holloway' ? 'https://placehold.co/44x44' : undefined}>
+                            {conversationName.charAt(0)}
+                        </Avatar>
+                    </Badge>
                     <Box>
                         <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>{conversationName}</Typography>
-                        <Typography sx={{ color: '#91929E', fontSize: 14 }}>對話成員</Typography>
+                        <Typography sx={{ color: '#91929E', fontSize: 14 }}>{conversationName === 'Oscar Holloway' ? 'UI/UX Designer' : '對話成員'}</Typography>
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
@@ -119,11 +145,56 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                                             {msg.messageType === 'IMAGE' && msg.fileUrl ? (
                                                 <img src={msg.fileUrl} alt="attachment" style={{ maxWidth: '100%', borderRadius: 8, cursor: 'pointer', marginTop: 8 }} onClick={()=>window.open(msg.fileUrl, '_blank')} />
                                             ) : msg.messageType === 'FILE' && msg.fileUrl ? (
-                                                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1.5, p: 1.5, pr: 3, bgcolor: 'rgba(21, 192, 230, 0.1)', borderRadius: '10px', mt: 1, cursor: 'pointer' }} onClick={()=>window.open(msg.fileUrl, '_blank')}>
-                                                    <InsertDriveFileIcon sx={{ color: '#15C0E6' }} />
-                                                    <Typography sx={{ color: '#15C0E6', fontWeight: 600, fontSize: 16 }}>
-                                                        {msg.fileName || '檔案附加'}
-                                                    </Typography>
+                                                <Box sx={{
+                                                    width: { xs: '100%', sm: 400, md: 518 },
+                                                    height: 70,
+                                                    bgcolor: 'white',
+                                                    borderRadius: '14px',
+                                                    border: '1px solid #D8DDE5',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    px: 1.5,
+                                                    mt: 1,
+                                                    cursor: 'pointer'
+                                                }} onClick={()=>window.open(msg.fileUrl, '_blank')}>
+                                                    {/* Icon Container */}
+                                                    <Box sx={{ 
+                                                        width: 44, height: 44, 
+                                                        bgcolor: 'rgba(109, 93, 211, 0.10)', 
+                                                        borderRadius: '14px',
+                                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                        mr: 2, flexShrink: 0 
+                                                    }}>
+                                                        <AttachFileIcon sx={{ color: '#6D5DD3', transform: 'rotate(45deg)' }} />
+                                                    </Box>
+                                                    
+                                                    {/* Text */}
+                                                    <Box sx={{ flex: 1, overflow: 'hidden' }}>
+                                                        <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: '21px', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                                                            {msg.fileName || 'site screens.png'}
+                                                        </Typography>
+                                                        <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 400 }}>
+                                                            10 MB PNG
+                                                        </Typography>
+                                                    </Box>
+                                                    
+                                                    {/* Actions */}
+                                                    <Box sx={{ display: 'flex', gap: 1, flexShrink: 0 }}>
+                                                        <IconButton size="small" sx={{ 
+                                                            width: 44, height: 44, 
+                                                            bgcolor: '#F4F9FD', borderRadius: '14px',
+                                                            '&:hover': { bgcolor: '#E6EDF5' }
+                                                        }} onClick={(e) => { e.stopPropagation(); window.open(msg.fileUrl, '_blank'); }}>
+                                                            <CloudDownloadOutlinedIcon sx={{ color: '#0A1629' }} />
+                                                        </IconButton>
+                                                        <IconButton size="small" sx={{ 
+                                                            width: 44, height: 44, 
+                                                            bgcolor: '#F4F9FD', borderRadius: '14px',
+                                                            '&:hover': { bgcolor: '#E6EDF5' }
+                                                        }} onClick={(e) => { e.stopPropagation(); }}>
+                                                            <MoreVertIcon sx={{ color: '#0A1629' }} />
+                                                        </IconButton>
+                                                    </Box>
                                                 </Box>
                                             ) : (
                                                 <Typography sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: 16, color: '#0A1629', opacity: 0.7, lineHeight: 1.5, mt: 0.5 }}>
@@ -152,7 +223,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     px: 1
                 }}>
                     <IconButton sx={{ color: '#6D5DD3' }} onClick={() => fileInputRef.current?.click()} disabled={isSubmitting}>
-                        <AttachFileIcon />
+                        <AttachFileIcon sx={{ transform: 'rotate(45deg)' }} />
                     </IconButton>
                     <IconButton sx={{ color: '#3F8CFF' }}>
                         <InsertLinkIcon />

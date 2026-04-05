@@ -116,8 +116,21 @@ function ConversationListItem({ conv, isActive, name, time, onClick }: any) {
                     pl: 2,
                     pr: 2,
                     py: 1.5,
+                    position: 'relative',
                     transition: 'all 0.2s',
-                    '&:hover': { bgcolor: '#F4F9FD' }
+                    '&:hover': { bgcolor: '#F4F9FD' },
+                    ...(isActive && {
+                        '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            right: -16, // Flush with the parent ListItem's px: 2 (16px) padding
+                            top: 0,
+                            bottom: 0,
+                            width: 4,
+                            bgcolor: '#3F8CFF',
+                            borderRadius: 2
+                        }
+                    })
                 }}
             >
                 <ListItemAvatar sx={{ minWidth: 54 }}>
