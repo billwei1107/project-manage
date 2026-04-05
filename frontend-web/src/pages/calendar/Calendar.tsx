@@ -176,7 +176,7 @@ export default function Calendar() {
                         const dayItems = getItemsForDay(day);
 
                         return (
-                            <Box key={day.toISOString()} sx={{ bgcolor: 'white', minHeight: 120, p: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Box key={day.toISOString()} sx={{ bgcolor: 'white', minHeight: 120, p: 1, display: 'flex', flexDirection: 'column', position: 'relative' }}>
                                 {/* Date Number Top Right */}
                                 <Typography sx={{ 
                                     textAlign: 'right', 
@@ -188,9 +188,13 @@ export default function Calendar() {
                                     {format(day, dateFormat)}
                                 </Typography>
 
-                                {/* Day Events */}
-                                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
-                                    {dayItems.slice(0, 3).map((item, idx) => {
+                                {/* Day Events (Scrollable) */}
+                                <Box sx={{ 
+                                    display: 'flex', flexDirection: 'column', flex: 1, 
+                                    overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' },
+                                    pb: 1 // Padding bottom for scrolling clearance
+                                }}>
+                                    {dayItems.map((item, idx) => {
                                         let borderColor = '#3F8CFF'; 
                                         if (item.isTask) borderColor = '#0AC947'; 
                                         else if (item.priority === 'High') borderColor = '#DE92EB';
@@ -212,13 +216,19 @@ export default function Calendar() {
                                                     bgcolor: '#F4F9FD', borderRadius: '14px', 
                                                     position: 'relative', overflow: 'hidden',
                                                     p: 1.5, pb: 1, pl: 2.5,
-                                                    height: 56, // Fixed height for standard pill view
+                                                    minHeight: 56, // Fixed minimum height for standard pill view
                                                     cursor: item.isTask ? 'default' : 'pointer',
                                                     mb: isStackedMode ? 0 : 1,
                                                     mt: isStackedMode && idx > 0 ? '-26px' : 0, // Overlap for 3+ items
                                                     outline: isStackedMode ? '2px solid white' : 'none',
-                                                    '&:hover': { bgcolor: '#E6EDF5' },
                                                     transition: 'all 0.2s',
+                                                    '&:hover': { 
+                                                        bgcolor: '#E6EDF5',
+                                                        zIndex: 10,
+                                                        outline: '2px solid #3F8CFF',
+                                                        transform: isStackedMode ? 'translateY(-4px)' : 'none',
+                                                        boxShadow: isStackedMode ? '0px 4px 12px rgba(63, 140, 255, 0.2)' : 'none',
+                                                    },
                                                 }}
                                             >
                                                 {/* Left Color Strip */}
@@ -243,24 +253,26 @@ export default function Calendar() {
                                             </Box>
                                         );
                                     })}
-                                    
-                                    {/* +X More Counter Badge */}
-                                    {dayItems.length > 3 && (
-                                        <Box sx={{ 
-                                            position: 'absolute', 
-                                            right: 8, bottom: 8, 
-                                            width: 24, height: 24, 
-                                            bgcolor: '#3F8CFF', color: 'white', 
-                                            borderRadius: '50%', 
-                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                            fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans',
-                                            outline: '2px solid white',
-                                            zIndex: 5
-                                        }}>
-                                            +{dayItems.length - 3}
-                                        </Box>
-                                    )}
                                 </Box>
+                                
+                                {/* +X More Counter Badge (Fixed at bottom right of the cell) */}
+                                {dayItems.length > 3 && (
+                                    <Box sx={{ 
+                                        position: 'absolute', 
+                                        right: 8, bottom: 8, 
+                                        width: 24, height: 24, 
+                                        bgcolor: 'rgba(63, 140, 255, 0.9)', color: 'white', 
+                                        borderRadius: '50%', 
+                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                        fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans',
+                                        outline: '2px solid white',
+                                        zIndex: 5,
+                                        pointerEvents: 'none', // Allow clicking/scrolling events behind the badge
+                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                                    }}>
+                                        +{dayItems.length}
+                                    </Box>
+                                )}
                             </Box>
                         );
                     })}
