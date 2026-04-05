@@ -2,14 +2,10 @@ import { useState, useEffect, useMemo } from 'react';
 import {
     Box,
     Typography,
-    Paper,
-    IconButton,
     Button,
     useTheme,
     alpha,
-    List,
-    ListItem,
-    Tooltip,
+    IconButton,
 } from '@mui/material';
 import {
     addMonths,
@@ -22,24 +18,22 @@ import {
     eachDayOfInterval,
     isSameMonth,
     isSameDay,
-    isToday,
     parseISO,
 } from 'date-fns';
 import KeyboardArrowLeftIcon from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import AddIcon from '@mui/icons-material/Add';
 import EventIcon from '@mui/icons-material/Event';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import { useEventStore } from '../../stores/useEventStore';
 import AddEventModal from '../../components/calendar/AddEventModal';
 
 /**
  * @file Calendar.tsx
  * @description 行事曆主頁面 / Calendar Main Page
- * @description_en Displays the monthly calendar grid and nearest events sidebar
- * @description_zh 顯示月曆畫面與近期事件側邊欄
+ * @description_en Displays the monthly calendar grid and events
+ * @description_zh 顯示月曆畫面 (現代化無側拉選單配置)
  */
 
 export default function Calendar() {
@@ -47,7 +41,7 @@ export default function Calendar() {
     const { events, tasks, fetchEvents } = useEventStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedEvent, setSelectedEvent] = useState<any>(null); // For editing
+    const [selectedEvent, setSelectedEvent] = useState<any>(null);
 
     useEffect(() => {
         fetchEvents();
@@ -57,7 +51,7 @@ export default function Calendar() {
         const mappedTasks = (tasks || []).map(t => ({
             id: t.id,
             title: t.title,
-            startDate: t.deadline || t.createdAt, // fallback to creation date if no deadline
+            startDate: t.deadline || t.createdAt,
             endDate: t.deadline || t.createdAt,
             description: t.description || `狀態: ${t.status}`,
             category: 'Project Task',
@@ -76,15 +70,17 @@ export default function Calendar() {
 
     const handlePrevMonth = () => setCurrentDate(subMonths(currentDate, 1));
     const handleNextMonth = () => setCurrentDate(addMonths(currentDate, 1));
-    const handleToday = () => setCurrentDate(new Date());
 
     const monthStart = startOfMonth(currentDate);
     const monthEnd = endOfMonth(currentDate);
-    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 }); // Sunday start
-    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    // User requested 7 days logic back (weekStartsOn: 1 for Monday)
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 1 });
     const dateFormat = "d";
+    
+    // We generate all 7 days intervals
     const days = eachDayOfInterval({ start: startDate, end: endDate });
-    const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
+    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
     // Helper to get events for a specific day
     const getItemsForDay = (day: Date) => {
@@ -92,207 +88,164 @@ export default function Calendar() {
             if (!item.startDate) return false;
             const itemStart = parseISO(item.startDate);
             const itemEnd = item.endDate ? parseISO(item.endDate) : itemStart;
-            // Simple check: if day is between start and end (inclusive of start/end days)
             return isSameDay(day, itemStart) || (day >= itemStart && day <= itemEnd);
         });
     };
 
-    // Sort events for the right sidebar (Nearest events)
-    const nearestEvents = [...calendarItems]
-        .filter(item => item.startDate && new Date(item.startDate) >= new Date(new Date().setHours(0, 0, 0, 0)))
-        .sort((a, b) => new Date(a.startDate as string).getTime() - new Date(b.startDate as string).getTime())
-        .slice(0, 5);
+    // Calculate time diff helper for UI
+    const calculateTimeDiff = (start: string, end: string | undefined): string => {
+        if (!end) return '1h'; // default mock
+        try {
+            const startDate = parseISO(start);
+            const endDate = parseISO(end);
+            const diffHours = Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60));
+            return diffHours > 0 ? `${diffHours}h` : '1h';
+        } catch {
+            return '1h';
+        }
+    };
 
     return (
-        <Box sx={{ p: 3, display: 'flex', gap: 3, flexDirection: { xs: 'column', lg: 'row' }, height: '100%' }}>
-            {/* Main Calendar Area */}
-            <Paper elevation={0} sx={{ flex: 1, p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, display: 'flex', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', bgcolor: '#F4F9FD', px: { xs: 3, lg: 6 }, py: { xs: 3, lg: 4 }, minHeight: 'calc(100vh - 64px)' }}>
+            
+            {/* Page Header Area */}
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, mt: 1 }}>
+                <Typography sx={{ color: '#0A1629', fontSize: 36, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                    Calendar
+                </Typography>
+                <Button
+                    variant="contained"
+                    startIcon={<AddIcon />}
+                    onClick={() => { setSelectedEvent(null); setModalOpen(true); }}
+                    sx={{
+                        width: 148, height: 48,
+                        bgcolor: '#3F8CFF',
+                        borderRadius: '14px',
+                        boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                        textTransform: 'none',
+                        fontSize: 16,
+                        fontFamily: 'Nunito Sans',
+                        fontWeight: 700,
+                        '&:hover': { bgcolor: '#2b75e3' }
+                    }}
+                >
+                    Add Event
+                </Button>
+            </Box>
 
-                {/* Header: Month/Year Nav & Add Button */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Button
-                            variant="outlined"
-                            size="small"
-                            onClick={handleToday}
-                            sx={{ borderRadius: 2, textTransform: 'none', color: 'text.secondary', borderColor: theme.palette.divider }}
-                        >
-                            <EventIcon fontSize="small" sx={{ mr: 1 }} />
-                            今天
-                        </Button>
-                        <IconButton size="small" onClick={handlePrevMonth} sx={{ border: `1px solid ${theme.palette.divider}` }}>
-                            <KeyboardArrowLeftIcon />
-                        </IconButton>
-                        <IconButton size="small" onClick={handleNextMonth} sx={{ border: `1px solid ${theme.palette.divider}` }}>
-                            <KeyboardArrowRightIcon />
-                        </IconButton>
-                        <Typography variant="h5" sx={{ fontWeight: 700, ml: 2, color: 'text.primary' }}>
-                            {format(currentDate, 'yyyy 年 M 月')}
-                        </Typography>
-                    </Box>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={<AddIcon />}
-                        onClick={() => { setSelectedEvent(null); setModalOpen(true); }}
-                        sx={{ borderRadius: 2, px: 3, py: 1, textTransform: 'none', fontWeight: 600, boxShadow: 'none' }}
-                    >
-                        新增事件
-                    </Button>
+            {/* Main Calendar Container */}
+            <Box sx={{ 
+                flex: 1, display: 'flex', flexDirection: 'column', 
+                bgcolor: 'white', 
+                boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)', 
+                borderRadius: '24px', 
+                overflow: 'hidden',
+                position: 'relative'
+            }}>
+                
+                {/* Internal Header (Month Nav) */}
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', pt: 3, pb: 2, borderBottom: '1px solid #E6EBF5' }}>
+                    <IconButton onClick={handlePrevMonth} sx={{ color: '#3F8CFF' }}>
+                        <KeyboardArrowLeftIcon />
+                    </IconButton>
+                    <Typography sx={{ color: '#0A1629', fontSize: 18, fontFamily: 'Nunito Sans', fontWeight: 700, mx: 2, minWidth: 150, textAlign: 'center' }}>
+                        {format(currentDate, 'MMMM, yyyy')}
+                    </Typography>
+                    <IconButton onClick={handleNextMonth} sx={{ color: '#3F8CFF' }}>
+                        <KeyboardArrowRightIcon />
+                    </IconButton>
                 </Box>
 
-                {/* Calendar Grid */}
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 1, mb: 1 }}>
+                {/* Calendar Grid Headers */}
+                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', borderBottom: '1px solid #E6EBF5' }}>
                     {weekDays.map(day => (
-                        <Typography key={day} variant="subtitle2" align="center" sx={{ color: 'text.secondary', fontWeight: 600, py: 1 }}>
-                            {day}
-                        </Typography>
+                        <Box key={day} sx={{ p: 2, display: 'flex', alignItems: 'flex-start' }}>
+                            <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '7px', px: 1.5, py: 0.5 }}>
+                                <Typography sx={{ color: '#7D8592', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
+                                    {day}
+                                </Typography>
+                            </Box>
+                        </Box>
                     ))}
                 </Box>
 
-                <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '1px', bgcolor: theme.palette.divider, border: `1px solid ${theme.palette.divider}`, borderRadius: 2, overflow: 'hidden', flex: 1 }}>
+                {/* Calendar Core Grid */}
+                <Box sx={{ 
+                    display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', 
+                    bgcolor: '#E6EBF5', gap: '1px', flex: 1 
+                }}>
                     {days.map((day) => {
                         const isCurrentMonth = isSameMonth(day, monthStart);
-                        const isDayToday = isToday(day);
                         const dayItems = getItemsForDay(day);
 
                         return (
-                            <Box
-                                key={day.toISOString()}
-                                sx={{
-                                    bgcolor: isCurrentMonth ? 'background.paper' : alpha(theme.palette.background.default, 0.5),
-                                    minHeight: 120,
-                                    p: 1,
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}
-                            >
-                                <Typography
-                                    variant="body2"
-                                    sx={{
-                                        fontWeight: isDayToday ? 700 : 500,
-                                        color: isDayToday ? 'primary.main' : (isCurrentMonth ? 'text.primary' : 'text.disabled'),
-                                        mb: 1,
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        width: 24,
-                                        height: 24,
-                                        borderRadius: '50%',
-                                        ...(isDayToday && { bgcolor: alpha(theme.palette.primary.main, 0.1) })
-                                    }}
-                                >
+                            <Box key={day.toISOString()} sx={{ bgcolor: 'white', minHeight: 120, p: 1, display: 'flex', flexDirection: 'column' }}>
+                                {/* Date Number Top Right */}
+                                <Typography sx={{ 
+                                    textAlign: 'right', 
+                                    color: isCurrentMonth ? '#0A1629' : '#C9CCD1', 
+                                    fontSize: 14, 
+                                    fontFamily: 'Nunito Sans', 
+                                    mb: 1, px: 0.5 
+                                }}>
                                     {format(day, dateFormat)}
                                 </Typography>
 
-                                {/* Events for the day */}
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
-                                    {dayItems.map(item => (
-                                        <Tooltip
-                                            key={item.id}
-                                            title={
-                                                <Box sx={{ p: 0.5 }}>
-                                                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold' }}>{item.title}</Typography>
-                                                    <Typography variant="caption" display="block">
-                                                        {item.isTask ? '專案待辦事項' : `${format(parseISO(item.startDate as string), 'HH:mm')} - ${format(parseISO(item.endDate as string), 'HH:mm')}`}
-                                                    </Typography>
-                                                    {item.description && <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>{item.description}</Typography>}
-                                                    {!item.isTask && <Typography variant="caption" display="block" sx={{ mt: 0.5, color: 'primary.light' }}>類別: {item.category}</Typography>}
-                                                </Box>
-                                            }
-                                            placement="top"
-                                            arrow
-                                        >
-                                            <Box
-                                                sx={{
-                                                    bgcolor: alpha(item.isTask ? theme.palette.success.main : theme.palette.primary.main, 0.1),
-                                                    color: item.isTask ? 'success.dark' : 'primary.dark',
-                                                    px: 1,
-                                                    py: 0.5,
-                                                    borderRadius: 1,
-                                                    fontSize: '0.75rem',
-                                                    fontWeight: 600,
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    cursor: item.isTask ? 'default' : 'pointer',
-                                                    '&:hover': { bgcolor: alpha(item.isTask ? theme.palette.success.main : theme.palette.primary.main, 0.2) }
-                                                }}
+                                {/* Day Events */}
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
+                                    {dayItems.map((item, idx) => {
+                                        // Pick a color based on priority or type
+                                        let borderColor = '#3F8CFF'; // default blue
+                                        if (item.isTask) borderColor = '#0AC947'; // green
+                                        else if (item.priority === 'High') borderColor = '#DE92EB'; // pink/purple
+                                        else if (item.priority === 'Low') borderColor = '#FFBD21'; // yellow
+                                        
+                                        const timeDiff = calculateTimeDiff(item.startDate as string, item.endDate as string);
+
+                                        return (
+                                            <Box 
+                                                key={item.id + '_' + idx}
                                                 onClick={() => {
                                                     if (!item.isTask) {
                                                         setSelectedEvent(item);
                                                         setModalOpen(true);
                                                     }
                                                 }}
+                                                sx={{
+                                                    bgcolor: '#F4F9FD', borderRadius: '14px', 
+                                                    position: 'relative', overflow: 'hidden',
+                                                    p: 1.5, pb: 1, pl: 2.5,
+                                                    cursor: item.isTask ? 'default' : 'pointer',
+                                                    '&:hover': { bgcolor: '#E6EDF5' }
+                                                }}
                                             >
-                                                {item.title}
+                                                {/* Left Color Strip */}
+                                                <Box sx={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 4, bgcolor: borderColor, borderRadius: '2px' }} />
+                                                
+                                                {/* Title */}
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                    {item.title}
+                                                </Typography>
+                                                
+                                                {/* Time & Icon row */}
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                                                        {timeDiff}
+                                                    </Typography>
+                                                    {item.isTask ? (
+                                                        <EventIcon sx={{ fontSize: 14, color: '#0AC947' }} />
+                                                    ) : (
+                                                        item.priority === 'High' ? <ArrowUpwardIcon sx={{ fontSize: 14, color: borderColor }} /> : <ArrowDownwardIcon sx={{ fontSize: 14, color: borderColor }} />
+                                                    )}
+                                                </Box>
                                             </Box>
-                                        </Tooltip>
-                                    ))}
+                                        );
+                                    })}
                                 </Box>
                             </Box>
                         );
                     })}
                 </Box>
-            </Paper>
-
-            {/* Sidebar: Nearest Events */}
-            <Box sx={{ width: { xs: '100%', lg: 320 }, display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: `1px solid ${theme.palette.divider}`, bgcolor: alpha(theme.palette.primary.main, 0.02) }}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 700 }}>近期事件</Typography>
-                        <Button size="small" sx={{ textTransform: 'none' }}>查看全部</Button>
-                    </Box>
-                    <List disablePadding>
-                        {nearestEvents.length === 0 ? (
-                            <Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>尚無近期事件</Typography>
-                        ) : (
-                            nearestEvents.map((event, idx) => {
-                                const isTodayEvent = isSameDay(parseISO(event.startDate as string), new Date());
-                                return (
-                                    <ListItem
-                                        key={event.id}
-                                        disablePadding
-                                        sx={{
-                                            mb: 2,
-                                            bgcolor: 'background.paper',
-                                            borderRadius: 2,
-                                            p: 2,
-                                            borderLeft: `4px solid ${event.priority === 'High' ? theme.palette.error.main : (event.priority === 'Medium' ? theme.palette.warning.main : theme.palette.success.main)}`,
-                                            boxShadow: '0 2px 10px rgba(0,0,0,0.02)',
-                                            ...(idx === nearestEvents.length - 1 && { mb: 0 })
-                                        }}
-                                    >
-                                        <Box sx={{ width: '100%' }}>
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
-                                                <Typography variant="subtitle2" sx={{ fontWeight: 600, flex: 1 }}>
-                                                    {event.title}
-                                                </Typography>
-                                                {event.priority === 'High' ? (
-                                                    <ArrowUpwardIcon fontSize="small" color="error" />
-                                                ) : <ArrowDownwardIcon fontSize="small" color="success" />}
-                                            </Box>
-                                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                                <Typography variant="caption" sx={{ color: 'text.secondary' }}>
-                                                    {isTodayEvent ? '今天' : format(parseISO(event.startDate as string), 'M月d日')} {event.isTask ? '' : `| ${format(parseISO(event.startDate as string), 'HH:mm')}`}
-                                                </Typography>
-                                                {!event.isTask && (
-                                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, bgcolor: alpha(theme.palette.text.secondary, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>
-                                                        <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
-                                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>{format(parseISO(event.endDate as string), 'HH:mm')}</Typography>
-                                                    </Box>
-                                                )}
-                                                {event.isTask && (
-                                                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600, bgcolor: alpha(theme.palette.success.main, 0.1), px: 1, py: 0.5, borderRadius: 1 }}>專案待辦事項</Typography>
-                                                )}
-                                            </Box>
-                                        </Box>
-                                    </ListItem>
-                                );
-                            })
-                        )}
-                    </List>
-                </Paper>
             </Box>
 
             <AddEventModal open={modalOpen} onClose={() => { setModalOpen(false); setSelectedEvent(null); fetchEvents(); }} event={selectedEvent} />
