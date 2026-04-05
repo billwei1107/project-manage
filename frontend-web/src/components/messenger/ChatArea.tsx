@@ -7,9 +7,9 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import PushPinIcon from '@mui/icons-material/PushPin';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import Badge from '@mui/material/Badge';
+import CloseIcon from '@mui/icons-material/Close';
 import { useMessengerStore } from '../../stores/useMessengerStore';
 import type { Message as MessageType, ChatUser } from '../../stores/useMessengerStore';
 
@@ -31,6 +31,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     
     // Mention State
     const [showMention, setShowMention] = useState(false);
+    const [mentions, setMentions] = useState<ChatUser[]>([]);
     
     const users = useMessengerStore(state => state.users);
 
@@ -47,15 +48,22 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     };
     
     const handleMentionClick = (user: ChatUser) => {
-        // Find the last '@' and replace it with the username
+        // Find the last '@' and remove it from the input string
         const lastAtIndex = inputStr.lastIndexOf('@');
         if (lastAtIndex !== -1) {
-            const newStr = inputStr.substring(0, lastAtIndex) + '@' + user.name + ' ';
-            setInputStr(newStr);
-        } else {
-            setInputStr(inputStr + '@' + user.name + ' ');
+            setInputStr(inputStr.substring(0, lastAtIndex)); // retain text before @
         }
+        setMentions(prev => {
+            // Prevent adding the same user twice consecutively
+            if (prev.length > 0 && prev[prev.length-1].id === user.id) return prev;
+            return [...prev, user];
+        });
         setShowMention(false);
+        inputRef.current?.focus();
+    };
+    
+    const removeMention = (index: number) => {
+        setMentions(prev => prev.filter((_, i) => i !== index));
         inputRef.current?.focus();
     };
 
@@ -64,12 +72,14 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     }, [messages]);
 
     const handleSend = async () => {
-        if (!inputStr.trim() || isSubmitting) return;
+        const finalContent = `${mentions.map(u => `@${u.name}`).join(' ')} ${inputStr}`.trim();
+        if (!finalContent || isSubmitting) return;
         setIsSubmitting(true);
-        const text = inputStr.trim();
+        
         setInputStr('');
+        setMentions([]);
         try {
-            await onSendMessage(conversationId, text, 'TEXT');
+            await onSendMessage(conversationId, finalContent, 'TEXT');
         } finally {
             setIsSubmitting(false);
         }
@@ -83,6 +93,10 @@ export default function ChatArea({ conversationId, conversationName, messages, c
         }
         if (e.key === 'Escape' && showMention) {
             setShowMention(false);
+        }
+        // Remove mention when pressing backspace on empty input
+        if (e.key === 'Backspace' && inputStr === '' && mentions.length > 0) {
+            setMentions(prev => prev.slice(0, -1));
         }
     };
 
@@ -294,12 +308,13 @@ export default function ChatArea({ conversationId, conversationName, messages, c
 
                 <Box sx={{ 
                     display: 'flex', alignItems: 'center',
-                    border: '1px solid #D8E0F0', 
+                    border: mentions.length > 0 ? '1px solid #3F8CFF' : '1px solid #D8E0F0', 
                     borderRadius: '14px', 
                     bgcolor: 'white', 
-                    boxShadow: '0px 1px 2px rgba(183.68, 200.04, 224.46, 0.22)', 
+                    boxShadow: mentions.length > 0 ? '0 0 0 3px rgba(63, 140, 255, 0.12)' : '0px 1px 2px rgba(183.68, 200.04, 224.46, 0.22)', 
                     height: 56,
-                    px: 1
+                    px: 1,
+                    transition: 'all 0.2s ease-in-out'
                 }}>
                     <IconButton sx={{ color: '#6D5DD3' }} onClick={() => fileInputRef.current?.click()} disabled={isSubmitting}>
                         <AttachFileIcon sx={{ transform: 'rotate(45deg)' }} />
@@ -314,11 +329,39 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     <InputBase
                         inputRef={inputRef}
                         sx={{ ml: 2, flex: 1, fontSize: 16, color: '#0A1629' }}
-                        placeholder="請在這裡輸入您的訊息..."
+                        placeholder={mentions.length > 0 ? '' : '請在這裡輸入您的訊息...'}
                         value={inputStr}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         disabled={isSubmitting}
+                        startAdornment={
+                            mentions.length > 0 && (
+                                <Box sx={{ display: 'flex', gap: 1, mr: 1 }}>
+                                    {mentions.map((u, i) => (
+                                        <Box key={u.id + '_' + i} sx={{
+                                            bgcolor: 'rgba(63, 140, 255, 0.12)',
+                                            borderRadius: '8px',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            px: 1.5,
+                                            height: 28,
+                                            whiteSpace: 'nowrap'
+                                        }}>
+                                            <Typography sx={{ color: '#3F8CFF', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
+                                                @{u.name}
+                                            </Typography>
+                                            <IconButton 
+                                                size="small" 
+                                                onClick={() => removeMention(i)}
+                                                sx={{ p: 0.2, ml: 0.5, color: '#3F8CFF', '&:hover': { bgcolor: 'rgba(63,140,255,0.2)' } }}
+                                            >
+                                                <CloseIcon sx={{ fontSize: 14 }} />
+                                            </IconButton>
+                                        </Box>
+                                    ))}
+                                </Box>
+                            )
+                        }
                     />
                     
                     <IconButton sx={{ color: '#FDC748', mr: 1 }}>
@@ -332,10 +375,11 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                             width: 44, 
                             height: 44, 
                             boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
-                            '&:hover': { bgcolor: '#2670e8' } 
+                            '&:hover': { bgcolor: '#2670e8' },
+                            '&.Mui-disabled': { bgcolor: '#B0D4FF', color: 'white' }
                         }} 
                         onClick={handleSend}
-                        disabled={!inputStr.trim() || isSubmitting}
+                        disabled={(inputStr.trim() === '' && mentions.length === 0) || isSubmitting}
                     >
                         <SendIcon fontSize="small" />
                     </IconButton>
