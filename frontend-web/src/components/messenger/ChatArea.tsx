@@ -10,7 +10,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PushPinIcon from '@mui/icons-material/PushPin';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
 import Badge from '@mui/material/Badge';
-import type { Message as MessageType } from '../../stores/useMessengerStore';
+import { useMessengerStore } from '../../stores/useMessengerStore';
+import type { Message as MessageType, ChatUser } from '../../stores/useMessengerStore';
 
 interface ChatAreaProps {
     conversationId: string;
@@ -24,8 +25,39 @@ interface ChatAreaProps {
 export default function ChatArea({ conversationId, conversationName, messages, currentUserId, isLoading, onSendMessage }: ChatAreaProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
     const [inputStr, setInputStr] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Mention State
+    const [showMention, setShowMention] = useState(false);
+    
+    const users = useMessengerStore(state => state.users);
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = e.target.value;
+        setInputStr(val);
+        
+        // Show mention popup if the last character is '@' or string ends with ' @'
+        if (val.endsWith('@') || val.endsWith(' @')) {
+            setShowMention(true);
+        } else if (!val.includes('@')) {
+            setShowMention(false);
+        }
+    };
+    
+    const handleMentionClick = (user: ChatUser) => {
+        // Find the last '@' and replace it with the username
+        const lastAtIndex = inputStr.lastIndexOf('@');
+        if (lastAtIndex !== -1) {
+            const newStr = inputStr.substring(0, lastAtIndex) + '@' + user.name + ' ';
+            setInputStr(newStr);
+        } else {
+            setInputStr(inputStr + '@' + user.name + ' ');
+        }
+        setShowMention(false);
+        inputRef.current?.focus();
+    };
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -48,6 +80,9 @@ export default function ChatArea({ conversationId, conversationName, messages, c
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             handleSend();
+        }
+        if (e.key === 'Escape' && showMention) {
+            setShowMention(false);
         }
     };
 
@@ -211,8 +246,52 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                 <div ref={messagesEndRef} />
             </Box>
 
-            {/* Input Form */}
-            <Box sx={{ p: 4, pt: 2, bgcolor: 'white' }}>
+            {/* Input Form Wrapper */}
+            <Box sx={{ p: 4, pt: 2, bgcolor: 'white', position: 'relative' }}>
+                
+                {/* Mention Popup */}
+                {showMention && (
+                    <Box sx={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        left: 170, // visually aligned roughly above the @ symbol area
+                        mb: 1,
+                        width: 240,
+                        bgcolor: 'white',
+                        boxShadow: '0px 6px 58px rgba(121.38, 144.70, 173.40, 0.20)',
+                        borderRadius: '14px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        py: 1,
+                        maxHeight: 280,
+                        overflowY: 'auto'
+                    }} className="custom-scrollbar">
+                        {users.length === 0 && (
+                            <Typography sx={{ px: 2, py: 1, color: '#7D8592', fontSize: 14 }}>無此紀錄...</Typography>
+                        )}
+                        {users.map(user => (
+                            <Box 
+                                key={user.id}
+                                sx={{
+                                    display: 'flex', alignItems: 'center', gap: 1.5,
+                                    mx: 1, px: 2, py: 1.5,
+                                    borderRadius: '14px',
+                                    cursor: 'pointer',
+                                    '&:hover': { bgcolor: 'rgba(63, 140, 255, 0.12)' }
+                                }}
+                                onClick={() => handleMentionClick(user)}
+                            >
+                                <Avatar sx={{ width: 24, height: 24, bgcolor: '#63A2FF', fontSize: 12 }}>
+                                    {user.name.charAt(0)}
+                                </Avatar>
+                                <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
+                                    {user.name}
+                                </Typography>
+                            </Box>
+                        ))}
+                    </Box>
+                )}
+
                 <Box sx={{ 
                     display: 'flex', alignItems: 'center',
                     border: '1px solid #D8E0F0', 
@@ -228,15 +307,16 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     <IconButton sx={{ color: '#3F8CFF' }}>
                         <InsertLinkIcon />
                     </IconButton>
-                    <IconButton sx={{ color: '#3F8CFF' }}>
+                    <IconButton sx={{ color: '#3F8CFF' }} onClick={() => setShowMention(!showMention)}>
                         <AlternateEmailIcon />
                     </IconButton>
                     
                     <InputBase
+                        inputRef={inputRef}
                         sx={{ ml: 2, flex: 1, fontSize: 16, color: '#0A1629' }}
                         placeholder="請在這裡輸入您的訊息..."
                         value={inputStr}
-                        onChange={e => setInputStr(e.target.value)}
+                        onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
                         disabled={isSubmitting}
                     />
