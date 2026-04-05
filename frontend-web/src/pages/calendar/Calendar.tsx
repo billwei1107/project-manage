@@ -192,16 +192,16 @@ export default function Calendar() {
                                 </Typography>
 
                                 {/* Day Events */}
-                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' } }}>
-                                    {dayItems.map((item, idx) => {
-                                        // Pick a color based on priority or type
-                                        let borderColor = '#3F8CFF'; // default blue
-                                        if (item.isTask) borderColor = '#0AC947'; // green
-                                        else if (item.priority === 'High') borderColor = '#DE92EB'; // pink/purple
-                                        else if (item.priority === 'Low') borderColor = '#FFBD21'; // yellow
+                                <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1, position: 'relative' }}>
+                                    {dayItems.slice(0, 3).map((item, idx) => {
+                                        let borderColor = '#3F8CFF'; 
+                                        if (item.isTask) borderColor = '#0AC947'; 
+                                        else if (item.priority === 'High') borderColor = '#DE92EB';
+                                        else if (item.priority === 'Low') borderColor = '#FFBD21';
                                         
                                         const timeDiff = calculateTimeDiff(item.startDate as string, item.endDate as string);
-
+                                        const isStackedMode = dayItems.length >= 3;
+                                        
                                         return (
                                             <Box 
                                                 key={item.id + '_' + idx}
@@ -215,15 +215,20 @@ export default function Calendar() {
                                                     bgcolor: '#F4F9FD', borderRadius: '14px', 
                                                     position: 'relative', overflow: 'hidden',
                                                     p: 1.5, pb: 1, pl: 2.5,
+                                                    height: 56, // Fixed height for standard pill view
                                                     cursor: item.isTask ? 'default' : 'pointer',
-                                                    '&:hover': { bgcolor: '#E6EDF5' }
+                                                    mb: isStackedMode ? 0 : 1,
+                                                    mt: isStackedMode && idx > 0 ? '-26px' : 0, // Overlap for 3+ items
+                                                    outline: isStackedMode ? '2px solid white' : 'none',
+                                                    '&:hover': { bgcolor: '#E6EDF5' },
+                                                    transition: 'all 0.2s',
                                                 }}
                                             >
                                                 {/* Left Color Strip */}
                                                 <Box sx={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 4, bgcolor: borderColor, borderRadius: '2px' }} />
                                                 
                                                 {/* Title */}
-                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 1, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
                                                     {item.title}
                                                 </Typography>
                                                 
@@ -241,6 +246,23 @@ export default function Calendar() {
                                             </Box>
                                         );
                                     })}
+                                    
+                                    {/* +X More Counter Badge */}
+                                    {dayItems.length > 3 && (
+                                        <Box sx={{ 
+                                            position: 'absolute', 
+                                            right: 8, bottom: 8, 
+                                            width: 24, height: 24, 
+                                            bgcolor: '#3F8CFF', color: 'white', 
+                                            borderRadius: '50%', 
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans',
+                                            outline: '2px solid white',
+                                            zIndex: 5
+                                        }}>
+                                            +{dayItems.length - 3}
+                                        </Box>
+                                    )}
                                 </Box>
                             </Box>
                         );
