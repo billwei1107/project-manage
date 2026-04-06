@@ -220,12 +220,12 @@ export default function Calendar() {
                                                     cursor: item.isTask ? 'default' : 'pointer',
                                                     mb: isStackedMode ? 0 : 1,
                                                     mt: isStackedMode && idx > 0 ? '-26px' : 0, // Overlap for 3+ items
-                                                    outline: isStackedMode ? '2px solid white' : 'none',
+                                                    border: isStackedMode ? '2px solid white' : '2px solid transparent',
                                                     transition: 'all 0.2s',
                                                     '&:hover': { 
                                                         bgcolor: '#E6EDF5',
                                                         zIndex: 10,
-                                                        outline: '2px solid #3F8CFF',
+                                                        borderColor: '#3F8CFF',
                                                         transform: isStackedMode ? 'translateY(-4px)' : 'none',
                                                         boxShadow: isStackedMode ? '0px 4px 12px rgba(63, 140, 255, 0.2)' : 'none',
                                                     },
@@ -254,25 +254,6 @@ export default function Calendar() {
                                         );
                                     })}
                                 </Box>
-                                
-                                {/* +X More Counter Badge (Fixed at bottom right of the cell) */}
-                                {dayItems.length > 3 && (
-                                    <Box sx={{ 
-                                        position: 'absolute', 
-                                        right: 8, bottom: 8, 
-                                        width: 24, height: 24, 
-                                        bgcolor: 'rgba(63, 140, 255, 0.9)', color: 'white', 
-                                        borderRadius: '50%', 
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans',
-                                        outline: '2px solid white',
-                                        zIndex: 5,
-                                        pointerEvents: 'none', // Allow clicking/scrolling events behind the badge
-                                        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                                    }}>
-                                        +{dayItems.length}
-                                    </Box>
-                                )}
                             </Box>
                         );
                     })}
