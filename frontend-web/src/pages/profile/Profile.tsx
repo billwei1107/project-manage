@@ -18,6 +18,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 
 import { useAuthStore } from '../../stores/useAuthStore';
 import axiosInstance from '../../api/axios';
+import AddRequestModal from '../../components/profile/AddRequestModal';
 
 /**
  * @file Profile.tsx
@@ -93,7 +94,8 @@ const dummyRequests = [
 export default function Profile() {
     const { user, checkAuth } = useAuthStore();
     const [isUploading, setIsUploading] = useState(false);
-    const [activeTab, setActiveTab] = useState('Projects'); // Projects, Team, My vacations
+    const [activeTab, setActiveTab] = useState('My vacations'); // Projects, Team, My vacations
+    const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleAvatarClick = () => {
@@ -307,6 +309,7 @@ export default function Profile() {
                         {activeTab === 'My vacations' && (
                             <Button
                                 variant="contained"
+                                onClick={() => setIsRequestModalOpen(true)}
                                 sx={{
                                     bgcolor: '#3F8CFF', color: 'white', borderRadius: '12px',
                                     textTransform: 'none', px: 3, py: 1, fontSize: 14, fontWeight: 700,
@@ -533,6 +536,13 @@ export default function Profile() {
 
                 </Box>
             </Box>
+
+            {/* Add Request Modal */}
+            <AddRequestModal 
+                open={isRequestModalOpen} 
+                onClose={() => setIsRequestModalOpen(false)} 
+            />
+
         </Box>
     );
 }
