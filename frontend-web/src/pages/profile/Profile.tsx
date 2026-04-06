@@ -66,6 +66,17 @@ const dummyProjects = [
     }
 ];
 
+// Dummy Team Data
+const dummyTeam = [
+    { id: 1, name: 'Shawn Stone', role: 'UI/UX Designer', level: 'Middle', initials: 'S' },
+    { id: 2, name: 'Randy Delgado', role: 'UI/UX Designer', level: 'Junior', initials: 'R' },
+    { id: 3, name: 'Emily Tyler', role: 'Copywriter', level: 'Middle', initials: 'E' },
+    { id: 4, name: 'Blake Silva', role: 'IOS Developer', level: 'Senior', initials: 'B' },
+    { id: 5, name: 'Oscar Holloway', role: 'UI/UX Designer', level: 'Middle', initials: 'O' },
+    { id: 6, name: 'Wayne Marsh', role: 'Copywriter', level: 'Junior', initials: 'W' },
+    { id: 7, name: 'Jeremy Barrett', role: 'UI/UX Designer', level: 'Middle', initials: 'J' },
+];
+
 export default function Profile() {
     const { user, checkAuth } = useAuthStore();
     const [isUploading, setIsUploading] = useState(false);
@@ -258,24 +269,26 @@ export default function Profile() {
                             })}
                         </Box>
 
-                        {/* Filter & Dropdown */}
-                        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                            <IconButton sx={{ bgcolor: 'white', borderRadius: '12px', boxShadow: '0px 2px 8px rgba(0,0,0,0.05)' }}>
-                                <FilterAltOutlinedIcon sx={{ color: '#0A1629' }} />
-                            </IconButton>
-                            
-                            <Button 
-                                endIcon={<KeyboardArrowDownIcon />}
-                                sx={{ 
-                                    bgcolor: 'white', color: '#0A1629', borderRadius: '12px', 
-                                    textTransform: 'none', px: 2, py: 1, fontSize: 14, fontWeight: 700,
-                                    fontFamily: 'Nunito Sans', boxShadow: '0px 2px 8px rgba(0,0,0,0.05)',
-                                    '&:hover': { bgcolor: '#F4F9FD' }
-                                }}
-                            >
-                                Current Projects
-                            </Button>
-                        </Box>
+                        {/* Filter & Dropdown (Only for Projects) */}
+                        {activeTab === 'Projects' && (
+                            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                                <IconButton sx={{ bgcolor: 'white', borderRadius: '12px', boxShadow: '0px 2px 8px rgba(0,0,0,0.05)' }}>
+                                    <FilterAltOutlinedIcon sx={{ color: '#0A1629' }} />
+                                </IconButton>
+                                
+                                <Button 
+                                    endIcon={<KeyboardArrowDownIcon />}
+                                    sx={{ 
+                                        bgcolor: 'white', color: '#0A1629', borderRadius: '12px', 
+                                        textTransform: 'none', px: 2, py: 1, fontSize: 14, fontWeight: 700,
+                                        fontFamily: 'Nunito Sans', boxShadow: '0px 2px 8px rgba(0,0,0,0.05)',
+                                        '&:hover': { bgcolor: '#F4F9FD' }
+                                    }}
+                                >
+                                    Current Projects
+                                </Button>
+                            </Box>
+                        )}
 
                     </Box>
 
@@ -363,6 +376,44 @@ export default function Profile() {
                                                 </Box>
                                             </Box>
                                         </Box>
+                                    </Box>
+                                </Box>
+                            ))}
+                        </Box>
+                    ) : activeTab === 'Team' ? (
+                        <Box sx={{ 
+                            display: 'grid', 
+                            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' },
+                            gap: 3 
+                        }}>
+                            {dummyTeam.map(member => (
+                                <Box key={member.id} sx={{
+                                    bgcolor: 'white', borderRadius: '24px', p: 4,
+                                    boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)',
+                                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                                    textAlign: 'center'
+                                }}>
+                                    <Box sx={{ 
+                                        p: '3px', borderRadius: '50%', border: '2px solid #3F8CFF', 
+                                        borderColor: 'rgba(63,140,255,0.4)', mb: 2 
+                                    }}>
+                                        <Avatar sx={{ width: 64, height: 64, bgcolor: '#3F8CFF' }}>
+                                            {member.initials}
+                                        </Avatar>
+                                    </Box>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 0.5 }}>
+                                        {member.name}
+                                    </Typography>
+                                    <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 2 }}>
+                                        {member.role}
+                                    </Typography>
+                                    <Box sx={{ 
+                                        border: '1px solid #D8E0F0', borderRadius: '6px', 
+                                        px: 1.5, py: 0.25 
+                                    }}>
+                                        <Typography sx={{ color: '#7D8592', fontSize: 11, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                            {member.level}
+                                        </Typography>
                                     </Box>
                                 </Box>
                             ))}
