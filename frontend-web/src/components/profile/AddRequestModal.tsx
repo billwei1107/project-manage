@@ -95,8 +95,6 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 bgcolor: isRange ? colorPrefix : 'transparent',
                 borderRadius: borderRadiusText,
                 color: isRange ? 'white' : '#0A1629',
-                // Special border for the start day if range is selected
-                border: isStart ? `1px solid rgba(0,0,0,0.2)` : 'none',
                 boxSizing: 'border-box'
             }}>
                 <PickersDay 
