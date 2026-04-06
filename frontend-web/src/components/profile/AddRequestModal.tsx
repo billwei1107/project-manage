@@ -14,6 +14,7 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 import type { PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
@@ -37,8 +38,26 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
     const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().date(16));
     const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().date(18));
 
+    const [startTime, setStartTime] = useState<Dayjs | null>(dayjs().hour(9).minute(0));
+    const [endTime, setEndTime] = useState<Dayjs | null>(dayjs().hour(13).minute(0));
+
+    let computedHours = 0;
+    let computedMinutes = 0;
+    if (startTime && endTime && endTime.isAfter(startTime)) {
+        const diff = endTime.diff(startTime, 'minute');
+        computedHours = Math.floor(diff / 60);
+        computedMinutes = diff % 60;
+    }
+
     const handleDateChange = (newValue: Dayjs | null) => {
         if (!newValue) return;
+        
+        if (durationType === 'Hours') {
+            setStartDate(newValue);
+            setEndDate(null);
+            return;
+        }
+
         if (!startDate || (startDate && endDate)) {
             setStartDate(newValue);
             setEndDate(null);
@@ -64,9 +83,14 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
         if (!outsideCurrentMonth) {
             isStart = !!(startDate && currentDay.isSame(startDate, 'day'));
-            isEnd = !!(endDate && currentDay.isSame(endDate, 'day'));
-            isBetween = !!(startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day'));
-            isRange = isStart || isEnd || isBetween;
+            
+            if (durationType === 'Days') {
+                isEnd = !!(endDate && currentDay.isSame(endDate, 'day'));
+                isBetween = !!(startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day'));
+                isRange = isStart || isEnd || isBetween;
+            } else {
+                isRange = isStart;
+            }
         }
         const colorPrefix = requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1';
         
@@ -257,6 +281,61 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                         />
                     </LocalizationProvider>
                 </Box>
+
+                {/* Time Selection for Hours Mode */}
+                {durationType === 'Hours' && (
+                    <Box sx={{ mb: 4 }}>
+                        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                            <Box sx={{ flex: 1 }}>
+                                <Typography sx={{ fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 1 }}>From</Typography>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <TimePicker 
+                                        value={startTime}
+                                        onChange={setStartTime}
+                                        sx={{ 
+                                            width: '100%',
+                                            '& .MuiOutlinedInput-root': { 
+                                                borderRadius: '12px',
+                                                borderColor: '#D8E0F0',
+                                                '& fieldset': { borderColor: '#D8E0F0' },
+                                                '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                                fontFamily: 'Nunito Sans'
+                                            }
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                            <Box sx={{ flex: 1 }}>
+                                <Typography sx={{ fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 1 }}>To</Typography>
+                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                    <TimePicker 
+                                        value={endTime}
+                                        onChange={setEndTime}
+                                        sx={{ 
+                                            width: '100%',
+                                            '& .MuiOutlinedInput-root': { 
+                                                borderRadius: '12px',
+                                                borderColor: '#D8E0F0',
+                                                '& fieldset': { borderColor: '#D8E0F0' },
+                                                '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                                fontFamily: 'Nunito Sans'
+                                            }
+                                        }}
+                                    />
+                                </LocalizationProvider>
+                            </Box>
+                        </Box>
+                        
+                        <Box sx={{ bgcolor: 'rgba(63, 140, 255, 0.05)', borderRadius: '16px', py: 2, px: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography sx={{ fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629' }}>
+                                Time for {requestType}
+                            </Typography>
+                            <Typography sx={{ fontSize: 24, fontWeight: 700, fontFamily: 'Nunito Sans', color: requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1' }}>
+                                {computedHours}h {computedMinutes}m
+                            </Typography>
+                        </Box>
+                    </Box>
+                )}
 
                 {/* Footer Controls */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
