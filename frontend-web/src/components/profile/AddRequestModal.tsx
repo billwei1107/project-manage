@@ -54,18 +54,20 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
     const CustomDay = (props: PickersDayProps) => {
         const { day, outsideCurrentMonth, ...other } = props;
-        
-        if (outsideCurrentMonth) {
-            return <PickersDay {...other} outsideCurrentMonth={true} day={day} />;
-        }
-
         const currentDay = day as unknown as Dayjs;
 
-        const isStart = startDate && currentDay.isSame(startDate, 'day');
-        const isEnd = endDate && currentDay.isSame(endDate, 'day');
-        const isBetween = startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day');
+        // Base states
+        let isRange = false;
+        let isStart = false;
+        let isEnd = false;
+        let isBetween = false;
 
-        const isRange = isStart || isEnd || isBetween;
+        if (!outsideCurrentMonth) {
+            isStart = !!(startDate && currentDay.isSame(startDate, 'day'));
+            isEnd = !!(endDate && currentDay.isSame(endDate, 'day'));
+            isBetween = !!(startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day'));
+            isRange = isStart || isEnd || isBetween;
+        }
         const colorPrefix = requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1';
         
         let borderRadiusText = '50%';
@@ -86,25 +88,27 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
         return (
             <Box sx={{ 
-                height: 36, 
+                height: 40, 
+                width: 40,
                 display: 'flex', 
                 alignItems: 'center', 
                 justifyContent: 'center',
                 margin: 0,
-                width: '100%',
                 bgcolor: isRange ? colorPrefix : 'transparent',
                 borderRadius: borderRadiusText,
-                color: isRange ? 'white' : '#0A1629',
+                color: isRange ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
                 boxSizing: 'border-box'
             }}>
                 <PickersDay 
                     {...other} 
-                    outsideCurrentMonth={false} 
+                    outsideCurrentMonth={outsideCurrentMonth} 
                     day={day} 
                     disableRipple
                     sx={{ 
                         bgcolor: 'transparent !important', 
                         color: 'inherit',
+                        width: 36,
+                        height: 36,
                         '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
                     }} 
                 />
@@ -229,7 +233,9 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     '& .MuiDayCalendar-weekDayLabel': {
                         color: '#C3CBD6',
                         fontFamily: 'Nunito Sans',
-                        fontWeight: 700
+                        fontWeight: 700,
+                        width: 40,
+                        margin: 0
                     },
                     '& .MuiPickersDay-root': {
                         fontFamily: 'Nunito Sans',
