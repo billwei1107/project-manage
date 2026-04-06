@@ -192,7 +192,9 @@ export default function Calendar() {
                                 <Box sx={{ 
                                     display: 'flex', flexDirection: 'column', flex: 1, 
                                     overflowY: 'auto', '&::-webkit-scrollbar': { display: 'none' },
-                                    pb: 1 // Padding bottom for scrolling clearance
+                                    pt: '4px', // Extra padding at top to prevent hover pop-out from clipping
+                                    pb: 1, // Padding bottom for scrolling clearance
+                                    px: '4px', mx: '-4px' // Bleed space for hover box-shadow left/right
                                 }}>
                                     {dayItems.map((item, idx) => {
                                         let borderColor = '#3F8CFF'; 
