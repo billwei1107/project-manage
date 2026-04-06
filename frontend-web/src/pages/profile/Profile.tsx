@@ -77,6 +77,19 @@ const dummyTeam = [
     { id: 7, name: 'Jeremy Barrett', role: 'UI/UX Designer', level: 'Middle', initials: 'J' },
 ];
 
+// Dummy Vacations Data
+const dummyBalances = [
+    { type: 'Vacation', current: 12, total: 16, color: '#00C2FF' },
+    { type: 'Sick Leave', current: 6, total: 12, color: '#FF4D4F' },
+    { type: 'Work remotely', current: 42, total: 50, color: '#722ED1' }
+];
+
+const dummyRequests = [
+    { id: 1, type: 'Sick Leave', duration: '3 days', start: 'Sep 13, 2020', end: 'Sep 16, 2020', status: 'Pending', color: '#FF4D4F', statusBg: '#FFB800' },
+    { id: 2, type: 'Work remotely', duration: '1 day', start: 'Sep 1, 2020', end: 'Sep 2, 2020', status: 'Approved', color: '#722ED1', statusBg: '#0AC947' },
+    { id: 3, type: 'Vacation', duration: '1 day', start: 'Sep 1, 2020', end: 'Sep 2, 2020', status: 'Approved', color: '#00C2FF', statusBg: '#0AC947' },
+];
+
 export default function Profile() {
     const { user, checkAuth } = useAuthStore();
     const [isUploading, setIsUploading] = useState(false);
@@ -290,6 +303,21 @@ export default function Profile() {
                             </Box>
                         )}
 
+                        {/* Add Request Button (Only for My vacations) */}
+                        {activeTab === 'My vacations' && (
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    bgcolor: '#3F8CFF', color: 'white', borderRadius: '12px',
+                                    textTransform: 'none', px: 3, py: 1, fontSize: 14, fontWeight: 700,
+                                    fontFamily: 'Nunito Sans', boxShadow: '0px 4px 12px rgba(63, 140, 255, 0.3)',
+                                    '&:hover': { bgcolor: '#3377E6' }
+                                }}
+                            >
+                                + Add Request
+                            </Button>
+                        )}
+
                     </Box>
 
                     {/* Projects Listing */}
@@ -418,13 +446,90 @@ export default function Profile() {
                                 </Box>
                             ))}
                         </Box>
-                    ) : (
-                        <Box sx={{ py: 8, display: 'flex', justifyContent: 'center' }}>
-                            <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontStyle: 'italic' }}>
-                                No content for the selected tab yet...
-                            </Typography>
+                    ) : activeTab === 'My vacations' ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            
+                            {/* Balances Grid */}
+                            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+                                {dummyBalances.map((item, idx) => (
+                                    <Box key={idx} sx={{
+                                        bgcolor: 'white', borderRadius: '24px', p: 4,
+                                        boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)'
+                                    }}>
+                                        <Box sx={{ 
+                                            width: 64, height: 64, borderRadius: '50%', 
+                                            border: `2px solid ${item.color}`, display: 'flex', 
+                                            alignItems: 'center', justifyContent: 'center', mb: 3 
+                                        }}>
+                                            <Typography sx={{ color: item.color, fontSize: 24, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                                {item.current}
+                                            </Typography>
+                                        </Box>
+                                        <Typography sx={{ color: '#0A1629', fontSize: 18, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1 }}>
+                                            {item.type}
+                                        </Typography>
+                                        <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 400, fontFamily: 'Nunito Sans' }}>
+                                            {item.current}/{item.total} days availible
+                                        </Typography>
+                                    </Box>
+                                ))}
+                            </Box>
+
+                            {/* My Requests Section */}
+                            <Box>
+                                <Typography sx={{ color: '#0A1629', fontSize: 22, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 3 }}>
+                                    My Requests
+                                </Typography>
+                                
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    {dummyRequests.map(req => (
+                                        <Box key={req.id} sx={{
+                                            bgcolor: 'white', borderRadius: '24px', p: 3, px: 4,
+                                            boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)',
+                                            display: 'flex', flexDirection: { xs: 'column', md: 'row' },
+                                            justifyContent: 'space-between', alignItems: { md: 'center' }, gap: 3
+                                        }}>
+                                            
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Request Type</Typography>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: req.color }} />
+                                                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>{req.type}</Typography>
+                                                </Box>
+                                            </Box>
+
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Duration</Typography>
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.duration}</Typography>
+                                            </Box>
+
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Start Day</Typography>
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.start}</Typography>
+                                            </Box>
+
+                                            <Box sx={{ flex: 1 }}>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>End Day</Typography>
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.end}</Typography>
+                                            </Box>
+
+                                            <Box sx={{ px: { md: 2 } }}>
+                                                <Box sx={{ 
+                                                    bgcolor: req.statusBg, color: 'white', 
+                                                    borderRadius: '8px', px: 2, py: 0.5, 
+                                                    display: 'inline-block', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans' 
+                                                }}>
+                                                    {req.status}
+                                                </Box>
+                                            </Box>
+
+                                        </Box>
+                                    ))}
+                                </Box>
+                            </Box>
+
                         </Box>
-                    )}
+                    ) : null}
 
                 </Box>
             </Box>
