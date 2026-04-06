@@ -28,7 +28,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useAuthStore } from '../stores/useAuthStore';
 import ChangePasswordModal from '../components/common/ChangePasswordModal';
-import ProfileSettingsModal from '../components/common/ProfileSettingsModal';
 import { useEffect, useCallback } from 'react';
 import axiosInstance from '../api/axios';
 import { useMessengerStore } from '../stores/useMessengerStore';
@@ -78,7 +77,6 @@ export default function AdminLayout() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [notifAnchorEl, setNotifAnchorEl] = useState<null | HTMLElement>(null);
     const [pwModalOpen, setPwModalOpen] = useState(false);
-    const [profileModalOpen, setProfileModalOpen] = useState(false);
     const [reminders, setReminders] = useState<any[]>([]);
 
     const fetchReminders = useCallback(async () => {
@@ -123,11 +121,7 @@ export default function AdminLayout() {
 
     const handleOpenProfileModal = () => {
         handleMenuClose();
-        setProfileModalOpen(true);
-    };
-
-    const handleCloseProfileModal = () => {
-        setProfileModalOpen(false);
+        navigate('/admin/profile');
     };
 
     const handleLogout = () => {
@@ -326,7 +320,6 @@ export default function AdminLayout() {
 
             {/* Modals */}
             <ChangePasswordModal open={pwModalOpen} onClose={handleClosePwModal} />
-            <ProfileSettingsModal open={profileModalOpen} onClose={handleCloseProfileModal} />
         </Box>
     );
 }
