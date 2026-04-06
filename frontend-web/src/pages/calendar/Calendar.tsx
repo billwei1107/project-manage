@@ -24,6 +24,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EventIcon from '@mui/icons-material/Event';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import CloseIcon from '@mui/icons-material/Close';
 import { useEventStore } from '../../stores/useEventStore';
 import AddEventModal from '../../components/calendar/AddEventModal';
 
@@ -35,7 +36,7 @@ import AddEventModal from '../../components/calendar/AddEventModal';
  */
 
 export default function Calendar() {
-    const { events, tasks, fetchEvents } = useEventStore();
+    const { events, tasks, fetchEvents, deleteEvent } = useEventStore();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedEvent, setSelectedEvent] = useState<any>(null);
@@ -224,6 +225,7 @@ export default function Calendar() {
                                                     mt: isStackedMode && idx > 0 ? '-26px' : 0, // Overlap for 3+ items
                                                     border: isStackedMode ? '2px solid white' : '2px solid transparent',
                                                     transition: 'all 0.2s',
+                                                    '& .delete-btn': { opacity: 0, pointerEvents: 'none' },
                                                     '&:hover': { 
                                                         bgcolor: '#E6EDF5',
                                                         zIndex: 10,
@@ -231,15 +233,44 @@ export default function Calendar() {
                                                         transform: isStackedMode ? 'translateY(-4px)' : 'none',
                                                         boxShadow: isStackedMode ? '0px 4px 12px rgba(63, 140, 255, 0.2)' : 'none',
                                                     },
+                                                    '&:hover .delete-btn': { opacity: 1, pointerEvents: 'auto' },
                                                 }}
                                             >
                                                 {/* Left Color Strip */}
                                                 <Box sx={{ position: 'absolute', left: 4, top: 8, bottom: 8, width: 4, bgcolor: borderColor, borderRadius: '2px' }} />
                                                 
                                                 {/* Title */}
-                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 1, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                                                <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 1, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', pr: 2 }}>
                                                     {item.title}
                                                 </Typography>
+                                                
+                                                {/* Delete Button (Hover) */}
+                                                {!item.isTask && (
+                                                    <IconButton
+                                                        className="delete-btn"
+                                                        size="small"
+                                                        onClick={async (e) => {
+                                                            e.stopPropagation();
+                                                            if (window.confirm('確定要刪除此事件嗎？')) {
+                                                                try {
+                                                                    await deleteEvent(item.id);
+                                                                } catch (err) {
+                                                                    console.error(err);
+                                                                }
+                                                            }
+                                                        }}
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: 4, right: 4,
+                                                            p: '2px', // Reduce padding to fit nicely
+                                                            color: '#7D8592',
+                                                            transition: 'all 0.2s',
+                                                            '&:hover': { color: '#F65160', bgcolor: 'rgba(246, 81, 96, 0.1)' }
+                                                        }}
+                                                    >
+                                                        <CloseIcon sx={{ fontSize: 16 }} />
+                                                    </IconButton>
+                                                )}
                                                 
                                                 {/* Time & Icon row */}
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
