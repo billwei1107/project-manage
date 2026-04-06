@@ -34,6 +34,7 @@
 
 ### 2. 前端開發 (Frontend)
 
+- **編譯驗證 (Build Verification)**: 確保在每次提交前端代碼變更之前，**必須**在專案目錄下執行 `npx tsc -b` 以及相應的 `npm run build`。必須清理所有「宣告但未使用 (Unused Variables)」或是「缺少匯入 (Missing Imports)」的警告。因為在嚴格模式與 CI/CD 流程中，這類語法層級的警告會昇華為編譯錯誤 (Error Exit Code 1)，造成伺服器部署中斷並導致網站離線。
 - **硬編碼檢查**: 禁止在代碼中寫死 (Hardcode) 任何顯示文字或 API URL，應抽離至常數檔或 i18n 文件。
 - **類型安全**: TypeScript 專案中禁止使用 `any`，必須定義明確的 Interface 或 Type。
 - **組件設計**: 單一職責原則，過大的組件必須拆分為 Sub-components。
@@ -75,10 +76,13 @@
     - `chore`: 建構工具或輔助任務
   - 範例: feat(auth): integrate jwt login flow
 - **分支策略 (Branching)**:
-  - main / `master`: 生產環境分支 (Production)，必須是穩定版本。
-  - `develop`: 開發主分支，所有特性開發完成後合併至此。
-  - `feature/xxx`: 功能開發分支 (如 `feature/user-login`)，完成後 PR 至 develop。
+  - main / `master`: 生產環境分支 (Production)，必須是穩定版本。**絕對禁止** AI Agent 或開發者直接在此分支上進行代碼開發或直接執行 `git push origin main`。
+  - `feature` (或 `feature/xxx`): 功能開發分支。所有新功能與修改**必須**在此分支上進行。
+  - `develop`: 開發主分支，所有特性開發完成後合併至此（視專案情況選用）。
   - `fix/xxx`: Bug 修復分支。
+- **開發前強制檢查 (Pre-development Branch Check)**:
+  - **重要禁令**: 在撰寫代碼、執行 Commit 或 Push 之前，必須使用 `git branch` 或 `git status` 確認當下位於 `feature` 或相關的開發分支。
+  - 若發現處於 `main` 分支，必須立刻使用 `git checkout feature` 或建立新分支，**絕對不允許**在 main 產生新的 Commit。
 - **忽略文件 (.gitignore)**:
   - 必須忽略: 當地環境設定 (`.env`), 依賴包 (`node_modules/`, `venv/`), 建構產物 (`dist/`, `build/`), 系統檔 (`.DS_Store`), IDE 設定 (`.idea/`, `.vscode/`)。
 
