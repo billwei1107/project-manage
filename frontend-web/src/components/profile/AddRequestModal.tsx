@@ -14,6 +14,8 @@ import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutline
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import type { PickersDayProps } from '@mui/x-date-pickers/PickersDay';
 import dayjs, { Dayjs } from 'dayjs';
 
 /**
@@ -31,7 +33,86 @@ interface AddRequestModalProps {
 export default function AddRequestModal({ open, onClose }: AddRequestModalProps) {
     const [requestType, setRequestType] = useState('Vacation');
     const [durationType, setDurationType] = useState('Days'); // Days or Hours
-    const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+
+    const [startDate, setStartDate] = useState<Dayjs | null>(dayjs().date(16));
+    const [endDate, setEndDate] = useState<Dayjs | null>(dayjs().date(18));
+
+    const handleDateChange = (newValue: Dayjs | null) => {
+        if (!newValue) return;
+        if (!startDate || (startDate && endDate)) {
+            setStartDate(newValue);
+            setEndDate(null);
+        } else {
+            if (newValue.isBefore(startDate)) {
+                setEndDate(startDate);
+                setStartDate(newValue);
+            } else {
+                setEndDate(newValue);
+            }
+        }
+    };
+
+    const CustomDay = (props: PickersDayProps) => {
+        const { day, outsideCurrentMonth, ...other } = props;
+        
+        if (outsideCurrentMonth) {
+            return <PickersDay {...other} outsideCurrentMonth={true} day={day} />;
+        }
+
+        const currentDay = day as unknown as Dayjs;
+
+        const isStart = startDate && currentDay.isSame(startDate, 'day');
+        const isEnd = endDate && currentDay.isSame(endDate, 'day');
+        const isBetween = startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day');
+
+        const isRange = isStart || isEnd || isBetween;
+        const colorPrefix = requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1';
+        
+        let borderRadiusText = '50%';
+
+        if (isRange) {
+            if (startDate && endDate) {
+                if (isStart) {
+                    borderRadiusText = '16px 0 0 16px';
+                } else if (isEnd) {
+                    borderRadiusText = '0 16px 16px 0';
+                } else if (isBetween) {
+                    borderRadiusText = '0';
+                }
+            } else {
+                borderRadiusText = '16px'; // Single day selected
+            }
+        }
+
+        return (
+            <Box sx={{ 
+                height: 36, 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                margin: 0,
+                width: '100%',
+                bgcolor: isRange ? colorPrefix : 'transparent',
+                borderRadius: borderRadiusText,
+                color: isRange ? 'white' : '#0A1629',
+                // Special border for the start day if range is selected
+                border: isStart ? `1px solid rgba(0,0,0,0.2)` : 'none',
+                boxSizing: 'border-box'
+            }}>
+                <PickersDay 
+                    {...other} 
+                    outsideCurrentMonth={false} 
+                    day={day} 
+                    disableRipple
+                    sx={{ 
+                        bgcolor: 'transparent !important', 
+                        color: 'inherit',
+                        '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
+                    }} 
+                />
+            </Box>
+        );
+    };
 
     return (
         <Modal open={open} onClose={onClose} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -155,19 +236,20 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     '& .MuiPickersDay-root': {
                         fontFamily: 'Nunito Sans',
                         fontWeight: 700,
-                        color: '#0A1629'
+                        width: 36,
+                        height: 36,
+                        m: 0
                     },
-                    '& .MuiPickersDay-root.Mui-selected': {
-                        bgcolor: '#3F8CFF !important',
-                        color: 'white',
-                        borderRadius: '12px'
+                    '& .MuiDayCalendar-slideTransition': {
+                        minHeight: 250
                     }
                 }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DateCalendar 
-                            value={selectedDate}
-                            onChange={(newValue) => setSelectedDate(newValue)}
+                            value={startDate}
+                            onChange={handleDateChange}
                             showDaysOutsideCurrentMonth
+                            slots={{ day: CustomDay }}
                         />
                     </LocalizationProvider>
                 </Box>
