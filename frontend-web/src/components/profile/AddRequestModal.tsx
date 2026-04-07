@@ -8,6 +8,7 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
+    Tooltip,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -129,77 +130,69 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
             }
         }
 
-        // Position tooltip to avoid clipping based on day of week (0: Sun, 1: Mon, ..., 6: Sat)
-        const dayOfWeek = currentDay.day();
-        const tooltipLeft = dayOfWeek <= 1 ? '0%' : (dayOfWeek >= 5 ? '100%' : '50%');
-        const tooltipTransform = dayOfWeek <= 1 ? 'translateX(0)' : (dayOfWeek >= 5 ? 'translateX(-100%)' : 'translateX(-50%)');
-        const arrowLeft = dayOfWeek <= 1 ? '20px' : (dayOfWeek >= 5 ? 'calc(100% - 20px)' : '50%');
-
         return (
-            <Box sx={{
-                height: 40,
-                width: 40,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: 0,
-                bgcolor: (isRange && !isValidationError) ? colorPrefix : 'transparent',
-                borderRadius: borderRadiusText,
-                color: (isRange && !isValidationError) ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
-                boxSizing: 'border-box',
-                borderTop: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
-                borderBottom: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
-                borderLeft: (isValidationError && isStylingStart) ? '1.5px solid #F65160' : 'none',
-                borderRight: (isValidationError && isStylingEnd) ? '1.5px solid #F65160' : 'none',
-                position: 'relative'
-            }}>
-                {isStart && isValidationError && !outsideCurrentMonth && (
-                    <Box sx={{
-                        position: 'absolute',
-                        bottom: '100%',
-                        mb: 1.5,
-                        left: tooltipLeft,
-                        transform: tooltipTransform,
-                        bgcolor: 'white',
-                        boxShadow: '0px 4px 20px rgba(0,0,0,0.15)',
-                        borderRadius: '24px',
-                        py: 1, px: 2,
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                        whiteSpace: 'nowrap',
-                        zIndex: 10,
-                        '&::after': {
-                            content: '""',
-                            position: 'absolute',
-                            top: '100%',
-                            left: arrowLeft,
-                            transform: 'translateX(-50%)',
-                            borderWidth: '6px',
-                            borderStyle: 'solid',
-                            borderColor: 'white transparent transparent transparent',
-                        }
-                    }}>
+            <Tooltip
+                open={Boolean(isStart && isValidationError && !outsideCurrentMonth)}
+                title={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <InfoIcon sx={{ color: '#F65160', fontSize: 18 }} />
                         <Typography sx={{ color: '#F65160', fontFamily: 'Nunito Sans', fontSize: 13, fontWeight: 600 }}>
                             You have 3 days of Vacation left
                         </Typography>
                     </Box>
-                )}
-                <PickersDay
-                    {...other}
-                    outsideCurrentMonth={outsideCurrentMonth}
-                    day={day}
-                    disableRipple
-                    sx={{
-                        bgcolor: 'transparent !important',
-                        color: 'inherit',
-                        width: 36,
-                        height: 36,
-                        '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
-                    }}
-                />
-            </Box>
+                }
+                placement="top"
+                arrow
+                componentsProps={{
+                    tooltip: {
+                        sx: {
+                            bgcolor: 'white',
+                            boxShadow: '0px 4px 20px rgba(0,0,0,0.15)',
+                            borderRadius: '24px',
+                            py: 1,
+                            px: 2,
+                            maxWidth: 'none',
+                        }
+                    },
+                    arrow: {
+                        sx: {
+                            color: 'white',
+                        }
+                    }
+                }}
+            >
+                <Box sx={{
+                    height: 40,
+                    width: 40,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: 0,
+                    bgcolor: (isRange && !isValidationError) ? colorPrefix : 'transparent',
+                    borderRadius: borderRadiusText,
+                    color: (isRange && !isValidationError) ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
+                    boxSizing: 'border-box',
+                    borderTop: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
+                    borderBottom: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
+                    borderLeft: (isValidationError && isStylingStart) ? '1.5px solid #F65160' : 'none',
+                    borderRight: (isValidationError && isStylingEnd) ? '1.5px solid #F65160' : 'none',
+                    position: 'relative'
+                }}>
+                    <PickersDay
+                        {...other}
+                        outsideCurrentMonth={outsideCurrentMonth}
+                        day={day}
+                        disableRipple
+                        sx={{
+                            bgcolor: 'transparent !important',
+                            color: 'inherit',
+                            width: 36,
+                            height: 36,
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
+                        }}
+                    />
+                </Box>
+            </Tooltip>
         );
     };
 
