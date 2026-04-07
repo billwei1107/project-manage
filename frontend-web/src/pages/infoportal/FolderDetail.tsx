@@ -8,6 +8,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import ShareFolderModal from '../../components/infoportal/ShareFolderModal';
 
 /**
  * @file FolderDetail.tsx
@@ -153,6 +154,7 @@ const FolderDetail: React.FC = () => {
     const navigate = useNavigate();
     const folder = MOCK_FOLDERS[folderId || ''] || MOCK_FOLDERS['time-tracker'];
     const [activePageId, setActivePageId] = useState(folder.pages[0]?.id || '');
+    const [shareOpen, setShareOpen] = useState(false);
 
     const activePage = folder.pages.find(p => p.id === activePageId) || folder.pages[0];
 
@@ -326,6 +328,7 @@ const FolderDetail: React.FC = () => {
                                 <Button
                                     variant="outlined"
                                     startIcon={<ShareOutlinedIcon />}
+                                    onClick={() => setShareOpen(true)}
                                     sx={{
                                         borderRadius: '10px',
                                         textTransform: 'none',
@@ -347,6 +350,13 @@ const FolderDetail: React.FC = () => {
                     </CardContent>
                 </Card>
             </Box>
+
+            {/* 分享資料夾彈窗 / Share Folder Modal */}
+            <ShareFolderModal
+                open={shareOpen}
+                onClose={() => setShareOpen(false)}
+                folderTitle={folder.title}
+            />
         </Box>
     );
 };
