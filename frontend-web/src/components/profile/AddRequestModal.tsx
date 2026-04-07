@@ -186,6 +186,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                         sx={{
                             bgcolor: 'transparent !important',
                             color: 'inherit !important',
+                            fontWeight: '700 !important',
                             width: 36,
                             height: 36,
                             '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
