@@ -87,6 +87,10 @@
 - **忽略文件 (.gitignore)**:
   - 必須忽略: 當地環境設定 (`.env`), 依賴包 (`node_modules/`, `venv/`), 建構產物 (`dist/`, `build/`), 系統檔 (`.DS_Store`), IDE 設定 (`.idea/`, `.vscode/`)。
 
+## 部署與 CI/CD 規範 (Deployment & CI/CD Standards)
+
+1. **每次修改完必須觸發 CI/CD**: 每次開發或修改完成後，都必須主動觸發 CI/CD 流程，將最新代碼部署至測試伺服器上並驗證 (可參考對應的工作流程指令)。
+
 ## Docker 與 部署規範 (Docker & Deployment Standards)
 
 - **容器命名 (Container Naming)**:
