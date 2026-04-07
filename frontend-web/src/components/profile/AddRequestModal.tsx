@@ -224,7 +224,12 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                         return (
                             <Box
                                 key={tab}
-                                onClick={() => setDurationType(tab)}
+                                onClick={() => {
+                                    setDurationType(tab);
+                                    if (tab === 'Hours') {
+                                        setEndDate(null);
+                                    }
+                                }}
                                 sx={{
                                     flex: 1, textAlign: 'center', py: 1.5,
                                     cursor: 'pointer', transition: 'all 0.2s',
