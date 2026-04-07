@@ -3,7 +3,6 @@ package com.erp.config;
 import com.erp.entity.User;
 import com.erp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -52,7 +51,7 @@ public class DataSeeder implements CommandLineRunner {
 
             // Sync admin password with configured value if it doesn't match
             // This handles: (1) password set with different APP_ADMIN_PASSWORD
-            //               (2) isDefaultPassword flag incorrectly set by DB migration
+            // (2) isDefaultPassword flag incorrectly set by DB migration
             if (!passwordEncoder.matches(adminPassword, admin.getPassword())) {
                 admin.setPassword(passwordEncoder.encode(adminPassword));
                 admin.setDefaultPassword(true);
