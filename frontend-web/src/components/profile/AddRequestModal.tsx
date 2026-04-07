@@ -82,13 +82,27 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
         let isEnd = false;
         let isBetween = false;
 
+        let isStylingStart = false;
+        let isStylingEnd = false;
+
         if (!outsideCurrentMonth) {
             isStart = !!(startDate && currentDay.isSame(startDate, 'day'));
+            isStylingStart = isStart;
 
             if (durationType === 'Days') {
                 isEnd = !!(endDate && currentDay.isSame(endDate, 'day'));
+                isStylingEnd = isEnd;
                 isBetween = !!(startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day'));
                 isRange = isStart || isEnd || isBetween;
+
+                if (isRange && startDate && endDate) {
+                    if (startDate.isBefore(currentDay, 'month')) {
+                        if (currentDay.date() === 1) isStylingStart = true;
+                    }
+                    if (endDate.isAfter(currentDay, 'month')) {
+                        if (currentDay.date() === currentDay.daysInMonth()) isStylingEnd = true;
+                    }
+                }
             } else {
                 isRange = isStart;
             }
@@ -101,9 +115,11 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
         if (isRange) {
             if (startDate && endDate) {
-                if (isStart) {
+                if (isStylingStart && isStylingEnd) {
+                    borderRadiusText = '16px';
+                } else if (isStylingStart) {
                     borderRadiusText = '16px 0 0 16px';
-                } else if (isEnd) {
+                } else if (isStylingEnd) {
                     borderRadiusText = '0 16px 16px 0';
                 } else if (isBetween) {
                     borderRadiusText = '0';
@@ -112,6 +128,12 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 borderRadiusText = '16px'; // Single day selected
             }
         }
+
+        // Position tooltip to avoid clipping based on day of week (0: Sun, 1: Mon, ..., 6: Sat)
+        const dayOfWeek = currentDay.day();
+        const tooltipLeft = dayOfWeek <= 1 ? '0%' : (dayOfWeek >= 5 ? '100%' : '50%');
+        const tooltipTransform = dayOfWeek <= 1 ? 'translateX(0)' : (dayOfWeek >= 5 ? 'translateX(-100%)' : 'translateX(-50%)');
+        const arrowLeft = dayOfWeek <= 1 ? '20px' : (dayOfWeek >= 5 ? 'calc(100% - 20px)' : '50%');
 
         return (
             <Box sx={{
@@ -127,17 +149,17 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 boxSizing: 'border-box',
                 borderTop: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
                 borderBottom: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
-                borderLeft: (isValidationError && isStart) ? '1.5px solid #F65160' : 'none',
-                borderRight: (isValidationError && isEnd) ? '1.5px solid #F65160' : 'none',
+                borderLeft: (isValidationError && isStylingStart) ? '1.5px solid #F65160' : 'none',
+                borderRight: (isValidationError && isStylingEnd) ? '1.5px solid #F65160' : 'none',
                 position: 'relative'
             }}>
-                {isStart && isValidationError && (
+                {isStart && isValidationError && !outsideCurrentMonth && (
                     <Box sx={{
                         position: 'absolute',
                         bottom: '100%',
                         mb: 1.5,
-                        left: '50%',
-                        transform: 'translateX(-50%)',
+                        left: tooltipLeft,
+                        transform: tooltipTransform,
                         bgcolor: 'white',
                         boxShadow: '0px 4px 20px rgba(0,0,0,0.15)',
                         borderRadius: '24px',
@@ -151,7 +173,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                             content: '""',
                             position: 'absolute',
                             top: '100%',
-                            left: '50%',
+                            left: arrowLeft,
                             transform: 'translateX(-50%)',
                             borderWidth: '6px',
                             borderStyle: 'solid',
