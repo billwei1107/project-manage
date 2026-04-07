@@ -132,7 +132,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
         return (
             <Tooltip
-                open={Boolean(isStart && isValidationError && !outsideCurrentMonth)}
+                open={Boolean(isStylingStart && isValidationError && !outsideCurrentMonth)}
                 title={
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <InfoIcon sx={{ color: '#F65160', fontSize: 18 }} />
@@ -185,7 +185,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                         disableRipple
                         sx={{
                             bgcolor: 'transparent !important',
-                            color: 'inherit',
+                            color: 'inherit !important',
                             width: 36,
                             height: 36,
                             '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
