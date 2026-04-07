@@ -8,9 +8,10 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
-    InputBase
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
+import InfoIcon from '@mui/icons-material/Info';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -92,6 +93,8 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 isRange = isStart;
             }
         }
+
+        const isValidationError = requestType === 'Vacation' && durationType === 'Days' && startDate && endDate && endDate.diff(startDate, 'day') >= 3;
         const colorPrefix = requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1';
 
         let borderRadiusText = '50%';
@@ -118,11 +121,49 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: 0,
-                bgcolor: isRange ? colorPrefix : 'transparent',
+                bgcolor: (isRange && !isValidationError) ? colorPrefix : 'transparent',
                 borderRadius: borderRadiusText,
-                color: isRange ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
-                boxSizing: 'border-box'
+                color: (isRange && !isValidationError) ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
+                boxSizing: 'border-box',
+                borderTop: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
+                borderBottom: (isValidationError && isRange) ? '1.5px solid #F65160' : 'none',
+                borderLeft: (isValidationError && isStart) ? '1.5px solid #F65160' : 'none',
+                borderRight: (isValidationError && isEnd) ? '1.5px solid #F65160' : 'none',
+                position: 'relative'
             }}>
+                {isStart && isValidationError && (
+                    <Box sx={{
+                        position: 'absolute',
+                        bottom: '100%',
+                        mb: 1.5,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        bgcolor: 'white',
+                        boxShadow: '0px 4px 20px rgba(0,0,0,0.15)',
+                        borderRadius: '24px',
+                        py: 1, px: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        whiteSpace: 'nowrap',
+                        zIndex: 10,
+                        '&::after': {
+                            content: '""',
+                            position: 'absolute',
+                            top: '100%',
+                            left: '50%',
+                            transform: 'translateX(-50%)',
+                            borderWidth: '6px',
+                            borderStyle: 'solid',
+                            borderColor: 'white transparent transparent transparent',
+                        }
+                    }}>
+                        <InfoIcon sx={{ color: '#F65160', fontSize: 18 }} />
+                        <Typography sx={{ color: '#F65160', fontFamily: 'Nunito Sans', fontSize: 13, fontWeight: 600 }}>
+                            You have 3 days of Vacation left
+                        </Typography>
+                    </Box>
+                )}
                 <PickersDay
                     {...other}
                     outsideCurrentMonth={outsideCurrentMonth}
@@ -344,51 +385,25 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     </Box>
                 )}
 
-                {/* Footer Controls / Comment Box */}
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <Box sx={{
-                        border: '1px solid #D8E0F0',
-                        borderRadius: '14px',
-                        p: 2,
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        gap: 1.5,
-                        transition: 'border-color 0.2s ease',
-                        '&:focus-within': {
-                            borderColor: '#3F8CFF',
-                        }
+                {/* Footer Controls */}
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <IconButton sx={{
+                        bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44,
+                        '&:hover': { bgcolor: '#E6EDF5' }
                     }}>
-                        <CloseIcon sx={{ color: '#3F8CFF', fontSize: 20, mt: 0.25 }} />
-                        <InputBase
-                            multiline
-                            minRows={2}
-                            placeholder="Add your comment"
-                            sx={{
-                                width: '100%',
-                                fontFamily: 'Nunito Sans',
-                                fontSize: 14,
-                                color: '#0A1629',
-                                '& .MuiInputBase-input::placeholder': {
-                                    color: '#7D8592',
-                                    opacity: 1
-                                }
-                            }}
-                        />
-                    </Box>
-
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-                        <Button
-                            variant="contained"
-                            sx={{
-                                bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px',
-                                textTransform: 'none', px: 4, py: 1.5, fontSize: 14, fontWeight: 700,
-                                fontFamily: 'Nunito Sans', boxShadow: '0px 6px 12px rgba(63,140,255,0.26)',
-                                '&:hover': { bgcolor: '#3377E6' }
-                            }}
-                        >
-                            Send Request
-                        </Button>
-                    </Box>
+                        <ChatBubbleOutlineOutlinedIcon sx={{ color: '#0A1629', fontSize: 20 }} />
+                    </IconButton>
+                    <Button
+                        variant="contained"
+                        sx={{
+                            bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px',
+                            textTransform: 'none', px: 4, py: 1.5, fontSize: 14, fontWeight: 700,
+                            fontFamily: 'Nunito Sans', boxShadow: '0px 6px 12px rgba(63,140,255,0.26)',
+                            '&:hover': { bgcolor: '#3377E6' }
+                        }}
+                    >
+                        Send Request
+                    </Button>
                 </Box>
 
             </Box>
