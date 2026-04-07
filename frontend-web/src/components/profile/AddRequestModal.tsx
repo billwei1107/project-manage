@@ -7,10 +7,10 @@ import {
     Button,
     RadioGroup,
     FormControlLabel,
-    Radio
+    Radio,
+    InputBase
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
@@ -344,25 +344,51 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     </Box>
                 )}
 
-                {/* Footer Controls */}
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <IconButton sx={{
-                        bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44,
-                        '&:hover': { bgcolor: '#E6EDF5' }
+                {/* Footer Controls / Comment Box */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box sx={{
+                        border: '1px solid #D8E0F0',
+                        borderRadius: '14px',
+                        p: 2,
+                        display: 'flex',
+                        alignItems: 'flex-start',
+                        gap: 1.5,
+                        transition: 'border-color 0.2s ease',
+                        '&:focus-within': {
+                            borderColor: '#3F8CFF',
+                        }
                     }}>
-                        <ChatBubbleOutlineOutlinedIcon sx={{ color: '#0A1629', fontSize: 20 }} />
-                    </IconButton>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px',
-                            textTransform: 'none', px: 4, py: 1.5, fontSize: 14, fontWeight: 700,
-                            fontFamily: 'Nunito Sans', boxShadow: '0px 6px 12px rgba(63,140,255,0.26)',
-                            '&:hover': { bgcolor: '#3377E6' }
-                        }}
-                    >
-                        Send Request
-                    </Button>
+                        <CloseIcon sx={{ color: '#3F8CFF', fontSize: 20, mt: 0.25 }} />
+                        <InputBase
+                            multiline
+                            minRows={2}
+                            placeholder="Add your comment"
+                            sx={{
+                                width: '100%',
+                                fontFamily: 'Nunito Sans',
+                                fontSize: 14,
+                                color: '#0A1629',
+                                '& .MuiInputBase-input::placeholder': {
+                                    color: '#7D8592',
+                                    opacity: 1
+                                }
+                            }}
+                        />
+                    </Box>
+
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px',
+                                textTransform: 'none', px: 4, py: 1.5, fontSize: 14, fontWeight: 700,
+                                fontFamily: 'Nunito Sans', boxShadow: '0px 6px 12px rgba(63,140,255,0.26)',
+                                '&:hover': { bgcolor: '#3377E6' }
+                            }}
+                        >
+                            Send Request
+                        </Button>
+                    </Box>
                 </Box>
 
             </Box>
