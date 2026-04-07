@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Grid, Card, CardContent } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FolderRoundedIcon from '@mui/icons-material/FolderRounded';
@@ -24,13 +25,15 @@ const MiniChart = () => (
 );
 
 const folders = [
-    { title: 'Medical App', pages: 5, color: '#FBBF24' },
-    { title: 'Fortune website', pages: 8, color: '#22C55E' },
-    { title: 'Planner App', pages: 2, color: '#3B82F6' },
-    { title: 'Time tracker - personal...', pages: 5, color: '#8B5CF6' }
+    { id: 'medical-app', title: 'Medical App', pages: 5, color: '#FBBF24' },
+    { id: 'fortune-website', title: 'Fortune website', pages: 8, color: '#22C55E' },
+    { id: 'planner-app', title: 'Planner App', pages: 2, color: '#3B82F6' },
+    { id: 'time-tracker', title: 'Time tracker - personal...', pages: 5, color: '#8B5CF6' }
 ];
 
 const InfoPortal: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
         <Box sx={{
             height: '100%',
@@ -138,18 +141,20 @@ const InfoPortal: React.FC = () => {
 
             {/* Folders Grid */}
             <Grid container spacing={3}>
-                {folders.map((folder, index) => (
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-                        <Card sx={{
-                            borderRadius: '24px',
-                            boxShadow: '0px 12px 32px rgba(0,0,0,0.03)',
-                            cursor: 'pointer',
-                            transition: 'all 0.2s ease-in-out',
-                            '&:hover': {
-                                transform: 'translateY(-4px)',
-                                boxShadow: '0px 16px 40px rgba(0,0,0,0.08)',
-                            }
-                        }}>
+                {folders.map((folder) => (
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }} key={folder.id}>
+                        <Card
+                            onClick={() => navigate(`/admin/info-portal/${folder.id}`)}
+                            sx={{
+                                borderRadius: '24px',
+                                boxShadow: '0px 12px 32px rgba(0,0,0,0.03)',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s ease-in-out',
+                                '&:hover': {
+                                    transform: 'translateY(-4px)',
+                                    boxShadow: '0px 16px 40px rgba(0,0,0,0.08)',
+                                }
+                            }}>
                             <CardContent sx={{ p: { xs: 3, md: 3.5 } }}>
                                 <FolderRoundedIcon sx={{ fontSize: 48, color: folder.color, mb: 3 }} />
                                 <Typography variant="h6" sx={{ fontWeight: 700, color: '#0A1629', fontFamily: 'Nunito Sans', mb: 0.5, fontSize: 17 }} noWrap>

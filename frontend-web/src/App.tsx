@@ -18,6 +18,7 @@ import { Finance } from './pages/finance/Finance'; // Import the Finance compone
 import EmployeeList from './pages/employees/EmployeeList';
 import Messenger from './pages/messenger/Messenger';
 import InfoPortal from './pages/infoportal/InfoPortal';
+import FolderDetail from './pages/infoportal/FolderDetail';
 import PublicUploadPortal from './pages/infoportal/PublicUploadPortal';
 import NearestEventsPage from './pages/events/NearestEventsPage';
 import Profile from './pages/profile/Profile';
@@ -60,6 +61,7 @@ function App() {
               <Route path="messenger" element={<Messenger />} />
               <Route path="employees" element={<EmployeeList />} />
               <Route path="info-portal" element={<InfoPortal />} />
+              <Route path="info-portal/:folderId" element={<FolderDetail />} />
               <Route path="accounts" element={<AccountManagement />} />
               <Route path="events" element={<NearestEventsPage />} />
               <Route path="profile" element={<Profile />} />
