@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { 
-    Modal, 
-    Box, 
-    Typography, 
-    IconButton, 
-    Button, 
-    RadioGroup, 
-    FormControlLabel, 
-    Radio 
+import {
+    Modal,
+    Box,
+    Typography,
+    IconButton,
+    Button,
+    RadioGroup,
+    FormControlLabel,
+    Radio
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ChatBubbleOutlineOutlinedIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
@@ -51,7 +51,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
     const handleDateChange = (newValue: Dayjs | null) => {
         if (!newValue) return;
-        
+
         if (durationType === 'Hours') {
             setStartDate(newValue);
             setEndDate(null);
@@ -83,7 +83,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
         if (!outsideCurrentMonth) {
             isStart = !!(startDate && currentDay.isSame(startDate, 'day'));
-            
+
             if (durationType === 'Days') {
                 isEnd = !!(endDate && currentDay.isSame(endDate, 'day'));
                 isBetween = !!(startDate && endDate && currentDay.isAfter(startDate, 'day') && currentDay.isBefore(endDate, 'day'));
@@ -93,7 +93,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
             }
         }
         const colorPrefix = requestType === 'Vacation' ? '#00C2FF' : requestType === 'Sick Leave' ? '#FF4D4F' : '#722ED1';
-        
+
         let borderRadiusText = '50%';
 
         if (isRange) {
@@ -111,11 +111,11 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
         }
 
         return (
-            <Box sx={{ 
-                height: 40, 
+            <Box sx={{
+                height: 40,
                 width: 40,
-                display: 'flex', 
-                alignItems: 'center', 
+                display: 'flex',
+                alignItems: 'center',
                 justifyContent: 'center',
                 margin: 0,
                 bgcolor: isRange ? colorPrefix : 'transparent',
@@ -123,18 +123,18 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 color: isRange ? 'white' : (outsideCurrentMonth ? '#C3CBD6' : '#0A1629'),
                 boxSizing: 'border-box'
             }}>
-                <PickersDay 
-                    {...other} 
-                    outsideCurrentMonth={outsideCurrentMonth} 
-                    day={day} 
+                <PickersDay
+                    {...other}
+                    outsideCurrentMonth={outsideCurrentMonth}
+                    day={day}
                     disableRipple
-                    sx={{ 
-                        bgcolor: 'transparent !important', 
+                    sx={{
+                        bgcolor: 'transparent !important',
                         color: 'inherit',
                         width: 36,
                         height: 36,
                         '&:hover': { bgcolor: 'rgba(255,255,255,0.2) !important' }
-                    }} 
+                    }}
                 />
             </Box>
         );
@@ -142,7 +142,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
     return (
         <Modal open={open} onClose={onClose} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Box sx={{ 
+            <Box sx={{
                 bgcolor: 'white',
                 borderRadius: '24px',
                 p: { xs: 3, md: 5 },
@@ -153,12 +153,12 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 maxHeight: '90vh',
                 overflowY: 'auto'
             }}>
-                
+
                 {/* Close Button */}
-                <IconButton 
+                <IconButton
                     onClick={onClose}
-                    sx={{ 
-                        position: 'absolute', top: 24, right: 24, 
+                    sx={{
+                        position: 'absolute', top: 24, right: 24,
                         bgcolor: '#F4F9FD', borderRadius: '12px',
                         '&:hover': { bgcolor: '#E6EDF5' }
                     }}
@@ -175,22 +175,22 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     <Typography sx={{ fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 2 }}>
                         Request Type
                     </Typography>
-                    <RadioGroup 
-                        row 
-                        value={requestType} 
+                    <RadioGroup
+                        row
+                        value={requestType}
                         onChange={(e) => setRequestType(e.target.value)}
                         sx={{ gap: 2 }}
                     >
                         {['Vacation', 'Sick Leave', 'Work remotely'].map((type) => (
-                            <FormControlLabel 
+                            <FormControlLabel
                                 key={type}
                                 value={type}
                                 control={
-                                    <Radio 
-                                        sx={{ 
+                                    <Radio
+                                        sx={{
                                             color: '#D8E0F0',
                                             '&.Mui-checked': { color: '#3F8CFF' }
-                                        }} 
+                                        }}
                                     />
                                 }
                                 label={
@@ -215,14 +215,14 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 </Box>
 
                 {/* Duration Tabs */}
-                <Box sx={{ 
+                <Box sx={{
                     display: 'flex', bgcolor: '#F4F9FD', borderRadius: '16px',
                     mb: 3
                 }}>
                     {['Days', 'Hours'].map((tab) => {
                         const isActive = durationType === tab;
                         return (
-                            <Box 
+                            <Box
                                 key={tab}
                                 onClick={() => setDurationType(tab)}
                                 sx={{
@@ -242,7 +242,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 </Box>
 
                 {/* Calendar Component */}
-                <Box sx={{ 
+                <Box sx={{
                     border: '1px solid #D8E0F0', borderRadius: '16px', p: 1, mb: 4,
                     '& .MuiPickersCalendarHeader-root': {
                         justifyContent: 'center',
@@ -273,7 +273,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                     }
                 }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <DateCalendar 
+                        <DateCalendar
                             value={startDate}
                             onChange={handleDateChange}
                             showDaysOutsideCurrentMonth
@@ -286,15 +286,16 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                 {durationType === 'Hours' && (
                     <Box sx={{ mb: 4 }}>
                         <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-                            <Box sx={{ flex: 1 }}>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <Typography sx={{ fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 1 }}>From</Typography>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <TimePicker 
+                                    <TimePicker
                                         value={startTime}
                                         onChange={setStartTime}
-                                        sx={{ 
+                                        slotProps={{ textField: { fullWidth: true } }}
+                                        sx={{
                                             width: '100%',
-                                            '& .MuiOutlinedInput-root': { 
+                                            '& .MuiOutlinedInput-root': {
                                                 borderRadius: '12px',
                                                 borderColor: '#D8E0F0',
                                                 '& fieldset': { borderColor: '#D8E0F0' },
@@ -305,15 +306,16 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                                     />
                                 </LocalizationProvider>
                             </Box>
-                            <Box sx={{ flex: 1 }}>
+                            <Box sx={{ flex: 1, minWidth: 0 }}>
                                 <Typography sx={{ fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 1 }}>To</Typography>
                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <TimePicker 
+                                    <TimePicker
                                         value={endTime}
                                         onChange={setEndTime}
-                                        sx={{ 
+                                        slotProps={{ textField: { fullWidth: true } }}
+                                        sx={{
                                             width: '100%',
-                                            '& .MuiOutlinedInput-root': { 
+                                            '& .MuiOutlinedInput-root': {
                                                 borderRadius: '12px',
                                                 borderColor: '#D8E0F0',
                                                 '& fieldset': { borderColor: '#D8E0F0' },
@@ -325,7 +327,7 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
                                 </LocalizationProvider>
                             </Box>
                         </Box>
-                        
+
                         <Box sx={{ bgcolor: 'rgba(63, 140, 255, 0.05)', borderRadius: '16px', py: 2, px: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Typography sx={{ fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629' }}>
                                 Time for {requestType}
@@ -339,15 +341,15 @@ export default function AddRequestModal({ open, onClose }: AddRequestModalProps)
 
                 {/* Footer Controls */}
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <IconButton sx={{ 
+                    <IconButton sx={{
                         bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44,
                         '&:hover': { bgcolor: '#E6EDF5' }
                     }}>
                         <ChatBubbleOutlineOutlinedIcon sx={{ color: '#0A1629', fontSize: 20 }} />
                     </IconButton>
-                    <Button 
+                    <Button
                         variant="contained"
-                        sx={{ 
+                        sx={{
                             bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px',
                             textTransform: 'none', px: 4, py: 1.5, fontSize: 14, fontWeight: 700,
                             fontFamily: 'Nunito Sans', boxShadow: '0px 6px 12px rgba(63,140,255,0.26)',

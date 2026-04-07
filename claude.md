@@ -10,8 +10,9 @@
 初次建立或接觸新專案時，必須嚴格遵守以下順序：
 
 1. **需求釐清 (Requirement Clarification)**: 詳讀並分析需求文檔，清楚定義開發的功能範圍。
-2. **文檔整理 (Documentation Organization)**: 整理或建立完整的需求文檔。
-3. **專案規範建立 (Setup Standards)**: 根據需求文檔，建立專案規則文件，並依據下方的日誌規範初始化日誌。
+2. **分支切換 (Branch Checking)**: 拉取檔案與開始工作前，請務必優先拉取 `feature` 分支的檔案 (`git checkout feature && git pull origin feature`)，確保取得最新開發資料。
+3. **文檔整理 (Documentation Organization)**: 整理或建立完整的需求文檔。
+4. **專案規範建立 (Setup Standards)**: 根據需求文檔，建立專案規則文件，並依據下方的日誌規範初始化日誌。
 
 ## 代碼開發規範 (Development Standards)
 
