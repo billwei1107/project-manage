@@ -19,6 +19,8 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useAuthStore } from '../../stores/useAuthStore';
 import axiosInstance from '../../api/axios';
 import AddRequestModal from '../../components/profile/AddRequestModal';
+import SettingsNavigation from '../../components/profile/SettingsNavigation';
+import SettingsNotificationsPanel from '../../components/profile/SettingsNotificationsPanel';
 
 /**
  * @file Profile.tsx
@@ -96,6 +98,8 @@ export default function Profile() {
     const [isUploading, setIsUploading] = useState(false);
     const [activeTab, setActiveTab] = useState('My vacations'); // Projects, Team, My vacations
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+    const [isSettingsMode, setIsSettingsMode] = useState(false);
+    const [settingsTab, setSettingsTab] = useState('Notifications');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleAvatarClick = () => {
@@ -170,8 +174,17 @@ export default function Profile() {
                 <Typography sx={{ fontSize: 36, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629' }}>
                     My Profile
                 </Typography>
-                <IconButton sx={{ bgcolor: 'white', borderRadius: '14px', p: 1.5, boxShadow: '0px 2px 8px rgba(0,0,0,0.05)' }}>
-                    <SettingsOutlinedIcon sx={{ color: '#0A1629' }} />
+                <IconButton
+                    onClick={() => setIsSettingsMode(!isSettingsMode)}
+                    sx={{
+                        bgcolor: 'white',
+                        borderRadius: '14px',
+                        p: 1.5,
+                        boxShadow: '0px 2px 8px rgba(0,0,0,0.05)',
+                        border: isSettingsMode ? '2px solid #3F8CFF' : '2px solid transparent'
+                    }}
+                >
+                    <SettingsOutlinedIcon sx={{ color: isSettingsMode ? '#3F8CFF' : '#0A1629' }} />
                 </IconButton>
             </Box>
 
@@ -254,7 +267,37 @@ export default function Profile() {
 
                 {/* Right Content Area */}
                 <Box sx={{ flex: 1, width: '100%' }}>
-                    
+
+                    {/* ======================================== */}
+                    {/* 設定模式 / Settings Mode */}
+                    {/* ======================================== */}
+                    {isSettingsMode ? (
+                        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3 }}>
+                            <SettingsNavigation
+                                onBack={() => setIsSettingsMode(false)}
+                                activeTab={settingsTab}
+                                onTabChange={setSettingsTab}
+                            />
+                            {settingsTab === 'Notifications' && <SettingsNotificationsPanel />}
+                            {settingsTab !== 'Notifications' && (
+                                <Box sx={{
+                                    flex: 1,
+                                    bgcolor: 'white',
+                                    borderRadius: '24px',
+                                    boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)',
+                                    p: { xs: 3, md: 4 },
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}>
+                                    <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontSize: 16 }}>
+                                        {settingsTab} settings coming soon...
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Box>
+                    ) : (
+                    <>
                     {/* Top Control Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, flexWrap: 'wrap', gap: 2 }}>
                         
@@ -533,6 +576,8 @@ export default function Profile() {
 
                         </Box>
                     ) : null}
+                    </>
+                    )}
 
                 </Box>
             </Box>
