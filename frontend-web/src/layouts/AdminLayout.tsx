@@ -7,10 +7,6 @@ import {
     useMediaQuery,
     Menu,
     MenuItem,
-    Divider,
-    ListSubheader,
-    Typography,
-    Chip,
     ListItemIcon,
     ListItemText,
     Toolbar
@@ -31,11 +27,9 @@ import ChangePasswordModal from '../components/common/ChangePasswordModal';
 import { useEffect, useCallback } from 'react';
 import axiosInstance from '../api/axios';
 import { useMessengerStore } from '../stores/useMessengerStore';
-import { format, differenceInDays } from 'date-fns';
-import { zhTW } from 'date-fns/locale';
-
 import Sidebar, { type NavItem } from '../components/layout/Sidebar';
 import Header from '../components/layout/Header';
+import NotificationsDropdown from '../components/layout/NotificationsDropdown';
 
 const DRAWER_WIDTH = 280;
 const COLLAPSED_DRAWER_WIDTH = 80;
@@ -158,58 +152,7 @@ export default function AdminLayout() {
             />
 
             {/* Menus mounted globally but anchored to Header elements */}
-            <Menu
-                anchorEl={notifAnchorEl}
-                open={Boolean(notifAnchorEl)}
-                onClose={handleNotifClose}
-                PaperProps={{
-                    elevation: 3,
-                    sx: { mt: 1.5, minWidth: 280, maxWidth: 350, maxHeight: 400, borderRadius: '14px' }
-                }}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-                <ListSubheader sx={{ bgcolor: 'background.paper', fontWeight: 'bold', fontFamily: 'Nunito Sans' }}>
-                    到期任務提醒 ({reminders.length})
-                </ListSubheader>
-                <Divider />
-                {reminders.length === 0 ? (
-                    <MenuItem disabled>
-                        <ListItemText primary="目前沒有即將到期的任務" />
-                    </MenuItem>
-                ) : (
-                    reminders.map((task) => {
-                        const isOverdue = new Date(task.deadline) < new Date();
-                        const daysLeft = differenceInDays(new Date(task.deadline), new Date());
-
-                        return (
-                            <MenuItem
-                                key={task.id}
-                                onClick={() => {
-                                    handleNotifClose();
-                                    navigate(`/admin/projects/${task.projectId}`);
-                                }}
-                                sx={{ py: 1.5, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}
-                            >
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', mb: 0.5 }}>
-                                    <Typography variant="subtitle2" noWrap sx={{ fontWeight: 600, flexGrow: 1, mr: 1, fontFamily: 'Nunito Sans' }}>
-                                        {task.title}
-                                    </Typography>
-                                    <Chip
-                                        size="small"
-                                        label={isOverdue ? '已逾期' : `剩餘 ${daysLeft} 天`}
-                                        color={isOverdue ? 'error' : 'warning'}
-                                        sx={{ height: 20, fontSize: '0.7rem' }}
-                                    />
-                                </Box>
-                                <Typography variant="caption" color="text.secondary">
-                                    到期日: {format(new Date(task.deadline), 'yyyy/MM/dd HH:mm', { locale: zhTW })}
-                                </Typography>
-                            </MenuItem>
-                        );
-                    })
-                )}
-            </Menu>
+            <NotificationsDropdown anchorEl={notifAnchorEl} onClose={handleNotifClose} />
 
             <Menu
                 anchorEl={anchorEl}
