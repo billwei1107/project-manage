@@ -42,6 +42,29 @@ const MOCK_EMPLOYEES: MockEmployee[] = [
     { id: '8', name: 'Kathryn Guerrero', email: 'kathryn1992@gmail.com', gender: 'Female', birthday: 'Sep 23, 1992', age: 28, position: 'iOS Developer', level: 'Senior', avatar: '/avatars/kathryn.png' }
 ];
 
+interface MockActivity {
+    id: string;
+    name: string;
+    position: string;
+    level: string;
+    avatar: string;
+    backlog: number;
+    inProgress: number;
+    inReview: number;
+    isInactive: boolean;
+}
+
+const MOCK_ACTIVITIES: MockActivity[] = [
+    { id: '1', name: 'Shawn Stone', position: 'UI/UX Designer', level: 'Middle', avatar: '/avatars/shawn.png', backlog: 0, inProgress: 16, inReview: 6, isInactive: false },
+    { id: '2', name: 'Randy Delgado', position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/randy.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '3', name: 'Emily Tyler', position: 'Copywriter', level: 'Middle', avatar: '/avatars/emily.png', backlog: 0, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '4', name: 'Louis Castro', position: 'Copywriter', level: 'Senior', avatar: '/avatars/louis.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '5', name: 'Millie Harvey', position: 'Android Developer', level: 'Junior', avatar: '/avatars/millie.png', backlog: 1, inProgress: 14, inReview: 3, isInactive: false },
+    { id: '6', name: 'Ethel Weber', position: 'Copywriter', level: 'Junior', avatar: '/avatars/ethel.png', backlog: 0, inProgress: 8, inReview: 6, isInactive: true },
+    { id: '7', name: 'Charlie Palmer', position: 'Copywriter', level: 'Senior', avatar: '/avatars/charlie.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '8', name: 'Pearl Sims', position: 'Project Manager', level: 'Middle', avatar: '/avatars/pearl.png', backlog: 0, inProgress: 4, inReview: 6, isInactive: true }
+];
+
 export default function EmployeeList() {
     const [activeTab, setActiveTab] = useState<'List' | 'Activity'>('List');
 
@@ -195,29 +218,86 @@ export default function EmployeeList() {
             )}
 
             {/* Pagination Controls */}
-            {activeTab === 'List' && (
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', pb: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'white', borderRadius: '16px', py: 1.5, px: 3, gap: 3, boxShadow: '0px 2px 14px rgba(0,0,0,0.03)' }}>
-                        <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
-                            1-8 of 28
-                        </Typography>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
-                                <ArrowBackIcon sx={{ color: '#D8E0F0', fontSize: 20 }} />
-                            </IconButton>
-                            <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
-                                <ArrowForwardIcon sx={{ color: '#3F8CFF', fontSize: 20 }} />
-                            </IconButton>
-                        </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', pb: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'white', borderRadius: '16px', py: 1.5, px: 3, gap: 3, boxShadow: '0px 2px 14px rgba(0,0,0,0.03)' }}>
+                    <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
+                        1-8 of 28
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
+                            <ArrowBackIcon sx={{ color: '#D8E0F0', fontSize: 20 }} />
+                        </IconButton>
+                        <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
+                            <ArrowForwardIcon sx={{ color: '#3F8CFF', fontSize: 20 }} />
+                        </IconButton>
                     </Box>
                 </Box>
-            )}
+            </Box>
 
             {activeTab === 'Activity' && (
-                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Typography sx={{ color: '#7D8592', fontSize: 16, fontFamily: 'Nunito Sans' }}>
-                        Activity board coming soon...
-                    </Typography>
+                <Box sx={{ flex: 1, display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(4, 1fr)' }, gap: 3, mb: 4 }}>
+                    {MOCK_ACTIVITIES.map((act) => (
+                        <Box
+                            key={act.id}
+                            sx={{
+                                bgcolor: act.isInactive ? '#FFF9EE' : 'white',
+                                borderRadius: '24px',
+                                p: 3,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)',
+                                transition: 'transform 0.2s',
+                                '&:hover': { transform: 'translateY(-2px)' }
+                            }}
+                        >
+                            {/* Avatar with zZ decorating if inactive */}
+                            <Box sx={{ position: 'relative', mb: 2 }}>
+                                <Avatar src={act.avatar} sx={{ width: 64, height: 64, bgcolor: act.isInactive ? '#FF9800' : '#3F8CFF', fontSize: 24 }}>
+                                    {act.name.charAt(0)}
+                                </Avatar>
+                                {act.isInactive && (
+                                    <>
+                                        <Typography sx={{ position: 'absolute', top: -14, left: -14, color: '#FFB800', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', transform: 'rotate(-10deg)' }}>z</Typography>
+                                        <Typography sx={{ position: 'absolute', top: -20, left: 0, color: '#FFB800', fontSize: 18, fontWeight: 700, fontFamily: 'Nunito Sans', transform: 'rotate(-5deg)' }}>Z</Typography>
+                                        <Typography sx={{ position: 'absolute', top: -14, right: -12, color: '#FFB800', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', transform: 'rotate(10deg)' }}>z</Typography>
+                                        <Typography sx={{ position: 'absolute', top: 5, right: -20, color: '#FFB800', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', transform: 'rotate(20deg)' }}>z</Typography>
+                                    </>
+                                )}
+                            </Box>
+
+                            {/* Name & Position */}
+                            <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 800, fontFamily: 'Nunito Sans', mb: 0.5, textAlign: 'center' }}>
+                                {act.name}
+                            </Typography>
+                            <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 600, fontFamily: 'Nunito Sans', mb: 1.5, textAlign: 'center' }}>
+                                {act.position}
+                            </Typography>
+
+                            {/* Level Badge */}
+                            <Box sx={{ border: '1px solid #D8E0F0', borderRadius: '8px', px: 1.5, py: 0.25, mb: 4 }}>
+                                <Typography sx={{ color: '#7D8592', fontSize: 11, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                    {act.level}
+                                </Typography>
+                            </Box>
+
+                            {/* Stats */}
+                            <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', borderTop: '1px dashed #E6EDF5', pt: 2 }}>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.backlog}</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Backlog<br/>tasks</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.inProgress}</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Tasks<br/>In Progress</Typography>
+                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.inReview}</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Tasks<br/>In Review</Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+                    ))}
                 </Box>
             )}
 
