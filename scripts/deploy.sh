@@ -22,14 +22,15 @@ fi
 echo "🚀 開始執行專案自動化部署流程..."
 
 # 2. 自動拉取最新原始碼 (強制重置以防意外修改)
-echo "📥 正在獲取最新程式碼 (origin/master)..."
+echo "📥 正在獲取最新程式碼 (origin/feature)..."
 git fetch origin
 if [ $? -ne 0 ]; then
     echo "❌ Git Fetch 失敗，可能遭遇網路異常或權限問題。"
     exit 1
 fi
 
-git reset --hard origin/master
+git checkout feature
+git reset --hard origin/feature
 if [ $? -ne 0 ]; then
     echo "❌ Git Reset 失敗。"
     exit 1

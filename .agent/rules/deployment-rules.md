@@ -13,6 +13,6 @@ sshpass -p '<PASSWORD>' ssh -o StrictHostKeyChecking=no root@<IP_ADDRESS> "bash 
 ## 腳本行為規範
 `/root/project-manage/scripts/deploy.sh` 內部必須包含以下保護機制：
 1. **目錄鎖定**: 強制 `cd` 至專案根目錄。
-2. **乾淨拉取**: 執行 `git fetch --all` 與 `git reset --hard origin/master` 避免本地修改阻礙。
+2. **乾淨拉取**: 執行 `git fetch --all` 與 `git reset --hard origin/feature` 避免本地修改阻礙。
 3. **安全清理**: 透過 `docker compose down --remove-orphans` 與強制的假死容器清理，確保後續 Up 時不會發生 Name/Network Conflict。
 4. **重建環境**: 透過 `docker compose up -d --build` 平滑重啟所有微服務。
