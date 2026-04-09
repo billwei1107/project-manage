@@ -1,141 +1,226 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
     Box,
     Typography,
-    Paper,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Chip,
     Avatar,
-    Stack,
-    CircularProgress
+    IconButton,
+    Button,
 } from '@mui/material';
-import axiosInstance from '../../api/axios';
+import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AddIcon from '@mui/icons-material/Add';
 
 /**
  * @file EmployeeList.tsx
- * @description 員工列表與外包管理 / Employee List & Outsourcing Management
- * @description_en Displays the list of all employees and their current roles/status
- * @description_zh 顯示所有員工名單，包含部門、角色與在職狀態，支援過濾
+ * @description 員工列表頁面 / Employee List Page
+ * @description_en Detailed modern card-based employee list interface
+ * @description_zh 現代化卡片式員工列表介面，包含分頁與快速操作與狀態切換
  */
 
-interface Employee {
+interface MockEmployee {
     id: string;
-    employeeId: string;
     name: string;
     email: string;
-    role: string;
-    isOnline: boolean;
-    lastLoginAt?: string;
-    avatar?: string;
+    gender: 'Male' | 'Female';
+    birthday: string;
+    age: number;
+    position: string;
+    level: string;
+    avatar: string;
 }
 
+const MOCK_EMPLOYEES: MockEmployee[] = [
+    { id: '1', name: 'Evan Yates', email: 'evanyates@gmail.com', gender: 'Male', birthday: 'Apr 12, 1995', age: 25, position: 'UI/UX Designer', level: 'Middle', avatar: '/avatars/evan.png' },
+    { id: '2', name: 'Lenora Fowler', email: 'eravi@ec.gov', gender: 'Female', birthday: 'Apr 28, 1998', age: 23, position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/lenora.png' },
+    { id: '3', name: 'Winnie McGuire', email: 'winnie3498@gmail.com', gender: 'Female', birthday: 'Apr 12, 1995', age: 25, position: 'Copywriter', level: 'Senior', avatar: '/avatars/winnie.png' },
+    { id: '4', name: 'James Williamson', email: 'williamsonj@gmail.com', gender: 'Male', birthday: 'Sep 23, 1992', age: 28, position: 'iOS Developer', level: 'Middle', avatar: '/avatars/james.png' },
+    { id: '5', name: 'Emily Tyler', email: 'tyleremily24@gmail.com', gender: 'Female', birthday: 'May 16, 1996', age: 24, position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/emily.png' },
+    { id: '6', name: 'Thomas Schneider', email: 'thomas.s@gmail.com', gender: 'Male', birthday: 'Apr 28, 1998', age: 23, position: 'Sales Manager', level: 'Junior', avatar: '/avatars/thomas.png' },
+    { id: '7', name: 'Sallie Long', email: 'sallielong@gmail.com', gender: 'Female', birthday: 'Apr 12, 1995', age: 25, position: 'Copywriter', level: 'Middle', avatar: '/avatars/sallie.png' },
+    { id: '8', name: 'Kathryn Guerrero', email: 'kathryn1992@gmail.com', gender: 'Female', birthday: 'Sep 23, 1992', age: 28, position: 'iOS Developer', level: 'Senior', avatar: '/avatars/kathryn.png' }
+];
+
 export default function EmployeeList() {
-    const [employees, setEmployees] = useState<Employee[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    const [activeTab, setActiveTab] = useState<'List' | 'Activity'>('List');
 
-    useEffect(() => {
-        const fetchEmployees = async () => {
-            try {
-                // Assuming we have this endpoint or use /admin/users if applicable
-                const response = await axiosInstance.get('/v1/hr/employees');
-                const internalStaff = response.data;
-                setEmployees(internalStaff);
-            } catch (error) {
-                console.error('Failed to fetch employees:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const ColumnHeaderLabel = ({ title }: { title: string }) => (
+        <Typography sx={{ color: '#A0AABF', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 0.5 }}>
+            {title}
+        </Typography>
+    );
 
-        fetchEmployees();
-    }, []);
-
-    const getRoleChipColor = (role: string) => {
-        switch (role) {
-            case 'ADMIN': return 'error';
-            case 'PM': return 'warning';
-            case 'DEV': return 'info';
-            default: return 'default';
-        }
-    };
-
-    if (loading) {
-        return <Box display="flex" justifyContent="center" mt={4}><CircularProgress /></Box>;
-    }
+    const ColumnValueLabel = ({ value }: { value: string | number }) => (
+        <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+            {value}
+        </Typography>
+    );
 
     return (
-        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-            <Typography variant="h4" fontWeight="600" color="primary.main" gutterBottom>
-                員工列表 (Employee Directory)
-            </Typography>
-            <Typography variant="body1" color="text.secondary" mb={4}>
-                檢視目前在職的內部員工與外包資源。
-            </Typography>
+        <Box sx={{ flex: 1, p: { xs: 2, md: 4 }, bgcolor: '#F4F9FD', minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
 
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: 1 }}>
-                <Table>
-                    <TableHead sx={{ bgcolor: 'grey.50' }}>
-                        <TableRow>
-                            <TableCell sx={{ fontWeight: 600 }}>員工</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>編號 (ID)</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>聯絡信箱</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>系統角色</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>當前狀態</TableCell>
-                            <TableCell sx={{ fontWeight: 600 }}>最近登入</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {employees.map((emp) => (
-                            <TableRow key={emp.id} hover>
-                                <TableCell>
-                                    <Stack direction="row" alignItems="center" spacing={2}>
-                                        <Avatar src={emp.avatar}>{emp.name.charAt(0)}</Avatar>
-                                        <Typography variant="body2" fontWeight="500">{emp.name}</Typography>
-                                    </Stack>
-                                </TableCell>
-                                <TableCell>{emp.employeeId || 'N/A'}</TableCell>
-                                <TableCell>{emp.email}</TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={emp.role}
-                                        color={getRoleChipColor(emp.role) as any}
-                                        size="small"
-                                        variant="outlined"
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Stack direction="row" alignItems="center" spacing={1}>
-                                        <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: emp.isOnline ? 'success.main' : 'action.disabled' }} />
-                                        <Typography variant="body2" color={emp.isOnline ? 'success.main' : 'text.secondary'}>
-                                            {emp.isOnline ? '在線上' : '離線'}
-                                        </Typography>
-                                    </Stack>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant="body2" color="text.secondary">
-                                        {emp.lastLoginAt ? new Date(emp.lastLoginAt).toLocaleString('zh-TW', {
-                                            year: 'numeric', month: '2-digit', day: '2-digit',
-                                            hour: '2-digit', minute: '2-digit'
-                                        }) : '從未登入'}
+            {/* Top Toolbar */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', mb: 4, gap: 2 }}>
+                
+                {/* Title */}
+                <Typography sx={{ fontSize: 32, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', flexShrink: 0 }}>
+                    Employees (28)
+                </Typography>
+
+                {/* Segmented Control */}
+                <Box sx={{ display: 'flex', bgcolor: '#E6EDF5', borderRadius: '24px', p: '4px', flexShrink: 0 }}>
+                    <Box
+                        onClick={() => setActiveTab('List')}
+                        sx={{
+                            py: 1, px: 5, borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
+                            bgcolor: activeTab === 'List' ? '#3F8CFF' : 'transparent',
+                            color: activeTab === 'List' ? 'white' : '#7D8592',
+                            fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: activeTab === 'List' ? 700 : 600,
+                            boxShadow: activeTab === 'List' ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none'
+                        }}
+                    >
+                        List
+                    </Box>
+                    <Box
+                        onClick={() => setActiveTab('Activity')}
+                        sx={{
+                            py: 1, px: 5, borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
+                            bgcolor: activeTab === 'Activity' ? '#3F8CFF' : 'transparent',
+                            color: activeTab === 'Activity' ? 'white' : '#7D8592',
+                            fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: activeTab === 'Activity' ? 700 : 600,
+                            boxShadow: activeTab === 'Activity' ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none'
+                        }}
+                    >
+                        Activity
+                    </Box>
+                </Box>
+
+                {/* Action Buttons */}
+                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <IconButton sx={{ bgcolor: 'white', borderRadius: '14px', p: 1.5, boxShadow: '0px 2px 8px rgba(0,0,0,0.05)', '&:hover': { bgcolor: '#F0F6FF' } }}>
+                        <FilterAltOutlinedIcon sx={{ color: '#0A1629' }} />
+                    </IconButton>
+                    <Button
+                        variant="contained"
+                        startIcon={<AddIcon />}
+                        sx={{
+                            bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px', textTransform: 'none', px: 3, py: 1.5,
+                            fontSize: 15, fontWeight: 700, fontFamily: 'Nunito Sans', boxShadow: '0px 4px 12px rgba(63, 140, 255, 0.3)',
+                            '&:hover': { bgcolor: '#3377E6' }
+                        }}
+                    >
+                        Add Employee
+                    </Button>
+                </Box>
+            </Box>
+
+            {/* List Body */}
+            {activeTab === 'List' && (
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 4, flex: 1 }}>
+                    {MOCK_EMPLOYEES.map((employee) => (
+                        <Box
+                            key={employee.id}
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                bgcolor: 'white',
+                                borderRadius: '24px',
+                                p: { xs: 3, md: 3 },
+                                gap: { xs: 2, md: 4 },
+                                boxShadow: '0px 6px 58px rgba(195.86, 203.28, 214.36, 0.10)',
+                                flexWrap: { xs: 'wrap', md: 'nowrap' },
+                                transition: 'transform 0.2s',
+                                '&:hover': {
+                                    transform: 'translateY(-2px)'
+                                }
+                            }}
+                        >
+                            {/* 1. Avatar & Name/Email */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flex: { xs: '1 1 100%', md: '0 0 280px' } }}>
+                                <Avatar src={employee.avatar} sx={{ width: 56, height: 56, bgcolor: '#3F8CFF' }}>
+                                    {employee.name.charAt(0)}
+                                </Avatar>
+                                <Box>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 800, fontFamily: 'Nunito Sans', mb: 0.5 }}>
+                                        {employee.name}
                                     </Typography>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                        {employees.length === 0 && (
-                            <TableRow>
-                                <TableCell colSpan={6} align="center" sx={{ py: 3 }}>
-                                    <Typography color="text.secondary">尚未有任何員工資料</Typography>
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
+                                        {employee.email}
+                                    </Typography>
+                                </Box>
+                            </Box>
+
+                            {/* 2. Gender */}
+                            <Box sx={{ flex: { xs: '1 1 45%', md: '1' } }}>
+                                <ColumnHeaderLabel title="Gender" />
+                                <ColumnValueLabel value={employee.gender} />
+                            </Box>
+
+                            {/* 3. Birthday */}
+                            <Box sx={{ flex: { xs: '1 1 45%', md: '1' } }}>
+                                <ColumnHeaderLabel title="Birthday" />
+                                <ColumnValueLabel value={employee.birthday} />
+                            </Box>
+
+                            {/* 4. Full Age */}
+                            <Box sx={{ flex: { xs: '1 1 45%', md: '0.8' } }}>
+                                <ColumnHeaderLabel title="Full age" />
+                                <ColumnValueLabel value={employee.age} />
+                            </Box>
+
+                            {/* 5. Position & Label */}
+                            <Box sx={{ flex: { xs: '1 1 45%', md: '1.5' }, pr: { md: 2 } }}>
+                                <ColumnHeaderLabel title="Position" />
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <ColumnValueLabel value={employee.position} />
+                                    <Box sx={{ border: '1px solid #D8E0F0', borderRadius: '8px', px: 1, py: 0.25 }}>
+                                        <Typography sx={{ color: '#7D8592', fontSize: 11, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                            {employee.level}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+
+                            {/* 6. Context Menu Icon */}
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', ml: 'auto' }}>
+                                <IconButton sx={{ bgcolor: '#F4F9FD', width: 44, height: 44, borderRadius: '12px', '&:hover': { bgcolor: '#E6EDF5' } }}>
+                                    <MoreVertIcon sx={{ color: '#0A1629' }} />
+                                </IconButton>
+                            </Box>
+
+                        </Box>
+                    ))}
+                </Box>
+            )}
+
+            {/* Pagination Controls */}
+            {activeTab === 'List' && (
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', pb: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'white', borderRadius: '16px', py: 1.5, px: 3, gap: 3, boxShadow: '0px 2px 14px rgba(0,0,0,0.03)' }}>
+                        <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
+                            1-8 of 28
+                        </Typography>
+                        <Box sx={{ display: 'flex', gap: 2 }}>
+                            <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
+                                <ArrowBackIcon sx={{ color: '#D8E0F0', fontSize: 20 }} />
+                            </IconButton>
+                            <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
+                                <ArrowForwardIcon sx={{ color: '#3F8CFF', fontSize: 20 }} />
+                            </IconButton>
+                        </Box>
+                    </Box>
+                </Box>
+            )}
+
+            {activeTab === 'Activity' && (
+                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Typography sx={{ color: '#7D8592', fontSize: 16, fontFamily: 'Nunito Sans' }}>
+                        Activity board coming soon...
+                    </Typography>
+                </Box>
+            )}
+
         </Box>
     );
 }
