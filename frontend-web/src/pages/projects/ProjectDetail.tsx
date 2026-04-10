@@ -21,6 +21,7 @@ import ProjectContextSidebar from '../../components/projects/ProjectContextSideb
 import TaskRowCard from '../../components/projects/TaskRowCard';
 import TaskFilterDrawer from '../../components/projects/TaskFilterDrawer';
 import emptyTasksIllustration from '../../assets/empty_tasks.png';
+import AddTaskModal from '../../components/projects/AddTaskModal';
 
 import {
     DndContext, closestCorners, KeyboardSensor, PointerSensor,
@@ -72,6 +73,9 @@ export default function ProjectDetail() {
     const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [collapsedGroups, setCollapsedGroups] = useState<string[]>(['Development']);
+    
+    // Modals
+    const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
 
     const sensors = useSensors(
         useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -309,6 +313,7 @@ export default function ProjectDetail() {
             </Typography>
             <Button 
                 variant="contained" 
+                onClick={() => setIsAddTaskOpen(true)}
                 startIcon={<AddIcon />} 
                 sx={{ 
                     bgcolor: '#3F8CFF', 
@@ -342,7 +347,7 @@ export default function ProjectDetail() {
                     </Typography>
                 </Box>
                 {tasks.length > 0 && (
-                    <Button variant="contained" startIcon={<AddIcon />} sx={{ bgcolor: '#3F8CFF', borderRadius: '14px', textTransform: 'none', fontWeight: 700, fontFamily: 'Nunito Sans', fontSize: 16, px: 3, py: 1.5, boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)', alignSelf: 'center' }}>
+                    <Button variant="contained" onClick={() => setIsAddTaskOpen(true)} startIcon={<AddIcon />} sx={{ bgcolor: '#3F8CFF', borderRadius: '14px', textTransform: 'none', fontWeight: 700, fontFamily: 'Nunito Sans', fontSize: 16, px: 3, py: 1.5, boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)', alignSelf: 'center' }}>
                         Add Task
                     </Button>
                 )}
@@ -391,6 +396,9 @@ export default function ProjectDetail() {
 
             {/* Task Filter Drawer */}
             <TaskFilterDrawer open={isFilterOpen} onClose={() => setIsFilterOpen(false)} />
+
+            {/* Modals */}
+            <AddTaskModal open={isAddTaskOpen} onClose={() => setIsAddTaskOpen(false)} />
         </Box>
     );
 }
