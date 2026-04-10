@@ -8,6 +8,7 @@ import AdminLayout from './layouts/AdminLayout';
 import ClientLayout from './layouts/ClientLayout';
 import RequireAuth from './components/common/RequireAuth';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import ProjectList from './pages/projects/ProjectList';
 import ProjectDetail from './pages/projects/ProjectDetail';
@@ -49,6 +50,7 @@ function App() {
           <Route path="/public/upload/:tokenId" element={<PublicUploadPortal />} />
           <Route element={<AuthLayout />}>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
           </Route>
 
           {/* Protected Routes */}

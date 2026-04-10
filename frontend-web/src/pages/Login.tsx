@@ -240,7 +240,7 @@ export default function Login() {
                             {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
                         </Button>
 
-                        <Link href="#" underline="none" sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                        <Link component="button" onClick={() => navigate('/signup')} underline="none" sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
                             Don't have an account?
                         </Link>
                     </Box>
