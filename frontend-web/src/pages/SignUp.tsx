@@ -19,6 +19,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckIcon from '@mui/icons-material/Check';
+import AddIcon from '@mui/icons-material/Add';
 
 /**
  * @file SignUp.tsx
@@ -95,6 +96,16 @@ export default function SignUp() {
     const [companyName, setCompanyName] = useState('');
     const [businessDirection, setBusinessDirection] = useState('IT and programming');
     const [teamSize, setTeamSize] = useState('41 - 50');
+
+    // Step 4 State
+    const [memberEmails, setMemberEmails] = useState<string[]>(['']);
+
+    const handleAddMember = () => setMemberEmails([...memberEmails, '']);
+    const handleMemberEmailChange = (index: number, value: string) => {
+        const newEmails = [...memberEmails];
+        newEmails[index] = value;
+        setMemberEmails(newEmails);
+    };
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -531,6 +542,69 @@ export default function SignUp() {
                                         );
                                     })}
                                 </Box>
+                            </Box>
+                        </>
+                    )}
+
+                    {/* --- STEP 4 --- */}
+                    {step === 4 && (
+                        <>
+                            <Box sx={{ textAlign: 'center', mb: 6 }}>
+                                <Typography sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', textTransform: 'uppercase', mb: 1 }}>
+                                    Step 4/4
+                                </Typography>
+                                <Typography sx={{ color: '#0A1629', fontSize: 28, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
+                                    Invite Team Members
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ mb: 2 }}>
+                                {memberEmails.map((email, index) => (
+                                    <Box key={index} sx={{ mb: 3 }}>
+                                        {index === 0 && (
+                                            <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                                                Member's Email
+                                            </Typography>
+                                        )}
+                                        <TextField
+                                            fullWidth
+                                            variant="outlined"
+                                            placeholder="memberemail@gmail.com"
+                                            value={email}
+                                            onChange={(e) => handleMemberEmailChange(index, e.target.value)}
+                                            InputProps={{
+                                                sx: { 
+                                                    borderRadius: '12px', 
+                                                    fontFamily: 'Nunito Sans',
+                                                    fontWeight: 600,
+                                                    '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
+                                                    '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                                    '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                                    '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' },
+                                                }
+                                            }}
+                                        />
+                                    </Box>
+                                ))}
+                            </Box>
+
+                            <Box sx={{ mb: 4 }}>
+                                <Button
+                                    variant="text"
+                                    startIcon={<AddIcon />}
+                                    onClick={handleAddMember}
+                                    sx={{
+                                        color: '#3F8CFF',
+                                        fontSize: 14,
+                                        fontWeight: 700,
+                                        fontFamily: 'Nunito Sans',
+                                        textTransform: 'none',
+                                        p: 0,
+                                        '&:hover': { bgcolor: 'transparent', opacity: 0.8 }
+                                    }}
+                                >
+                                    Add another Member
+                                </Button>
                             </Box>
                         </>
                     )}
