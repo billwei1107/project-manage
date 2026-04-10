@@ -1,14 +1,27 @@
 import { useState } from 'react';
-import { Box, Button, TextField, Typography, Alert, CircularProgress, InputAdornment, IconButton } from '@mui/material';
+import { 
+    Box, 
+    Button, 
+    TextField, 
+    Typography, 
+    Alert, 
+    CircularProgress, 
+    InputAdornment, 
+    IconButton, 
+    Checkbox, 
+    FormControlLabel,
+    Link
+} from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/useAuthStore';
 
 /**
  * @file Login.tsx
- * @description Login Page
- * @description_en Real login form with API integration
- * @description_zh 真實登入表單，整合後端 API
+ * @description Login Page with modern split-card UI
+ * @description_en Modern login UI matching the presentation design
+ * @description_zh 依照 Figma 設計圖還原的現代化分割卡片登入介面
  */
 
 export default function Login() {
@@ -31,74 +44,209 @@ export default function Login() {
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-    const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-        event.preventDefault();
-    };
-
     return (
-        <Box sx={{ width: '100%' }}>
-            <Typography variant="h5" sx={{ mb: 3, fontWeight: 700, textAlign: 'center', color: 'primary.main' }}>
-                Project Manage CRM
-            </Typography>
-
-            {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
-                </Alert>
-            )}
-
-            <TextField
-                fullWidth
-                label="用戶名 / 員工編號"
-                variant="outlined"
-                margin="normal"
-                value={loginId}
-                onChange={(e) => setLoginId(e.target.value)}
-                disabled={isLoading}
-            />
-
-            <TextField
-                fullWidth
-                label="密碼"
-                type={showPassword ? 'text' : 'password'}
-                variant="outlined"
-                margin="normal"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                onKeyPress={(e) => {
-                    if (e.key === 'Enter') handleLogin();
+        <Box 
+            sx={{ 
+                display: 'flex', 
+                flexDirection: { xs: 'column', md: 'row' }, 
+                width: '100%', 
+                maxWidth: 1100, 
+                minHeight: { xs: 'auto', md: 680 },
+                bgcolor: 'white', 
+                borderRadius: '32px', 
+                overflow: 'hidden', 
+                boxShadow: '0px 24px 64px rgba(195, 203, 214, 0.4)' 
+            }}
+        >
+            {/* Left Side: Hero Area */}
+            <Box 
+                sx={{ 
+                    flex: 1, 
+                    bgcolor: '#3F8CFF', 
+                    p: { xs: 4, md: 8, lg: 10 },
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    position: 'relative'
                 }}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position="end">
-                            <IconButton
-                                aria-label="toggle password visibility"
-                                onClick={handleClickShowPassword}
-                                onMouseDown={handleMouseDownPassword}
-                                edge="end"
-                            >
-                                {showPassword ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-            />
-
-            <Button
-                fullWidth
-                variant="contained"
-                size="large"
-                sx={{ mt: 3, height: 48 }}
-                onClick={handleLogin}
-                disabled={isLoading}
             >
-                {isLoading ? <CircularProgress size={24} /> : '登入'}
-            </Button>
+                {/* Logo Area */}
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 6 }}>
+                    <Box sx={{
+                        height: 48,
+                        width: 48,
+                        borderRadius: '12px',
+                        bgcolor: 'rgba(255, 255, 255, 0.2)',
+                        boxShadow: 'inset 0 0 0 2px rgba(255,255,255,0.4)',
+                        mr: 2,
+                        flexShrink: 0,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        position: 'relative'
+                    }}>
+                        <Box sx={{ width: 14, height: 20, bgcolor: '#fff', borderRadius: '4px', position: 'absolute', left: 12, top: 14 }} />
+                        <Box sx={{ width: 6, height: 6, bgcolor: '#fff', borderRadius: '50%', position: 'absolute', right: 12, bottom: 14 }} />
+                    </Box>
+                    <Typography sx={{ color: 'white', fontWeight: 800, fontSize: 24, fontFamily: 'Nunito Sans' }}>
+                        Project Manage
+                    </Typography>
+                </Box>
 
-            <Typography variant="caption" display="block" sx={{ mt: 2, textAlign: 'center', color: 'text.secondary' }}>
-                * 請使用註冊的帳號密碼登入
-            </Typography>
+                <Typography sx={{ color: 'white', fontSize: { xs: 32, md: 40, lg: 48 }, fontWeight: 800, fontFamily: 'Nunito Sans', lineHeight: 1.2, mb: 6 }}>
+                    Your place to work<br/>
+                    Plan. Create. Control.
+                </Typography>
+
+                <Box 
+                    component="img"
+                    src="/illustrations/login-hero.png"
+                    alt="Hero Illustration"
+                    sx={{
+                        width: '100%',
+                        maxWidth: 420,
+                        alignSelf: 'center',
+                        display: 'block',
+                        mt: 'auto',
+                        borderRadius: '16px' // Optional: softly round our generated image if needed
+                    }}
+                />
+            </Box>
+
+            {/* Right Side: Login Form */}
+            <Box 
+                sx={{ 
+                    flex: 1, 
+                    p: { xs: 4, md: 8 }, 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    justifyContent: 'center', 
+                    alignItems: 'center',
+                    bgcolor: 'white'
+                }}
+            >
+                <Box sx={{ width: '100%', maxWidth: 380 }}>
+                    <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans', mb: 5, textAlign: 'center' }}>
+                        Sign In to Project Manage
+                    </Typography>
+
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 3, borderRadius: '12px' }}>
+                            {error}
+                        </Alert>
+                    )}
+
+                    {/* Email Input */}
+                    <Box sx={{ mb: 3 }}>
+                        <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                            Email Address (Employee ID)
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            placeholder="youremail@gmail.com"
+                            value={loginId}
+                            onChange={(e) => setLoginId(e.target.value)}
+                            disabled={isLoading}
+                            InputProps={{
+                                sx: { 
+                                    borderRadius: '12px', 
+                                    fontFamily: 'Nunito Sans',
+                                    fontWeight: 600,
+                                    '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
+                                    '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                    '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                }
+                            }}
+                        />
+                    </Box>
+
+                    {/* Password Input */}
+                    <Box sx={{ mb: 2 }}>
+                        <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                            Password
+                        </Typography>
+                        <TextField
+                            fullWidth
+                            type={showPassword ? 'text' : 'password'}
+                            variant="outlined"
+                            placeholder="••••••••"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            disabled={isLoading}
+                            onKeyPress={(e) => {
+                                if (e.key === 'Enter') handleLogin();
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            edge="end"
+                                            sx={{ color: '#A0AABF' }}
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                                sx: { 
+                                    borderRadius: '12px', 
+                                    fontFamily: 'Nunito Sans',
+                                    fontWeight: 800,
+                                    letterSpacing: showPassword ? 'normal' : '0.2em',
+                                    '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
+                                    '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                    '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                }
+                            }}
+                        />
+                    </Box>
+
+                    {/* Form Controls */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 5 }}>
+                        <FormControlLabel
+                            control={<Checkbox defaultChecked sx={{ color: '#A0AABF', '&.Mui-checked': { color: '#0A1629' } }} />}
+                            label={<Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans' }}>Remember me</Typography>}
+                        />
+                        <Link href="#" underline="none" sx={{ color: '#A0AABF', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans', '&:hover': { color: '#3F8CFF' } }}>
+                            Forgot Password?
+                        </Link>
+                    </Box>
+
+                    {/* Sign In Button */}
+                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Button
+                            variant="contained"
+                            disabled={isLoading}
+                            onClick={handleLogin}
+                            endIcon={!isLoading ? <ArrowForwardIcon /> : undefined}
+                            sx={{
+                                bgcolor: '#3F8CFF',
+                                color: 'white',
+                                borderRadius: '24px',
+                                py: 1.5,
+                                px: 5,
+                                fontSize: 16,
+                                fontWeight: 700,
+                                fontFamily: 'Nunito Sans',
+                                textTransform: 'none',
+                                minWidth: 180,
+                                boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                                mb: 3,
+                                '&:hover': { bgcolor: '#3377E6' }
+                            }}
+                        >
+                            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+                        </Button>
+
+                        <Link href="#" underline="none" sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            Don't have an account?
+                        </Link>
+                    </Box>
+
+                </Box>
+            </Box>
         </Box>
     );
 }
