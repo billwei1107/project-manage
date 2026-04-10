@@ -155,7 +155,7 @@ export default function SignUp() {
                         </Typography>
                         <Box sx={{ display: 'flex', gap: 2 }}>
                             {/* Country Code Selector Dummy */}
-                            <Box sx={{ 
+                            <Box tabIndex={0} sx={{ 
                                 display: 'flex', 
                                 alignItems: 'center', 
                                 justifyContent: 'center',
@@ -164,7 +164,9 @@ export default function SignUp() {
                                 border: '2px solid #E6EDF5', 
                                 borderRadius: '12px',
                                 cursor: 'pointer',
-                                '&:hover': { borderColor: '#3F8CFF' }
+                                outline: 'none',
+                                '&:hover': { borderColor: '#3F8CFF' },
+                                '&:focus': { borderColor: '#3F8CFF', boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' }
                             }}>
                                 <Typography sx={{ color: '#7D8592', fontWeight: 700, fontFamily: 'Nunito Sans', mr: 1 }}>+1</Typography>
                                 <KeyboardArrowDownIcon sx={{ color: '#7D8592', fontSize: 20 }} />
@@ -183,6 +185,7 @@ export default function SignUp() {
                                         '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
                                         '&:hover fieldset': { borderColor: '#3F8CFF' },
                                         '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                        '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' },
                                     }
                                 }}
                             />
@@ -210,6 +213,7 @@ export default function SignUp() {
                                             '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
                                             '&:hover fieldset': { borderColor: '#3F8CFF' },
                                             '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                        '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' },
                                         }
                                     }}
                                 />
