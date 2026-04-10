@@ -16,6 +16,7 @@ import AccountManagement from './pages/admin/AccountManagement';
 import Calendar from './pages/calendar/Calendar';
 import { Finance } from './pages/finance/Finance'; // Import the Finance component
 import EmployeeList from './pages/employees/EmployeeList';
+import EmployeeProfile from './pages/employees/EmployeeProfile';
 import Messenger from './pages/messenger/Messenger';
 import InfoPortal from './pages/infoportal/InfoPortal';
 import FolderDetail from './pages/infoportal/FolderDetail';
@@ -60,6 +61,7 @@ function App() {
               <Route path="finance" element={<Finance />} /> {/* Add Route for Finance */}
               <Route path="messenger" element={<Messenger />} />
               <Route path="employees" element={<EmployeeList />} />
+              <Route path="employees/:id" element={<EmployeeProfile />} />
               <Route path="info-portal" element={<InfoPortal />} />
               <Route path="info-portal/:folderId" element={<FolderDetail />} />
               <Route path="accounts" element={<AccountManagement />} />
