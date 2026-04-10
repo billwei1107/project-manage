@@ -14,8 +14,8 @@ import {
 import { useTheme } from '@mui/material/styles';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import FolderIcon from '@mui/icons-material/Folder';
-import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FlightIcon from '@mui/icons-material/Flight';
 import MessageIcon from '@mui/icons-material/Message';
 import GroupIcon from '@mui/icons-material/Group';
 import InfoIcon from '@mui/icons-material/Info';
@@ -127,7 +127,7 @@ export default function AdminLayout() {
         { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
         { text: 'Projects', icon: <FolderIcon />, path: '/admin/projects' },
         { text: 'Calendar', icon: <CalendarMonthIcon />, path: '/admin/calendar' },
-        { text: 'Vacations', icon: <MonetizationOnIcon />, path: '/admin/finance' }, // Mapped to finance for now
+        { text: 'Vacations', icon: <FlightIcon sx={{ transform: 'rotate(45deg)' }} />, path: '/admin/vacations' },
         { text: 'Employees', icon: <GroupIcon />, path: '/admin/employees' },
         { text: 'Messenger', icon: <MessageIcon />, path: '/admin/messenger' },
         { text: 'Info Portal', icon: <InfoIcon />, path: '/admin/info-portal' },

@@ -15,6 +15,7 @@ import TaskDetails from './pages/projects/TaskDetails';
 import AccountManagement from './pages/admin/AccountManagement';
 import Calendar from './pages/calendar/Calendar';
 import { Finance } from './pages/finance/Finance'; // Import the Finance component
+import Vacations from './pages/vacations/Vacations';
 import EmployeeList from './pages/employees/EmployeeList';
 import EmployeeProfile from './pages/employees/EmployeeProfile';
 import Messenger from './pages/messenger/Messenger';
@@ -58,6 +59,7 @@ function App() {
               <Route path="projects/:id" element={<ProjectDetail />} />
               <Route path="projects/task-details" element={<TaskDetails />} />
               <Route path="calendar" element={<Calendar />} />
+              <Route path="vacations" element={<Vacations />} />
               <Route path="finance" element={<Finance />} /> {/* Add Route for Finance */}
               <Route path="messenger" element={<Messenger />} />
               <Route path="employees" element={<EmployeeList />} />
