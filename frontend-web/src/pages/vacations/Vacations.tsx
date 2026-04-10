@@ -3,13 +3,17 @@ import {
     Box,
     Typography,
     Avatar,
-    Button
+    Button,
+    IconButton
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 /**
  * @file Vacations.tsx
- * @description 休假管理清單頁面 / Vacations Page
+ * @description 休假管理清單與行事曆頁面 / Vacations Page
  */
 
 interface VacationData {
@@ -33,8 +37,45 @@ const MOCK_VACATIONS: VacationData[] = [
     { id: '8', name: 'Brandon Potter', email: 'brandonp@gmail.com', avatar: '/avatars/brandon.png', vacations: 8, sickLeave: 7, workRemotely: 48 },
 ];
 
+interface CalendarEvent {
+    type: 'vacation' | 'sick' | 'remote';
+    status: 'approved' | 'pending';
+    startDay: number;
+    endDay: number;
+}
+
+interface EmployeeCalendar {
+    id: string;
+    name: string;
+    avatar: string;
+    events: CalendarEvent[];
+}
+
+const MOCK_CALENDAR_DATA: EmployeeCalendar[] = [
+    { id: '1', name: 'Oscar Holloway', avatar: '/avatars/oscar.png', events: [{ type: 'vacation', status: 'approved', startDay: 2, endDay: 4 }] },
+    { id: '2', name: 'Evan Yates', avatar: '/avatars/evan.png', events: [{ type: 'vacation', status: 'approved', startDay: 5, endDay: 6 }, { type: 'remote', status: 'pending', startDay: 16, endDay: 19 }] },
+    { id: '3', name: 'Lola Zimmerman', avatar: '/avatars/lola.png', events: [{ type: 'sick', status: 'approved', startDay: 7, endDay: 10 }] },
+    { id: '4', name: 'Tyler Curry', avatar: '/avatars/tyler.png', events: [{ type: 'remote', status: 'approved', startDay: 11, endDay: 14 }, { type: 'remote', status: 'approved', startDay: 21, endDay: 23 }] },
+    { id: '5', name: 'Sadie Wolfe', avatar: '/avatars/sadie.png', events: [{ type: 'vacation', status: 'approved', startDay: 15, endDay: 16 }, { type: 'vacation', status: 'approved', startDay: 24, endDay: 25 }] },
+    { id: '6', name: 'Sean Gibbs', avatar: '/avatars/sean.png', events: [{ type: 'sick', status: 'approved', startDay: 17, endDay: 17 }, { type: 'sick', status: 'pending', startDay: 18, endDay: 18 }, { type: 'sick', status: 'approved', startDay: 27, endDay: 27 }] },
+    { id: '7', name: 'Corey Watts', avatar: '/avatars/corey.png', events: [{ type: 'vacation', status: 'approved', startDay: 8, endDay: 9 }, { type: 'remote', status: 'approved', startDay: 10, endDay: 11 }] },
+    { id: '8', name: 'Theodore Shaw', avatar: '/avatars/theodore.png', events: [{ type: 'remote', status: 'approved', startDay: 6, endDay: 9 }] },
+    { id: '9', name: 'Edwin Austin', avatar: '/avatars/edwin.png', events: [{ type: 'remote', status: 'approved', startDay: 11, endDay: 13 }, { type: 'vacation', status: 'approved', startDay: 21, endDay: 22 }] },
+    { id: '10', name: 'Thomas Cummings', avatar: '/avatars/thomas.png', events: [{ type: 'vacation', status: 'pending', startDay: 8, endDay: 11 }] },
+    { id: '11', name: 'Augusta Gordon', avatar: '/avatars/augusta.png', events: [{ type: 'vacation', status: 'approved', startDay: 11, endDay: 12 }, { type: 'vacation', status: 'approved', startDay: 21, endDay: 25 }] },
+];
+
+const DAYS = Array.from({ length: 29 }, (_, i) => i + 1);
+const DAY_LETTERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+const COLORS = {
+    vacation: '#1CC0E0',
+    sick: '#FF565E',
+    remote: '#7452E2',
+};
+
 export default function Vacations() {
-    const [activeTab, setActiveTab] = useState<'Employees_vacations' | 'Calendar'>('Employees_vacations');
+    const [activeTab, setActiveTab] = useState<'Employees_vacations' | 'Calendar'>('Calendar');
 
     const StatColumn = ({ label, value }: { label: string, value: number }) => (
         <Box sx={{ minWidth: { xs: '80px', sm: '120px' } }}>
@@ -44,6 +85,24 @@ export default function Vacations() {
             <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                 {value}
             </Typography>
+        </Box>
+    );
+
+    const LegendItem = ({ label, type }: { label: string, type: 'vacation' | 'sick' | 'remote' }) => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Typography sx={{ color: '#A0AABF', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                {label}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: COLORS[type] }} />
+                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>Approved</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${COLORS[type]}` }} />
+                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>Pending</Typography>
+                </Box>
+            </Box>
         </Box>
     );
 
@@ -134,12 +193,8 @@ export default function Vacations() {
                                 gap: { xs: 3, md: 0 }
                             }}
                         >
-                            {/* Employee Info */}
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flex: 1, width: '100%' }}>
-                                <Avatar 
-                                    src={employee.avatar} 
-                                    sx={{ width: 48, height: 48 }}
-                                >
+                                <Avatar src={employee.avatar} sx={{ width: 48, height: 48 }}>
                                     {employee.name.charAt(0)}
                                 </Avatar>
                                 <Box>
@@ -152,13 +207,7 @@ export default function Vacations() {
                                 </Box>
                             </Box>
 
-                            {/* Stats Data */}
-                            <Box sx={{ 
-                                display: 'flex', 
-                                justifyContent: { xs: 'space-between', md: 'flex-end' }, 
-                                gap: { xs: 1, sm: 4 }, 
-                                width: { xs: '100%', md: 'auto' }
-                            }}>
+                            <Box sx={{ display: 'flex', justifyContent: { xs: 'space-between', md: 'flex-end' }, gap: { xs: 1, sm: 4 }, width: { xs: '100%', md: 'auto' } }}>
                                 <StatColumn label="Vacations" value={employee.vacations} />
                                 <StatColumn label="Sick Leave" value={employee.sickLeave} />
                                 <StatColumn label="Work remotely" value={employee.workRemotely} />
@@ -168,11 +217,94 @@ export default function Vacations() {
                 </Box>
             )}
 
+            {/* Calendar Area */}
             {activeTab === 'Calendar' && (
-                <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'white', borderRadius: '24px', border: '2px dashed #E6EDF5' }}>
-                    <Typography sx={{ color: '#A0AABF', fontSize: 16, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
-                        Calendar View Coming Soon...
-                    </Typography>
+                <Box sx={{ bgcolor: 'white', borderRadius: '24px', display: 'flex', flexDirection: 'column', boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.1)', overflowX: 'auto' }}>
+                    
+                    {/* Header Row */}
+                    <Box sx={{ display: 'flex', borderBottom: '1px solid #E6EDF5', minWidth: 1000 }}>
+                        <Box sx={{ width: 220, p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRight: '1px solid #E6EDF5' }}>
+                            <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 800, fontFamily: 'Nunito Sans' }}>Employees</Typography>
+                            <IconButton size="small" sx={{ bgcolor: '#F4F9FD', borderRadius: '8px' }}>
+                                <SearchIcon fontSize="small" sx={{ color: '#0A1629' }} />
+                            </IconButton>
+                        </Box>
+                        
+                        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                            <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', p: '14px 24px', borderBottom: '1px solid #E6EDF5' }}>
+                                <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 800, fontFamily: 'Nunito Sans', flex: 1, textAlign: 'center' }}>
+                                    First month (September)
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <ArrowBackIcon sx={{ color: '#A0AABF', fontSize: 20, cursor: 'pointer' }} />
+                                    <ArrowForwardIcon sx={{ color: '#3F8CFF', fontSize: 20, cursor: 'pointer' }} />
+                                </Box>
+                            </Box>
+                            
+                            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(29, 1fr)', gap: '4px', px: 2, pt: 1, pb: 1.5 }}>
+                                {DAYS.map(d => (
+                                    <Box key={d} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                        <Typography sx={{ color: '#0A1629', fontSize: 12, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{d}</Typography>
+                                        <Typography sx={{ color: '#A0AABF', fontSize: 10, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                            {DAY_LETTERS[d % 7]}
+                                        </Typography>
+                                    </Box>
+                                ))}
+                            </Box>
+                        </Box>
+                    </Box>
+
+                    {/* Timeline Rows */}
+                    <Box sx={{ minWidth: 1000 }}>
+                        {MOCK_CALENDAR_DATA.map((emp) => (
+                            <Box key={emp.id} sx={{ display: 'flex', borderBottom: '1px solid #F4F9FD', '&:last-child': { borderBottom: 'none' } }}>
+                                
+                                {/* Employee Name/Avatar */}
+                                <Box sx={{ width: 220, px: 3, py: 1.5, display: 'flex', alignItems: 'center', gap: 1.5, borderRight: '1px solid #E6EDF5' }}>
+                                    <Avatar src={emp.avatar} sx={{ width: 32, height: 32 }}>{emp.name.charAt(0)}</Avatar>
+                                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                        {emp.name}
+                                    </Typography>
+                                </Box>
+
+                                {/* Grid Timeline */}
+                                <Box sx={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(29, 1fr)', gap: '4px', px: 2, py: 1.5 }}>
+                                    {DAYS.map(day => {
+                                        const event = emp.events.find(e => day >= e.startDay && day <= e.endDay);
+                                        if (!event) {
+                                            return <Box key={day} sx={{ bgcolor: '#F4F9FD', borderRadius: '4px', height: 32 }} />;
+                                        }
+
+                                        const isApproved = event.status === 'approved';
+                                        
+                                        // 針對設計圖中視覺呈現稍微簡化的切版：
+                                        // 實際上可以用 flex 跨越多格，但現行架構直接每一格獨立 rendering 會更容易適配不同螢幕。
+                                        // 根據截圖，每個事件單元幾乎都有自己的圓角邊框，且看起來像是個別的 Pills。
+                                        return (
+                                            <Box 
+                                                key={day} 
+                                                sx={{ 
+                                                    height: 32, 
+                                                    borderRadius: '6px', 
+                                                    bgcolor: isApproved ? COLORS[event.type] : 'transparent',
+                                                    border: !isApproved ? `1.5px solid ${COLORS[event.type]}` : 'none',
+                                                    // 對於最後一天是半週休假或短時段，直接等比例縮小 (例如 50% 寬度)
+                                                    width: (emp.id === '9' && day === 13) ? '50%' : '100%',
+                                                }} 
+                                            />
+                                        );
+                                    })}
+                                </Box>
+                            </Box>
+                        ))}
+                    </Box>
+
+                    {/* Footer Legend */}
+                    <Box sx={{ display: 'flex', minWidth: 1000, borderTop: '1px solid #E6EDF5', p: 3, gap: 10 }}>
+                        <LegendItem label="Sick Leave" type="sick" />
+                        <LegendItem label="Work remotely" type="remote" />
+                        <LegendItem label="Vacation" type="vacation" />
+                    </Box>
                 </Box>
             )}
         </Box>
