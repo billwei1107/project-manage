@@ -20,6 +20,7 @@ import type { Project } from '../../api/projects';
 import ProjectContextSidebar from '../../components/projects/ProjectContextSidebar';
 import TaskRowCard from '../../components/projects/TaskRowCard';
 import TaskFilterDrawer from '../../components/projects/TaskFilterDrawer';
+import emptyTasksIllustration from '../../assets/empty_tasks.png';
 
 import {
     DndContext, closestCorners, KeyboardSensor, PointerSensor,
@@ -47,18 +48,7 @@ export interface ProjectTask {
     group?: string; // e.g. 'Design', 'Development'
 }
 
-const mockAssignee = { name: 'Evan Yates', avatar: 'https://placehold.co/24x24' };
-
-const INITIAL_TASKS: ProjectTask[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', startDay: 2, duration: 2, assignee: mockAssignee, group: 'Design' },
-    { id: '2', name: 'Mind Map', estimate: '1d 2h', spentTime: '4h 25m', priority: 'medium', status: 'in_progress', section: 'active', startDay: 5, duration: 2, assignee: mockAssignee, group: 'Design' },
-    { id: '3', name: 'UX sketches', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 8, duration: 4, assignee: mockAssignee, group: 'Design' },
-    { id: '4', name: 'UX Login + Registration', estimate: '2d', spentTime: '3h 15m', priority: 'low', status: 'todo', section: 'active', startDay: 7, duration: 4, assignee: mockAssignee, group: 'Design' },
-    { id: '5', name: 'UI Login + Registration', estimate: '1d 2h', spentTime: '4h', priority: 'medium', status: 'in_review', section: 'active', startDay: 9, duration: 5, assignee: mockAssignee, group: 'Design' },
-    { id: '6', name: 'UI for other screens', estimate: '4d', spentTime: '2d 2h 20m', priority: 'low', status: 'in_progress', section: 'active', startDay: 10, duration: 4, assignee: mockAssignee, group: 'Design' },
-    { id: '7', name: 'Animation for buttons', estimate: '6h', spentTime: '0h', priority: 'medium', status: 'todo', section: 'backlog', startDay: 13, duration: 1, assignee: mockAssignee },
-    { id: '8', name: 'Preloader', estimate: '2d', spentTime: '0h', priority: 'low', status: 'todo', section: 'backlog', startDay: 14, duration: 2, assignee: mockAssignee }
-];
+const INITIAL_TASKS: ProjectTask[] = [];
 
 const KANBAN_COLUMNS = [
     { id: 'todo', label: '待處理' },
@@ -303,6 +293,40 @@ export default function ProjectDetail() {
         );
     };
 
+    const renderEmptyState = () => (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 4 }}>
+            <Box 
+                component="img" 
+                src={emptyTasksIllustration} 
+                alt="No Tasks" 
+                sx={{ width: '100%', maxWidth: 450, height: 'auto', mb: 3 }} 
+            />
+            <Typography sx={{ color: '#0A1629', fontSize: 20, fontFamily: 'Nunito Sans', fontWeight: 800, mb: 0.5, textAlign: 'center' }}>
+                There are no tasks in this project yet
+            </Typography>
+            <Typography sx={{ color: '#0A1629', fontSize: 20, fontFamily: 'Nunito Sans', fontWeight: 800, mb: 4, textAlign: 'center' }}>
+                Let's add them
+            </Typography>
+            <Button 
+                variant="contained" 
+                startIcon={<AddIcon />} 
+                sx={{ 
+                    bgcolor: '#3F8CFF', 
+                    borderRadius: '14px', 
+                    textTransform: 'none', 
+                    fontWeight: 700, 
+                    fontFamily: 'Nunito Sans', 
+                    fontSize: 16, 
+                    px: 4, 
+                    py: 1.5, 
+                    boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)' 
+                }}
+            >
+                Add Task
+            </Button>
+        </Box>
+    );
+
     if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', mt: 10 }}><CircularProgress /></Box>;
     if (!project) return <Typography>Project not found.</Typography>;
 
@@ -317,9 +341,11 @@ export default function ProjectDetail() {
                         {project.title || 'Medical App (iOS native)'}
                     </Typography>
                 </Box>
-                <Button variant="contained" startIcon={<AddIcon />} sx={{ bgcolor: '#3F8CFF', borderRadius: '14px', textTransform: 'none', fontWeight: 700, fontFamily: 'Nunito Sans', fontSize: 16, px: 3, py: 1.5, boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)', alignSelf: 'center' }}>
-                    Add Task
-                </Button>
+                {tasks.length > 0 && (
+                    <Button variant="contained" startIcon={<AddIcon />} sx={{ bgcolor: '#3F8CFF', borderRadius: '14px', textTransform: 'none', fontWeight: 700, fontFamily: 'Nunito Sans', fontSize: 16, px: 3, py: 1.5, boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)', alignSelf: 'center' }}>
+                        Add Task
+                    </Button>
+                )}
             </Box>
 
             <Grid container spacing={4}>
@@ -353,9 +379,13 @@ export default function ProjectDetail() {
                         </Box>
                     </Box>
 
-                    {viewMode === 'list' && renderListBoard()}
-                    {viewMode === 'board' && renderKanbanBoard()}
-                    {viewMode === 'timeline' && <TaskTimelineBoard tasks={tasks as any} />}
+                    {tasks.length === 0 ? renderEmptyState() : (
+                        <>
+                            {viewMode === 'list' && renderListBoard()}
+                            {viewMode === 'board' && renderKanbanBoard()}
+                            {viewMode === 'timeline' && <TaskTimelineBoard tasks={tasks as any} />}
+                        </>
+                    )}
                 </Grid>
             </Grid>
 
