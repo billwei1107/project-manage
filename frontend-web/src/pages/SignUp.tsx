@@ -6,14 +6,12 @@ import {
     Typography, 
     InputAdornment, 
     IconButton,
-    Link,
     Divider
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import { useNavigate } from 'react-router-dom';
 
 /**
  * @file SignUp.tsx
@@ -69,7 +67,6 @@ const StepperItem = ({
 );
 
 export default function SignUp() {
-    const navigate = useNavigate();
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
