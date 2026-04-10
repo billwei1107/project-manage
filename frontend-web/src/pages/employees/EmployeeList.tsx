@@ -11,6 +11,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import AddIcon from '@mui/icons-material/Add';
+import AddEmployeeModal from '../../components/employees/AddEmployeeModal';
 
 /**
  * @file EmployeeList.tsx
@@ -67,6 +68,7 @@ const MOCK_ACTIVITIES: MockActivity[] = [
 
 export default function EmployeeList() {
     const [activeTab, setActiveTab] = useState<'List' | 'Activity'>('List');
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const ColumnHeaderLabel = ({ title }: { title: string }) => (
         <Typography sx={{ color: '#A0AABF', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 0.5 }}>
@@ -127,6 +129,7 @@ export default function EmployeeList() {
                     <Button
                         variant="contained"
                         startIcon={<AddIcon />}
+                        onClick={() => setIsAddModalOpen(true)}
                         sx={{
                             bgcolor: '#3F8CFF', color: 'white', borderRadius: '14px', textTransform: 'none', px: 3, py: 1.5,
                             fontSize: 15, fontWeight: 700, fontFamily: 'Nunito Sans', boxShadow: '0px 4px 12px rgba(63, 140, 255, 0.3)',
@@ -300,6 +303,8 @@ export default function EmployeeList() {
                     ))}
                 </Box>
             )}
+
+            <AddEmployeeModal open={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
 
         </Box>
     );
