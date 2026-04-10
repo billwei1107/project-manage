@@ -20,6 +20,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import CheckIcon from '@mui/icons-material/Check';
 import AddIcon from '@mui/icons-material/Add';
+import successIllustration from '../assets/success_illustration.png';
 
 /**
  * @file SignUp.tsx
@@ -108,6 +109,59 @@ export default function SignUp() {
     };
 
     const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+    if (step === 5) {
+        return (
+            <Box 
+                sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '100%', 
+                    maxWidth: 1360, 
+                    minHeight: { xs: 'auto', md: 860 },
+                    bgcolor: 'white', 
+                    borderRadius: '24px', 
+                    overflow: 'hidden', 
+                    boxShadow: '0px 6px 58px rgba(196, 203, 214, 0.1)',
+                    p: { xs: 4, md: 8 }
+                }}
+            >
+                <Box 
+                    component="img"
+                    src={successIllustration}
+                    alt="Success"
+                    sx={{ width: '100%', maxWidth: 500, height: 'auto', mb: 8 }}
+                />
+                
+                <Typography sx={{ color: '#0A1629', fontSize: 22, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 6 }}>
+                    You are successfully registered!
+                </Typography>
+
+                <Button
+                    variant="contained"
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => console.log("Started!")}
+                    sx={{
+                        bgcolor: '#3F8CFF',
+                        color: 'white',
+                        borderRadius: '14px',
+                        py: 1.5,
+                        px: 4,
+                        fontSize: 16,
+                        fontWeight: 700,
+                        fontFamily: 'Nunito Sans',
+                        textTransform: 'none',
+                        boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                        '&:hover': { bgcolor: '#3377E6' }
+                    }}
+                >
+                    Let's Start
+                </Button>
+            </Box>
+        );
+    }
 
     return (
         <Box 
@@ -633,7 +687,7 @@ export default function SignUp() {
                         <Button
                             variant="contained"
                             endIcon={<ArrowForwardIcon />}
-                            onClick={() => setStep(s => s < 4 ? s + 1 : s)}
+                            onClick={() => setStep(s => s < 5 ? s + 1 : s)}
                             sx={{
                                 bgcolor: '#3F8CFF',
                                 color: 'white',
