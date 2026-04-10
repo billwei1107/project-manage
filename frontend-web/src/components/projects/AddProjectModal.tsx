@@ -1,45 +1,26 @@
 import React, { useState } from 'react';
 import {
     Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
+    IconButton,
     Button,
     TextField,
     Grid,
     MenuItem,
-    InputAdornment,
     Typography,
     Box,
-    Divider,
-    Stack,
-    Switch,
-    FormControlLabel,
-    Alert,
     useTheme,
     alpha
 } from '@mui/material';
-import {
-    Description,
-    AttachMoney,
-    DateRange,
-    Person,
-    Work,
-    Title,
-    GitHub,
-    Business,
-    Assignment,
-    Autorenew,
-    RateReview,
-    CheckCircle
-} from '@mui/icons-material';
+import CloseIcon from '@mui/icons-material/Close';
+import AttachFileIcon from '@mui/icons-material/AttachFile';
+import LinkIcon from '@mui/icons-material/Link';
+import CloudUploadOutlinedIcon from '@mui/icons-material/CloudUploadOutlined';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/zh-tw';
 import type { Project, ProjectStatus } from '../../types/project';
-import UserSelect from '../common/UserSelect';
 
 interface AddProjectModalProps {
     open: boolean;
@@ -48,8 +29,23 @@ interface AddProjectModalProps {
     project?: Project | null;
 }
 
+const PRESETS = [
+    { type: 'pattern', color: '#FFD166' },
+    { type: 'pattern', color: '#06D6A0' },
+    { type: 'pattern', color: '#118AB2' },
+    { type: 'pattern', color: '#A259FF' },
+    { type: 'blob', color: '#3F8CFF' },
+    { type: 'blob', color: '#8C52FF' },
+    { type: 'blob', color: '#00C9FF' },
+    { type: 'blob', color: '#00E676' },
+    { type: 'blob', color: '#E040FB' },
+    { type: 'blob', color: '#FFCA28' },
+    { type: 'blob', color: '#FF5252' },
+];
+
 export default function AddProjectModal({ open, onClose, onSubmit, project }: AddProjectModalProps) {
     const theme = useTheme();
+    
     const [formData, setFormData] = useState({
         title: '',
         client: '',
@@ -57,6 +53,8 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
         startDate: null as Dayjs | null,
         endDate: null as Dayjs | null,
         description: '',
+        priority: 'Medium',
+        avatarId: 0,
         status: 'PLANNING' as ProjectStatus,
         teamIds: [] as string[],
         githubToken: '',
@@ -71,7 +69,8 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
 
     React.useEffect(() => {
         if (open && project) {
-            setFormData({
+            setFormData(prev => ({
+                ...prev,
                 title: project.title || '',
                 client: project.client || '',
                 budget: project.budget?.toString() || '',
@@ -80,15 +79,7 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                 description: project.description || '',
                 status: project.status || 'PLANNING',
                 teamIds: project.team?.map(t => t.id) || [],
-                githubToken: project.githubToken || '',
-                fileLocation: project.fileLocation || '',
-                githubRepo: project.githubRepo || '',
-                githubBranch: project.githubBranch || '',
-                backupConfig: project.backupConfig || '',
-                createGithubRepo: false,
-                githubRepoName: '',
-                githubPrivate: true
-            });
+            }));
         } else if (open && !project) {
             clearFormData();
         }
@@ -100,6 +91,10 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
 
     const handleDateChange = (name: 'startDate' | 'endDate') => (value: Dayjs | null) => {
         setFormData({ ...formData, [name]: value });
+    };
+
+    const handleAvatarSelect = (idx: number) => {
+        setFormData({ ...formData, avatarId: idx });
     };
 
     const handleSubmit = () => {
@@ -121,6 +116,8 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             startDate: null,
             endDate: null,
             description: '',
+            priority: 'Medium',
+            avatarId: 0,
             status: 'PLANNING',
             teamIds: [],
             githubToken: '',
@@ -134,28 +131,36 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
         });
     };
 
-    const resetForm = () => {
-        clearFormData();
-        onClose();
+    const customInputStyle = {
+        '& .MuiOutlinedInput-root': {
+            borderRadius: '12px',
+            backgroundColor: 'transparent',
+            '& fieldset': {
+                borderColor: '#E6EDF5',
+            },
+            '&:hover fieldset': {
+                borderColor: '#3F8CFF',
+            },
+            '&.Mui-focused fieldset': {
+                borderColor: '#3F8CFF',
+                borderWidth: '1px',
+                boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.1)',
+            },
+        },
+        '& .MuiInputLabel-root': {
+            color: '#A0AEC0',
+            fontWeight: 600,
+            fontSize: '14px',
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+            color: '#3F8CFF',
+        }
     };
 
-    const SectionHeader = ({ icon, text }: { icon: React.ReactNode, text: string }) => (
-        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2, mt: 1 }}>
-            <Box
-                sx={{
-                    display: 'flex',
-                    p: 0.8,
-                    borderRadius: 1.5,
-                    bgcolor: alpha(theme.palette.primary.main, 0.1),
-                    color: 'primary.main',
-                }}
-            >
-                {icon}
-            </Box>
-            <Typography variant="subtitle1" fontWeight="700" color="text.primary">
-                {text}
-            </Typography>
-        </Stack>
+    const CustomLabel = ({ text }: { text: string }) => (
+        <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#8898AA', mb: 1 }}>
+            {text}
+        </Typography>
     );
 
     return (
@@ -163,265 +168,216 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
             <Dialog
                 open={open}
                 onClose={onClose}
-                maxWidth="md"
-                fullWidth
+                maxWidth="lg"
                 PaperProps={{
-                    sx: { borderRadius: 3 }
+                    sx: { 
+                        borderRadius: '24px',
+                        p: 4,
+                        maxWidth: '920px',
+                        width: '100%',
+                        boxShadow: '0px 20px 50px rgba(0,0,0,0.1)'
+                    }
                 }}
             >
-                <DialogTitle sx={{
-                    fontWeight: 700,
-                    fontSize: '1.5rem',
-                    borderBottom: `1px solid ${theme.palette.divider}`,
-                    pb: 2
-                }}>
-                    <Stack direction="row" alignItems="center" spacing={1.5}>
-                        <Box sx={{
-                            bgcolor: 'primary.main',
-                            color: 'white',
-                            p: 1,
-                            borderRadius: 2,
-                            display: 'flex'
-                        }}>
-                            <Work />
+                <IconButton 
+                    onClick={onClose}
+                    sx={{ 
+                        position: 'absolute', 
+                        right: 24, 
+                        top: 24,
+                        bgcolor: '#F8F9FA',
+                        color: '#0A1629',
+                        '&:hover': { bgcolor: '#E2E8F0' }
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
+
+                <Typography variant="h4" sx={{ fontWeight: 800, color: '#0A1629', mb: 5, mt: 1 }}>
+                    Add Project
+                </Typography>
+
+                <Grid container spacing={6}>
+                    {/* Left Column: Forms */}
+                    <Grid size={{ xs: 12, md: 7 }}>
+                        <Box sx={{ mb: 3 }}>
+                            <CustomLabel text="Project Name" />
+                            <TextField
+                                fullWidth
+                                name="title"
+                                value={formData.title}
+                                onChange={handleChange}
+                                placeholder="Project Name"
+                                sx={customInputStyle}
+                                size="medium"
+                            />
                         </Box>
-                        <Box>
-                            {project ? '編輯專案 (Edit Project)' : '新增專案 (New Project)'}
-                            <Typography variant="body2" color="text.secondary" fontWeight="400">
-                                {project ? '修改專案資訊與狀態' : '建立一個新專案以開始追蹤進度與資源'}
-                            </Typography>
+
+                        <Grid container spacing={2} sx={{ mb: 3 }}>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <CustomLabel text="Starts" />
+                                <DatePicker
+                                    value={formData.startDate}
+                                    onChange={handleDateChange('startDate')}
+                                    slotProps={{ 
+                                        textField: { 
+                                            fullWidth: true,
+                                            placeholder: "Select Date",
+                                            sx: customInputStyle
+                                        } 
+                                    }}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, sm: 6 }}>
+                                <CustomLabel text="Dead Line" />
+                                <DatePicker
+                                    value={formData.endDate}
+                                    onChange={handleDateChange('endDate')}
+                                    slotProps={{ 
+                                        textField: { 
+                                            fullWidth: true,
+                                            placeholder: "Select Date",
+                                            sx: customInputStyle
+                                        } 
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <Box sx={{ mb: 3 }}>
+                            <CustomLabel text="Priority" />
+                            <TextField
+                                select
+                                fullWidth
+                                name="priority"
+                                value={formData.priority}
+                                onChange={handleChange}
+                                sx={customInputStyle}
+                                SelectProps={{
+                                    IconComponent: () => <Box sx={{ mx: 2, display: 'flex' }}><svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="#718EBF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg></Box>
+                                }}
+                            >
+                                <MenuItem value="Low">Low</MenuItem>
+                                <MenuItem value="Medium">Medium</MenuItem>
+                                <MenuItem value="High">High</MenuItem>
+                            </TextField>
                         </Box>
-                    </Stack>
-                </DialogTitle>
 
-                <DialogContent sx={{ py: 3 }}>
-                    <Grid container spacing={4}>
-                        {/* Left Column: Core Info */}
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <SectionHeader icon={<Business fontSize="small" />} text="基本資訊 (Basic Info)" />
-                            <Stack spacing={2.5}>
-                                <TextField
-                                    fullWidth
-                                    label="專案名稱"
-                                    name="title"
-                                    value={formData.title}
-                                    onChange={handleChange}
-                                    required
-                                    placeholder="例如：企業資源規劃系統 ERP"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Title fontSize="small" color="action" /></InputAdornment>,
-                                    }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label="客戶名稱"
-                                    name="client"
-                                    value={formData.client}
-                                    onChange={handleChange}
-                                    placeholder="例如：ABC 科技有限公司"
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Business fontSize="small" color="action" /></InputAdornment>,
-                                    }}
-                                />
-                                <TextField
-                                    fullWidth
-                                    select
-                                    label="專案階段"
-                                    name="status"
-                                    value={formData.status}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><Assignment fontSize="small" color="action" /></InputAdornment>,
-                                    }}
-                                >
-                                    <MenuItem value="PLANNING">
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Assignment fontSize="small" sx={{ mr: 1, color: 'info.main' }} />
-                                            規劃中
-                                        </Box>
-                                    </MenuItem>
-                                    <MenuItem value="IN_PROGRESS">
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <Autorenew fontSize="small" sx={{ mr: 1, color: 'primary.main' }} />
-                                            進行中
-                                        </Box>
-                                    </MenuItem>
-                                    <MenuItem value="REVIEW">
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <RateReview fontSize="small" sx={{ mr: 1, color: 'warning.main' }} />
-                                            審核中
-                                        </Box>
-                                    </MenuItem>
-                                    <MenuItem value="DONE">
-                                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                            <CheckCircle fontSize="small" sx={{ mr: 1, color: 'success.main' }} />
-                                            已完成
-                                        </Box>
-                                    </MenuItem>
-                                </TextField>
-                            </Stack>
-                        </Grid>
-
-                        {/* Right Column: Schedule & Budget */}
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <SectionHeader icon={<DateRange fontSize="small" />} text="時程與預算 (Schedule & Budget)" />
-                            <Stack spacing={2.5}>
-                                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                                    <DatePicker
-                                        label="開始日期"
-                                        value={formData.startDate}
-                                        onChange={handleDateChange('startDate')}
-                                        slotProps={{ textField: { fullWidth: true } }}
-                                    />
-                                    <DatePicker
-                                        label="結束日期"
-                                        value={formData.endDate}
-                                        onChange={handleDateChange('endDate')}
-                                        slotProps={{ textField: { fullWidth: true } }}
-                                    />
-                                </Stack>
-                                <TextField
-                                    fullWidth
-                                    label="專案預算"
-                                    name="budget"
-                                    type="number"
-                                    value={formData.budget}
-                                    onChange={handleChange}
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start"><AttachMoney fontSize="small" color="action" /></InputAdornment>,
-                                    }}
-                                />
-                            </Stack>
-                        </Grid>
-
-                        <Grid size={{ xs: 12 }}>
-                            <Divider />
-                        </Grid>
-
-                        {/* Full Width: Team & Description */}
-                        <Grid size={{ xs: 12 }}>
-                            <SectionHeader icon={<Person fontSize="small" />} text="團隊與描述 (Team & Details)" />
-                            <Stack spacing={2.5}>
-                                <UserSelect
-                                    multiple
-                                    label="指派專案成員"
-                                    valueArr={formData.teamIds}
-                                    onChange={(_id) => { }}
-                                    onChangeArr={(ids) => setFormData({ ...formData, teamIds: ids })}
-                                />
-                                <TextField
-                                    fullWidth
-                                    label="專案詳細描述"
-                                    name="description"
-                                    multiline
-                                    rows={3}
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    placeholder="輸入專案的詳細說明、目標與備註..."
-                                    InputProps={{
-                                        startAdornment: <InputAdornment position="start" sx={{ mt: 1.5 }}><Description fontSize="small" color="action" /></InputAdornment>,
-                                    }}
-                                />
-                            </Stack>
-                        </Grid>
-
-                        <Grid size={{ xs: 12 }}>
-                            <Divider sx={{ my: 1 }} />
-                        </Grid>
-
-                        {/* Full Width: GitHub Integration */}
-                        <Grid size={{ xs: 12 }}>
-                            <SectionHeader icon={<GitHub fontSize="small" />} text="GitHub 整合 (GitHub Integration)" />
-
-                            {!project ? (
-                                <Box sx={{
-                                    p: 2,
-                                    borderRadius: 2,
-                                    border: `1px solid ${theme.palette.divider}`,
-                                    bgcolor: formData.createGithubRepo ? alpha(theme.palette.info.main, 0.05) : 'transparent'
-                                }}>
-                                    <FormControlLabel
-                                        control={
-                                            <Switch
-                                                checked={formData.createGithubRepo}
-                                                onChange={(e) => setFormData({ ...formData, createGithubRepo: e.target.checked })}
-                                                color="info"
-                                            />
-                                        }
-                                        label={
-                                            <Typography variant="body1" fontWeight={500}>
-                                                在組織建立共用倉庫 (Create GitHub Repository)
-                                            </Typography>
-                                        }
-                                    />
-
-                                    {formData.createGithubRepo && (
-                                        <Box sx={{ mt: 2, pl: 4 }}>
-                                            <Alert severity="info" sx={{ mb: 2 }}>
-                                                系統將自動在綁定的 GitHub 組織下建立一個倉庫。輸入的名稱會自動轉換為合法格式 (小寫與連字號)。
-                                                被指派的成員若已綁定 GitHub 帳號，將會自動受邀。
-                                            </Alert>
-
-                                            <TextField
-                                                fullWidth
-                                                label="GitHub 倉庫名稱"
-                                                name="githubRepoName"
-                                                value={formData.githubRepoName}
-                                                onChange={(e) => {
-                                                    const formatted = e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-                                                    setFormData({ ...formData, githubRepoName: formatted });
-                                                }}
-                                                placeholder="例如: abc-e-commerce-system"
-                                                required={formData.createGithubRepo}
-                                                sx={{ mb: 2 }}
-                                                autoFocus
-                                                InputProps={{
-                                                    startAdornment: <InputAdornment position="start"><GitHub fontSize="small" color="action" /></InputAdornment>,
-                                                }}
-                                            />
-
-                                            <FormControlLabel
-                                                control={
-                                                    <Switch
-                                                        checked={formData.githubPrivate}
-                                                        onChange={(e) => setFormData({ ...formData, githubPrivate: e.target.checked })}
-                                                    />
-                                                }
-                                                label="設為私人倉庫 (Private Repository)"
-                                            />
-                                        </Box>
-                                    )}
-                                </Box>
-                            ) : (
-                                <Alert severity="info">
-                                    此專案已建立。若要進階設定 GitHub 連動，請至專案內的「資源與設定」區塊操作。
-                                </Alert>
-                            )}
-                        </Grid>
+                        <Box sx={{ mb: 4 }}>
+                            <CustomLabel text="Description" />
+                            <TextField
+                                fullWidth
+                                name="description"
+                                multiline
+                                rows={4}
+                                value={formData.description}
+                                onChange={handleChange}
+                                placeholder="Add some description of the project"
+                                sx={customInputStyle}
+                            />
+                        </Box>
                     </Grid>
-                </DialogContent>
 
-                <DialogActions sx={{ p: 3, borderTop: `1px solid ${theme.palette.divider}`, bgcolor: 'background.default' }}>
-                    <Button
-                        onClick={resetForm}
-                        color="inherit"
-                        size="large"
-                        sx={{ borderRadius: 2, px: 3 }}
-                    >
-                        取消 (Cancel)
-                    </Button>
-                    <Button
-                        onClick={handleSubmit}
-                        variant="contained"
-                        color="primary"
-                        size="large"
-                        disabled={!formData.title || (formData.createGithubRepo && !formData.githubRepoName)}
-                        startIcon={<Work />}
-                        sx={{ borderRadius: 2, px: 4, boxShadow: 4 }}
-                    >
-                        {project ? '確認修改 (Update)' : '確認建立 (Create)'}
-                    </Button>
-                </DialogActions>
+                    {/* Right Column: Image Picker */}
+                    <Grid size={{ xs: 12, md: 5 }}>
+                        <Box sx={{ 
+                            border: '1px solid #E6EDF5', 
+                            borderRadius: '24px', 
+                            p: 3,
+                            mb: 2,
+                            position: 'relative'
+                        }}>
+                            <Typography sx={{ fontWeight: 800, color: '#0A1629', mb: 1 }}>
+                                Select image
+                            </Typography>
+                            <Typography sx={{ fontSize: 13, color: '#8898AA', mb: 3, lineHeight: 1.6 }}>
+                                Select or upload an avatar for the project (available formats: jpg, png)
+                            </Typography>
+
+                            <Grid container spacing={2}>
+                                {PRESETS.map((preset, idx) => (
+                                    <Grid size={{ xs: 3 }} key={idx}>
+                                        <Box 
+                                            onClick={() => handleAvatarSelect(idx)}
+                                            sx={{
+                                                width: 48,
+                                                height: 48,
+                                                borderRadius: '16px',
+                                                bgcolor: preset.type === 'pattern' ? alpha(preset.color, 0.1) : alpha(preset.color, 0.1),
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                border: formData.avatarId === idx ? `2px solid ${theme.palette.primary.main}` : '2px solid transparent',
+                                                transition: 'all 0.2s',
+                                                '&:hover': { transform: 'scale(1.05)' }
+                                            }}
+                                        >
+                                            <Box sx={{ 
+                                                width: 20, 
+                                                height: 20, 
+                                                bgcolor: preset.color,
+                                                borderRadius: preset.type === 'pattern' ? '40% 60% 70% 30% / 40% 50% 60% 50%' : '50% 50% 50% 20% / 60% 40% 70% 40%',
+                                                transform: `rotate(${idx * 45}deg)`,
+                                                opacity: 0.8
+                                            }} />
+                                        </Box>
+                                    </Grid>
+                                ))}
+                                <Grid size={{ xs: 3 }}>
+                                    <Box 
+                                        sx={{
+                                            width: 48,
+                                            height: 48,
+                                            borderRadius: '16px',
+                                            border: '2px dashed #3F8CFF',
+                                            cursor: 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            bgcolor: 'transparent',
+                                            color: '#3F8CFF',
+                                            transition: 'all 0.2s',
+                                            '&:hover': { bgcolor: alpha('#3F8CFF', 0.05) }
+                                        }}
+                                    >
+                                        <CloudUploadOutlinedIcon fontSize="small" />
+                                    </Box>
+                                </Grid>
+                            </Grid>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', gap: 1.5, mb: { xs: 4, md: 0 } }}>
+                            <IconButton sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#F4F7FE', color: '#8C52FF', '&:hover': { bgcolor: '#EBE3FF' } }}>
+                                <AttachFileIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#E6F9F5', color: '#06D6A0', '&:hover': { bgcolor: '#D1F4EC' } }}>
+                                <LinkIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
+
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', pt: { xs: 2, md: 8 } }}>
+                            <Button
+                                variant="contained"
+                                onClick={handleSubmit}
+                                sx={{
+                                    bgcolor: '#3F8CFF',
+                                    color: 'white',
+                                    borderRadius: '12px',
+                                    py: 1.5,
+                                    px: 4,
+                                    fontSize: 15,
+                                    fontWeight: 700,
+                                    textTransform: 'none',
+                                    boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                                    '&:hover': { bgcolor: '#3377E6' }
+                                }}
+                            >
+                                Save Project
+                            </Button>
+                        </Box>
+                    </Grid>
+                </Grid>
             </Dialog>
         </LocalizationProvider>
     );
