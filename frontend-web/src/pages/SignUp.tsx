@@ -91,6 +91,11 @@ export default function SignUp() {
     const [role, setRole] = useState('Business Owner');
     const [describe, setDescribe] = useState('Yes');
 
+    // Step 3 State
+    const [companyName, setCompanyName] = useState('');
+    const [businessDirection, setBusinessDirection] = useState('IT and programming');
+    const [teamSize, setTeamSize] = useState('41 - 50');
+
     const handleClickShowPassword = () => setShowPassword((show) => !show);
 
     return (
@@ -421,6 +426,111 @@ export default function SignUp() {
                                         label={<Typography sx={{ fontFamily: 'Nunito Sans', fontWeight: 600, color: '#0A1629', fontSize: 16 }}>No</Typography>} 
                                     />
                                 </RadioGroup>
+                            </Box>
+                        </>
+                    )}
+
+                    {/* --- STEP 3 --- */}
+                    {step === 3 && (
+                        <>
+                            <Box sx={{ textAlign: 'center', mb: 6 }}>
+                                <Typography sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', textTransform: 'uppercase', mb: 1 }}>
+                                    Step 3/4
+                                </Typography>
+                                <Typography sx={{ color: '#0A1629', fontSize: 28, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
+                                    Tell about your company
+                                </Typography>
+                            </Box>
+
+                            <Box sx={{ mb: 3 }}>
+                                <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                                    Your Company's Name
+                                </Typography>
+                                <TextField
+                                    fullWidth
+                                    variant="outlined"
+                                    placeholder="Company's Name"
+                                    value={companyName}
+                                    onChange={(e) => setCompanyName(e.target.value)}
+                                    InputProps={{
+                                        sx: { 
+                                            borderRadius: '12px', 
+                                            fontFamily: 'Nunito Sans',
+                                            fontWeight: 600,
+                                            '& fieldset': { borderColor: '#E6EDF5', borderWidth: '2px' },
+                                            '&:hover fieldset': { borderColor: '#3F8CFF' },
+                                            '&.Mui-focused fieldset': { borderColor: '#3F8CFF' },
+                                            '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' },
+                                        }
+                                    }}
+                                />
+                            </Box>
+
+                            <Box sx={{ mb: 3 }}>
+                                <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                                    Business Direction
+                                </Typography>
+                                <Select
+                                    fullWidth
+                                    value={businessDirection}
+                                    onChange={(e) => setBusinessDirection(e.target.value as string)}
+                                    IconComponent={KeyboardArrowDownIcon}
+                                    sx={{
+                                        borderRadius: '12px',
+                                        fontFamily: 'Nunito Sans',
+                                        fontWeight: 600,
+                                        color: '#0A1629',
+                                        '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E6EDF5', borderWidth: '2px' },
+                                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#3F8CFF' },
+                                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#3F8CFF' },
+                                        '&.Mui-focused': { boxShadow: '0 0 0 4px rgba(63, 140, 255, 0.12)' },
+                                    }}
+                                >
+                                    <MenuItem value="IT and programming">IT and programming</MenuItem>
+                                    <MenuItem value="Finance">Finance</MenuItem>
+                                    <MenuItem value="Healthcare">Healthcare</MenuItem>
+                                    <MenuItem value="Other">Other</MenuItem>
+                                </Select>
+                            </Box>
+
+                            <Box sx={{ mb: 4 }}>
+                                <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
+                                    How many people in your team?
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5 }}>
+                                    {['Only me', '2 - 5', '6 - 10', '11 - 20', '21 - 40', '41 - 50', '51 - 100', '101 - 500'].map((size) => {
+                                        const isSelected = teamSize === size;
+                                        return (
+                                            <Button
+                                                key={size}
+                                                variant={isSelected ? "contained" : "outlined"}
+                                                onClick={() => setTeamSize(size)}
+                                                sx={{
+                                                    borderRadius: '10px',
+                                                    textTransform: 'none',
+                                                    fontFamily: 'Nunito Sans',
+                                                    fontWeight: isSelected ? 700 : 600,
+                                                    fontSize: 14,
+                                                    px: 2,
+                                                    py: 1,
+                                                    minWidth: 80,
+                                                    borderColor: isSelected ? 'transparent' : '#E6EDF5',
+                                                    borderWidth: '2px',
+                                                    color: isSelected ? 'white' : '#7D8592',
+                                                    bgcolor: isSelected ? '#3F8CFF' : 'white',
+                                                    boxShadow: isSelected ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none',
+                                                    '&:hover': {
+                                                        borderColor: '#3F8CFF',
+                                                        borderWidth: '2px',
+                                                        bgcolor: isSelected ? '#3377E6' : 'transparent',
+                                                    }
+                                                }}
+                                            >
+                                                {size}
+                                            </Button>
+                                        );
+                                    })}
+                                </Box>
                             </Box>
                         </>
                     )}
