@@ -16,6 +16,7 @@ import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Badge from '@mui/material/Badge';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
 import { useMessengerStore } from '../../stores/useMessengerStore';
 import type { Message as MessageType, ChatUser } from '../../stores/useMessengerStore';
 
@@ -41,6 +42,9 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     
     // Hover Message State
     const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
+    
+    // Edit Message State
+    const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     
     const users = useMessengerStore(state => state.users);
 
@@ -85,13 +89,26 @@ export default function ChatArea({ conversationId, conversationName, messages, c
         if (!finalContent || isSubmitting) return;
         setIsSubmitting(true);
         
-        setInputStr('');
-        setMentions([]);
         try {
-            await onSendMessage(conversationId, finalContent, 'TEXT');
+            if (editingMessageId) {
+                // Future iteration: call edit API
+                console.log('Edited message:', editingMessageId, 'to:', finalContent);
+                // Fake optimistic update behavior can go here. For now just clear state.
+            } else {
+                await onSendMessage(conversationId, finalContent, 'TEXT');
+            }
         } finally {
+            setInputStr('');
+            setMentions([]);
+            setEditingMessageId(null);
             setIsSubmitting(false);
         }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingMessageId(null);
+        setInputStr('');
+        setMentions([]);
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -300,7 +317,16 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                                                 <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
                                                     <ShareOutlinedIcon sx={{ fontSize: 20, color: '#0A1629' }} />
                                                 </IconButton>
-                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
+                                                <IconButton 
+                                                    size="small" 
+                                                    onClick={() => {
+                                                        setEditingMessageId(msg.id);
+                                                        setInputStr(msg.content);
+                                                        setHoveredMessageId(null);
+                                                        inputRef.current?.focus();
+                                                    }}
+                                                    sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}
+                                                >
                                                     <EditOutlinedIcon sx={{ fontSize: 20, color: '#0A1629' }} />
                                                 </IconButton>
                                                 <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#FFF0F0', color: '#F76659', '&:hover': { bgcolor: '#FFE5E5' } }}>
@@ -365,10 +391,10 @@ export default function ChatArea({ conversationId, conversationName, messages, c
 
                 <Box sx={{ 
                     display: 'flex', alignItems: 'center',
-                    border: mentions.length > 0 ? '1px solid #3F8CFF' : '1px solid #D8E0F0', 
+                    border: (mentions.length > 0 || editingMessageId) ? '1px solid #3F8CFF' : '1px solid #D8E0F0', 
                     borderRadius: '14px', 
                     bgcolor: 'white', 
-                    boxShadow: mentions.length > 0 ? '0 0 0 3px rgba(63, 140, 255, 0.12)' : '0px 1px 2px rgba(183.68, 200.04, 224.46, 0.22)', 
+                    boxShadow: (mentions.length > 0 || editingMessageId) ? '0 0 0 3px rgba(63, 140, 255, 0.12)' : '0px 1px 2px rgba(183.68, 200.04, 224.46, 0.22)', 
                     height: 56,
                     px: 1,
                     transition: 'all 0.2s ease-in-out'
@@ -386,7 +412,7 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     <InputBase
                         inputRef={inputRef}
                         sx={{ ml: 2, flex: 1, fontSize: 16, color: '#0A1629' }}
-                        placeholder={mentions.length > 0 ? '' : '請在這裡輸入您的訊息...'}
+                        placeholder={mentions.length > 0 || editingMessageId ? '' : '請在這裡輸入您的訊息...'}
                         value={inputStr}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
@@ -424,22 +450,56 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     <IconButton sx={{ color: '#FDC748', mr: 1 }}>
                         <SentimentSatisfiedAltIcon />
                     </IconButton>
-                    <IconButton 
-                        sx={{ 
-                            bgcolor: '#3F8CFF', 
-                            color: 'white', 
-                            borderRadius: '14px', 
-                            width: 44, 
-                            height: 44, 
-                            boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
-                            '&:hover': { bgcolor: '#2670e8' },
-                            '&.Mui-disabled': { bgcolor: '#B0D4FF', color: 'white' }
-                        }} 
-                        onClick={handleSend}
-                        disabled={(inputStr.trim() === '' && mentions.length === 0) || isSubmitting}
-                    >
-                        <SendIcon fontSize="small" />
-                    </IconButton>
+                    
+                    {editingMessageId ? (
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                            <IconButton 
+                                sx={{ 
+                                    border: '1px solid #D8E0F0', 
+                                    borderRadius: '14px', 
+                                    width: 44, 
+                                    height: 44, 
+                                    color: '#7D8592',
+                                    '&:hover': { bgcolor: '#F4F9FD' }
+                                }} 
+                                onClick={handleCancelEdit}
+                            >
+                                <CloseIcon fontSize="small" />
+                            </IconButton>
+                            <IconButton 
+                                sx={{ 
+                                    bgcolor: '#3F8CFF', 
+                                    color: 'white', 
+                                    borderRadius: '14px', 
+                                    width: 44, 
+                                    height: 44, 
+                                    boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                                    '&:hover': { bgcolor: '#2670e8' }
+                                }} 
+                                onClick={handleSend}
+                                disabled={inputStr.trim() === '' || isSubmitting}
+                            >
+                                <CheckIcon fontSize="small" />
+                            </IconButton>
+                        </Box>
+                    ) : (
+                        <IconButton 
+                            sx={{ 
+                                bgcolor: '#3F8CFF', 
+                                color: 'white', 
+                                borderRadius: '14px', 
+                                width: 44, 
+                                height: 44, 
+                                boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)',
+                                '&:hover': { bgcolor: '#2670e8' },
+                                '&.Mui-disabled': { bgcolor: '#B0D4FF', color: 'white' }
+                            }} 
+                            onClick={handleSend}
+                            disabled={(inputStr.trim() === '' && mentions.length === 0) || isSubmitting}
+                        >
+                            <SendIcon fontSize="small" />
+                        </IconButton>
+                    )}
                 </Box>
             </Box>
             <input type="file" ref={fileInputRef} style={{ display: 'none' }} />
