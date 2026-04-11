@@ -113,7 +113,7 @@ export const Finance: React.FC = () => {
                         >
                             <MenuItem value="ALL">全部專案 (All Projects)</MenuItem>
                             {projects.map((p: any) => (
-                                <MenuItem key={p.id} value={p.id}>{p.name}</MenuItem>
+                                <MenuItem key={p.id} value={p.id}>{p.title}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
@@ -252,7 +252,7 @@ export const Finance: React.FC = () => {
                                             {selectedProject === 'ALL' && (
                                                 <TableCell>
                                                     <Typography variant="body2" color="textSecondary">
-                                                        {projects.find((p: any) => p.id === row.projectId)?.name || 'Unknown'}
+                                                        {projects.find((p: any) => p.id === row.projectId)?.title || 'Unknown'}
                                                     </Typography>
                                                 </TableCell>
                                             )}
