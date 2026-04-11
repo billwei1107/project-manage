@@ -14,7 +14,7 @@ import { useEffect } from 'react';
 export default function ProjectList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     
-    const { projects, fetchProjects, loading } = useProjectStore();
+    const { projects, fetchProjects } = useProjectStore();
     const [activeProjectId, setActiveProjectId] = useState<string>('');
     const [tasks, setTasks] = useState<Task[]>([]);
 

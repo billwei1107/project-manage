@@ -1,21 +1,7 @@
 import { create } from 'zustand';
 import api from '../api/axios';
 
-export interface Project {
-    id: string;
-    title: string;
-    client?: string;
-    budget?: number;
-    startDate?: string;
-    endDate?: string;
-    status: string;
-    progress?: number;
-    description?: string;
-    team?: any[];
-    githubRepo?: string;
-    githubBranch?: string;
-    fileLocation?: string;
-}
+import type { Project } from '../api/projects';
 
 interface ProjectState {
     projects: Project[];

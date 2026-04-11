@@ -1,5 +1,4 @@
 import { Box, Typography, Avatar } from '@mui/material';
-import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import type { Task } from '../../types/project';
 
 export default function TaskCard({ task }: { task: Task }) {

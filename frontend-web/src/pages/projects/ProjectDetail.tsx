@@ -45,6 +45,7 @@ export type TaskItem = Task & {
     spentTime?: string;
     priority?: 'low' | 'medium' | 'high';
     section?: 'active' | 'backlog';
+    group?: string;
 };
 
 export default function ProjectDetail() {
@@ -173,7 +174,7 @@ export default function ProjectDetail() {
             setCollapsedGroups(prev => prev.includes(groupName) ? prev.filter(g => g !== groupName) : [...prev, groupName]);
         };
 
-        const renderTaskGroup = (groupName: string, groupTasks: ProjectTask[]) => {
+        const renderTaskGroup = (groupName: string, groupTasks: TaskItem[]) => {
             const isCollapsed = collapsedGroups.includes(groupName);
             return (
                 <Box key={groupName} sx={{ mb: 4 }}>
@@ -195,8 +196,8 @@ export default function ProjectDetail() {
             );
         };
 
-        const activeGroups: Record<string, ProjectTask[]> = {};
-        const activeUngrouped: ProjectTask[] = [];
+        const activeGroups: Record<string, TaskItem[]> = {};
+        const activeUngrouped: TaskItem[] = [];
         activeTasks.forEach(t => {
             if (t.group) {
                 if (!activeGroups[t.group]) activeGroups[t.group] = [];
