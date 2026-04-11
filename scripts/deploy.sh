@@ -38,19 +38,14 @@ fi
 
 echo "✅ 程式碼已更新至最新狀態。"
 
-# 3. 安全關閉現有容器並清理廢棄依賴 (解決 Conflict 根本原因)
-echo "🧹 正在安全停止與清理 Docker 容器 (移除 orphans)..."
-docker compose -f docker/compose.yaml down -v --remove-orphans
+# 3. 重新建立與啟動容器 (零停機部署)
+echo "🏗️ 正在背景重新建置並啟動所有微服務..."
+docker compose -f docker/compose.yaml up -d --build --remove-orphans
 
-# 額外確認：確保沒有卡死或殘留的同名容器
-# 這個步驟能解決 "The container name is already in use by container..." 的致命錯誤
-echo "🔍 檢查是否有殘留的假死容器..."
-docker rm -f $(docker ps -aq) 2>/dev/null || true
+# 4. 清理殘留的映像檔與廢棄網絡
+echo "🧹 正在安全清理舊版 Docker 資源..."
+docker image prune -f
 docker network prune -f 2>/dev/null || true
-
-# 4. 重新建立與啟動容器
-echo "🏗️ 正在重新建置並啟動所有微服務 (Frontend, Backend, Redis, Postgres)..."
-docker compose -f docker/compose.yaml up -d --build
 
 if [ $? -eq 0 ]; then
     echo "🎉 部署完成！(All services have been started successfully)"

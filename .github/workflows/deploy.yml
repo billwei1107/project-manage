@@ -43,19 +43,15 @@ jobs:
             git checkout -B ${{ github.ref_name }} origin/${{ github.ref_name }}
           fi
 
-          # 3. Stop old containers
-          echo "Stopping old containers..."
-          docker compose -f docker/compose.yaml down --remove-orphans || true
+          # 3. Start services with zero-downtime build
+          echo "Starting Docker Compose (Background Build)..."
+          docker compose -f docker/compose.yaml up -d --build --remove-orphans
+
+          # 4. Cleanup unused images and cache AFTER successful deployment
+          docker image prune -f
           docker system prune -f || true
 
-          # 4. Start services with build
-          echo "Starting Docker Compose..."
-          docker compose -f docker/compose.yaml up -d --build --force-recreate --remove-orphans
-
-          # 4. Cleanup unused images
-          docker image prune -f
-
-          # 4. Immediate Log Check
+          # 5. Immediate Log Check
           echo "=== IMMEDIATE LOG CHECK ==="
           docker logs project-manage-frontend || echo "No logs found"
           
