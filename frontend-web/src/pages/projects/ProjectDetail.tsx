@@ -49,7 +49,11 @@ export interface ProjectTask {
     group?: string; // e.g. 'Design', 'Development'
 }
 
-const INITIAL_TASKS: ProjectTask[] = [];
+const mockAssignee = { name: 'Evan Yates', avatar: 'https://placehold.co/24x24' };
+
+const INITIAL_TASKS: ProjectTask[] = [
+    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', assignee: mockAssignee }
+];
 
 const KANBAN_COLUMNS = [
     { id: 'todo', label: '待處理' },
@@ -206,14 +210,18 @@ export default function ProjectDetail() {
             }
         });
 
+        const showHeaders = tasks.length > 1;
+
         return (
             <Box>
                 {/* Header Row similar to Figma */}
-                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
-                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                        Active Tasks
-                    </Typography>
-                </Box>
+                {showHeaders && (
+                    <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
+                        <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                            Active Tasks
+                        </Typography>
+                    </Box>
+                )}
 
                 {Object.entries(activeGroups).map(([groupName, groupTasks]) =>
                     renderTaskGroup(groupName, groupTasks)
@@ -221,18 +229,24 @@ export default function ProjectDetail() {
 
                 {activeUngrouped.length > 0 && (
                     <Stack spacing={2} sx={{ mb: 4 }}>
-                        {activeUngrouped.map(t => <TaskRowCard key={t.id} task={t as any} />)}
+                        {activeUngrouped.map(t => (
+                            <TaskRowCard key={t.id} task={{...t, assigneeAvatar: t.assignee?.avatar} as any} />
+                        ))}
                     </Stack>
                 )}
 
-                <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
-                    <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                        Backlog
-                    </Typography>
-                </Box>
-                <Stack spacing={2}>
-                    {backlogTasks.map(t => <TaskRowCard key={t.id} task={t as any} />)}
-                </Stack>
+                {showHeaders && backlogTasks.length > 0 && (
+                    <>
+                        <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
+                            <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                Backlog
+                            </Typography>
+                        </Box>
+                        <Stack spacing={2}>
+                            {backlogTasks.map(t => <TaskRowCard key={t.id} task={{...t, assigneeAvatar: t.assignee?.avatar} as any} />)}
+                        </Stack>
+                    </>
+                )}
             </Box>
         );
     };
