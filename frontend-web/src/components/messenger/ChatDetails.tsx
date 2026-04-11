@@ -19,7 +19,7 @@ interface ChatDetailsProps {
 }
 
 export default function ChatDetails({ conversationName, onClose }: ChatDetailsProps) {
-    const [expanded, setExpanded] = useState<string | false>('Members');
+    const [expanded, setExpanded] = useState<string | false>('Files');
     
     // Mock members explicitly matching the design
     const mockMembers = [
@@ -29,6 +29,12 @@ export default function ChatDetails({ conversationName, onClose }: ChatDetailsPr
         { id: '4', name: 'Ellen Wong', avatar: 'https://placehold.co/40x40', isOnline: false },
         { id: '5', name: 'Lily Bradley', avatar: 'https://placehold.co/40x40', isOnline: false },
         { id: '6', name: 'Gerald Ingram', avatar: 'https://placehold.co/40x40', isOnline: false },
+    ];
+
+    // Mock files explicitly matching the design
+    const mockFiles = [
+        { id: '1', name: 'site screens.png', size: '10 MB', type: 'PNG', url: 'https://placehold.co/44x44/E6EDF5/3F8CFF' },
+        { id: '2', name: 'site screens.png', size: '10 MB', type: 'PNG', url: 'https://placehold.co/44x44/E6EDF5/6D5DD3' },
     ];
 
     const sections = [
@@ -194,6 +200,42 @@ export default function ChatDetails({ conversationName, onClose }: ChatDetailsPr
                                                 <Typography sx={{ color: '#0A1629', fontSize: 15, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
                                                     {member.name}
                                                 </Typography>
+                                            </Box>
+                                        ))}
+                                    </Box>
+                                ) : sec.title === 'Files' ? (
+                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mt: 1 }}>
+                                        {mockFiles.map(file => (
+                                            <Box 
+                                                key={file.id} 
+                                                sx={{ 
+                                                    display: 'flex', 
+                                                    alignItems: 'center', 
+                                                    gap: 1.5,
+                                                    border: '1px solid #E6EBF5',
+                                                    borderRadius: '12px',
+                                                    p: 1,
+                                                    cursor: 'pointer',
+                                                    '&:hover': { bgcolor: '#F4F9FD' }
+                                                }}
+                                            >
+                                                <Box sx={{ 
+                                                    width: 44, 
+                                                    height: 44, 
+                                                    borderRadius: '8px', 
+                                                    overflow: 'hidden',
+                                                    flexShrink: 0
+                                                }}>
+                                                    <img src={file.url} alt={file.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                </Box>
+                                                <Box>
+                                                    <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 700, lineHeight: 1.2, mb: 0.5 }}>
+                                                        {file.name}
+                                                    </Typography>
+                                                    <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
+                                                        {file.size} {file.type}
+                                                    </Typography>
+                                                </Box>
                                             </Box>
                                         ))}
                                     </Box>
