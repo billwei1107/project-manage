@@ -24,6 +24,7 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
+@SuppressWarnings("null")
 public class FileUploadService {
 
     @Value("${app.upload.dir:uploads}")

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class ShareLinkService {
 
     private final ShareLinkRepository shareLinkRepository;

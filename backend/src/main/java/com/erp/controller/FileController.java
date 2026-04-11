@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projects/{projectId}/files")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class FileController {
 
     private final FileService fileService;

@@ -2,7 +2,9 @@ package com.erp.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.lang.NonNull;
 
 /**
  * @file WebConfig.java
@@ -14,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
+    public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**")
                 .allowedOriginPatterns("*") // Allow all origins for development
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
@@ -23,8 +25,7 @@ public class WebConfig implements WebMvcConfigurer {
     }
 
     @Override
-    public void addResourceHandlers(
-            org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry registry) {
+    public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
         // Expose the uploads directory so receipts can be accessed directly
         registry.addResourceHandler("/api/v1/finance/receipts/**")
                 .addResourceLocations("file:uploads/");

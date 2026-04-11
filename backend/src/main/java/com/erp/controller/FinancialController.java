@@ -22,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/finance")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class FinancialController {
 
     private final FinancialService financialService;

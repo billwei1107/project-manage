@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/files")
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class FileEntityController {
 
     private final FileEntityService fileEntityService;

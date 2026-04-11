@@ -33,6 +33,7 @@ import java.util.stream.Stream;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@SuppressWarnings("null")
 public class FileService {
 
     private final ProjectRepository projectRepository;

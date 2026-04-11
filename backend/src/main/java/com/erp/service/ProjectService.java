@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@SuppressWarnings("null")
 public class ProjectService {
 
     private final ProjectRepository projectRepository;

@@ -26,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
+@SuppressWarnings("null")
 public class UserService {
 
     private final UserRepository userRepository;
