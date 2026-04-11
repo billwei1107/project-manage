@@ -9,6 +9,11 @@ import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt
 import SendIcon from '@mui/icons-material/Send';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloudDownloadOutlinedIcon from '@mui/icons-material/CloudDownloadOutlined';
+import PushPinOutlinedIcon from '@mui/icons-material/PushPinOutlined';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ShareOutlinedIcon from '@mui/icons-material/ShareOutlined';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Badge from '@mui/material/Badge';
 import CloseIcon from '@mui/icons-material/Close';
 import { useMessengerStore } from '../../stores/useMessengerStore';
@@ -33,6 +38,9 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     // Mention State
     const [showMention, setShowMention] = useState(false);
     const [mentions, setMentions] = useState<ChatUser[]>([]);
+    
+    // Hover Message State
+    const [hoveredMessageId, setHoveredMessageId] = useState<string | null>(null);
     
     const users = useMessengerStore(state => state.users);
 
@@ -177,11 +185,26 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                                     </Box>
                                 )}
                                 
-                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                                <Box 
+                                    sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, position: 'relative' }}
+                                    onMouseEnter={() => setHoveredMessageId(msg.id)}
+                                    onMouseLeave={() => setHoveredMessageId(null)}
+                                >
                                     <Avatar sx={{ width: 40, height: 40, bgcolor: isOwn ? '#3F8CFF' : '#E78175' }}>
                                         {isOwn ? '我' : msg.senderName?.charAt(0) || 'U'}
                                     </Avatar>
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+                                    <Box sx={{ 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        flex: 1,
+                                        bgcolor: hoveredMessageId === msg.id ? '#F4F9FD' : 'transparent',
+                                        borderRadius: '16px',
+                                        px: 2,
+                                        py: 1.5,
+                                        ml: -2,
+                                        position: 'relative',
+                                        transition: 'background-color 0.2s'
+                                    }}>
                                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                                             <Typography sx={{ fontWeight: 700, color: '#0A1629', fontSize: 16 }}>
                                                 {isOwn ? '我' : msg.senderName || '未知使用者'}
@@ -252,6 +275,39 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                                                 </Typography>
                                             )}
                                         </Box>
+                                        
+                                        {/* Hover Action Bar */}
+                                        {hoveredMessageId === msg.id && (
+                                            <Box sx={{
+                                                position: 'absolute',
+                                                top: -20,
+                                                right: 16,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: 0.5,
+                                                bgcolor: 'white',
+                                                boxShadow: '0px 6px 16px rgba(121, 144, 173, 0.15)',
+                                                borderRadius: '16px',
+                                                p: 0.5,
+                                                zIndex: 10
+                                            }}>
+                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
+                                                    <PushPinOutlinedIcon sx={{ fontSize: 20, color: '#0A1629' }} />
+                                                </IconButton>
+                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
+                                                    <ChatBubbleOutlineIcon sx={{ fontSize: 20, color: '#0A1629' }} />
+                                                </IconButton>
+                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
+                                                    <ShareOutlinedIcon sx={{ fontSize: 20, color: '#0A1629' }} />
+                                                </IconButton>
+                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', '&:hover': { bgcolor: '#F4F9FD' } }}>
+                                                    <EditOutlinedIcon sx={{ fontSize: 20, color: '#0A1629' }} />
+                                                </IconButton>
+                                                <IconButton size="small" sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#FFF0F0', color: '#F76659', '&:hover': { bgcolor: '#FFE5E5' } }}>
+                                                    <DeleteOutlineIcon sx={{ fontSize: 20 }} />
+                                                </IconButton>
+                                            </Box>
+                                        )}
                                     </Box>
                                 </Box>
                             </React.Fragment>
