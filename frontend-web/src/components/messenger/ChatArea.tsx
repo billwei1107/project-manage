@@ -46,6 +46,9 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     // Edit Message State
     const [editingMessageId, setEditingMessageId] = useState<string | null>(null);
     
+    // Typing Indicators State (hardcoded for UI preview per screenshot)
+    const [typingUsers] = useState<string[]>(['Oscar Holloway']);
+    
     const users = useMessengerStore(state => state.users);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -345,6 +348,24 @@ export default function ChatArea({ conversationId, conversationName, messages, c
 
             {/* Input Form Wrapper */}
             <Box sx={{ p: 4, pt: 2, bgcolor: 'white', position: 'relative' }}>
+                
+                {/* Typing Indicator */}
+                {typingUsers.length > 0 && (
+                    <Typography 
+                        sx={{ 
+                            color: '#3F8CFF', 
+                            fontSize: 13, 
+                            fontWeight: 700, 
+                            fontFamily: 'Nunito Sans',
+                            mb: 1.5,
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 0.5
+                        }}
+                    >
+                        {typingUsers.join(', ')} is typing...
+                    </Typography>
+                )}
                 
                 {/* Mention Popup */}
                 {showMention && (
