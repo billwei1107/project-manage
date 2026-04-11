@@ -7,6 +7,7 @@ import AddProjectModal from '../../components/projects/AddProjectModal';
 // 引入新建立的元件
 import ProjectSidebar from '../../components/projects/ProjectSidebar';
 import TaskBoard from '../../components/projects/TaskBoard';
+import emptyTasksIllustration from '../../assets/empty_tasks.png';
 import type { Task } from '../../types/project';
 import { useProjectStore } from '../../stores/useProjectStore';
 import { useEffect } from 'react';
@@ -101,30 +102,49 @@ export default function ProjectList() {
                     />
                 </Box>
 
-                {/* 任務看板 */}
+                {/* 任務看板或空狀態 */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    {/* Header line for Tasks */}
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                        <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                            任務列表
-                        </Typography>
-                        
-                        {/* Fake Toolbar Icons */}
-                        <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Box sx={{ width: 48, height: 48, bgcolor: 'white', borderRadius: '14px', boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', mb: 1, position: 'relative' }}>
-                                    <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 6 }} />
-                                    <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 12 }} />
+                    {projects.length === 0 ? (
+                        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, bgcolor: 'white', borderRadius: '24px', p: 4, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
+                            <Box 
+                                component="img" 
+                                src={emptyTasksIllustration} 
+                                alt="No Projects" 
+                                sx={{ width: '100%', maxWidth: 300, height: 'auto', mb: 3 }} 
+                            />
+                            <Typography sx={{ color: '#0A1629', fontSize: 20, fontFamily: 'Nunito Sans', fontWeight: 800 }}>
+                                尚未建立任何專案
+                            </Typography>
+                            <Typography sx={{ color: '#91929E', fontSize: 16, fontFamily: 'Nunito Sans', mt: 1 }}>
+                                請點擊右上角的「新增專案」開始您的工作
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <>
+                            {/* Header line for Tasks */}
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                                <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
+                                    任務列表
+                                </Typography>
+                                
+                                {/* Fake Toolbar Icons */}
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                    <Box sx={{ width: 48, height: 48, bgcolor: 'white', borderRadius: '14px', boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', mb: 1, position: 'relative' }}>
+                                            <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 6 }} />
+                                            <Box sx={{ width: 20, height: 2, bgcolor: '#0A1629', position: 'absolute', top: 12 }} />
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ width: 48, height: 48, bgcolor: 'white', border: '1px solid #3F8CFF', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Box sx={{ width: 16, height: 16, borderRadius: '4px', border: '2px solid #3F8CFF' }} />
+                                    </Box>
                                 </Box>
                             </Box>
-                            <Box sx={{ width: 48, height: 48, bgcolor: 'white', border: '1px solid #3F8CFF', borderRadius: '14px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <Box sx={{ width: 16, height: 16, borderRadius: '4px', border: '2px solid #3F8CFF' }} />
-                            </Box>
-                        </Box>
-                    </Box>
 
-                    {/* 看板的主體，傳入當前選中專案的 tasks 資料 */}
-                    <TaskBoard tasks={tasks as any} />
+                            {/* 看板的主體，傳入當前選中專案的 tasks 資料 */}
+                            <TaskBoard tasks={tasks as any} />
+                        </>
+                    )}
                 </Box>
             </Box>
 

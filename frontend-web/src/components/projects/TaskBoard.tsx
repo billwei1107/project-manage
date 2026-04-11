@@ -1,6 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import type { Task } from '../../types/project';
 import TaskCard from './TaskCard';
+import emptyTasksIllustration from '../../assets/empty_tasks.png';
 
 interface TaskBoardProps {
     tasks: Task[];
@@ -45,6 +46,25 @@ export default function TaskBoard({ tasks }: TaskBoardProps) {
             )}
         </Box>
     );
+
+    if (tasks.length === 0) {
+        return (
+            <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', bgcolor: 'white', borderRadius: '24px', p: 4, boxShadow: '0px 6px 58px rgba(195, 203, 214, 0.10)' }}>
+                <Box 
+                    component="img" 
+                    src={emptyTasksIllustration} 
+                    alt="No Tasks" 
+                    sx={{ width: '100%', maxWidth: 300, height: 'auto', mb: 3 }} 
+                />
+                <Typography sx={{ color: '#0A1629', fontSize: 18, fontFamily: 'Nunito Sans', fontWeight: 800, textAlign: 'center' }}>
+                    這個專案還沒有任何任務
+                </Typography>
+                <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mt: 1, textAlign: 'center' }}>
+                    （請前往專案詳情頁面新增任務）
+                </Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 3 }}>
