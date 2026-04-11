@@ -11,3 +11,5 @@
 
 
 - 修復 `TaskTimelineBoard.tsx` 中殘留的 `ProjectTask` 匯入錯誤，解決 CI/CD 前端編譯失敗的問題。
+
+- 修復 `TaskTimelineBoard.tsx` 中 `TaskItem` 缺少 `startDay`, `duration` 屬性，及 `task.name` 取用錯誤的名稱，解決 CI/CD 前端編譯失敗的問題。

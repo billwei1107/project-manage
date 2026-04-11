@@ -105,7 +105,7 @@ export default function TaskTimelineBoard({ tasks }: Props) {
                                     height: 60, display: 'flex', alignItems: 'center', px: 3
                                 }}>
                                     <Typography noWrap sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans' }}>
-                                        {task.name}
+                                        {task.title}
                                     </Typography>
                                 </Box>
 

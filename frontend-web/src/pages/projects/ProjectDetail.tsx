@@ -46,6 +46,8 @@ export type TaskItem = Task & {
     priority?: 'low' | 'medium' | 'high';
     section?: 'active' | 'backlog';
     group?: string;
+    startDay?: number;
+    duration?: number;
 };
 
 export default function ProjectDetail() {
