@@ -29,9 +29,10 @@ interface ChatAreaProps {
     currentUserId: string;
     isLoading: boolean;
     onSendMessage: (conversationId: string, content: string, messageType?: string, fileUrl?: string, fileName?: string) => Promise<void>;
+    onToggleDetails?: () => void;
 }
 
-export default function ChatArea({ conversationId, conversationName, messages, currentUserId, isLoading, onSendMessage }: ChatAreaProps) {
+export default function ChatArea({ conversationId, conversationName, messages, currentUserId, isLoading, onSendMessage, onToggleDetails }: ChatAreaProps) {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
@@ -188,7 +189,10 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <PushPinIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
+                    <IconButton 
+                        onClick={onToggleDetails}
+                        sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44, '&:hover': { bgcolor: '#e2e8f0' } }}
+                    >
                         <MoreVertIcon sx={{ color: '#0A1629' }} fontSize="small" />
                     </IconButton>
                 </Box>

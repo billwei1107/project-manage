@@ -11,6 +11,7 @@ import { useMessengerStore, type ChatUser, type ConversationItem } from '../../s
 import { useAuthStore } from '../../stores/useAuthStore';
 import ConversationsList from '../../components/messenger/ConversationsList';
 import ChatArea from '../../components/messenger/ChatArea';
+import ChatDetails from '../../components/messenger/ChatDetails';
 
 export default function Messenger() {
     const {
@@ -20,6 +21,7 @@ export default function Messenger() {
     } = useMessengerStore();
     const { user: currentUser } = useAuthStore();
     const [newMessageDialogOpen, setNewMessageDialogOpen] = useState(false);
+    const [showDetails, setShowDetails] = useState(true);
 
     useEffect(() => {
         fetchConversations();
@@ -68,7 +70,7 @@ export default function Messenger() {
                 
                 {/* Right Side: Chat Area or Placeholder */}
                 {activeConversationId ? (
-                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <Box sx={{ flex: 1, display: 'flex', flexDirection: 'row' }}>
                         <ChatArea
                             conversationId={activeConversationId}
                             conversationName={getConversationName(conversations.find(c => c.id === activeConversationId)!)}
@@ -76,7 +78,14 @@ export default function Messenger() {
                             currentUserId={currentUser?.id || ''}
                             isLoading={isLoading}
                             onSendMessage={sendMessage}
+                            onToggleDetails={() => setShowDetails(!showDetails)}
                         />
+                        {showDetails && (
+                            <ChatDetails 
+                                conversationName={getConversationName(conversations.find(c => c.id === activeConversationId)!)}
+                                onClose={() => setShowDetails(false)}
+                            />
+                        )}
                     </Box>
                 ) : (
                     <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#7D8592', bgcolor: 'white', borderTopRightRadius: '24px', borderBottomRightRadius: '24px' }}>
