@@ -17,6 +17,8 @@ import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import Badge from '@mui/material/Badge';
 import CloseIcon from '@mui/icons-material/Close';
 import CheckIcon from '@mui/icons-material/Check';
+import CancelIcon from '@mui/icons-material/Cancel';
+import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import { useMessengerStore } from '../../stores/useMessengerStore';
 import type { Message as MessageType, ChatUser } from '../../stores/useMessengerStore';
 
@@ -48,6 +50,10 @@ export default function ChatArea({ conversationId, conversationName, messages, c
     
     // Typing Indicators State (hardcoded for UI preview per screenshot)
     const [typingUsers] = useState<string[]>(['Oscar Holloway']);
+    
+    // Search Header State
+    const [isSearchActive, setIsSearchActive] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
     
     const users = useMessengerStore(state => state.users);
 
@@ -168,8 +174,16 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     </Box>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 2 }}>
-                    <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
-                        <SearchIcon sx={{ color: '#0A1629' }} fontSize="small" />
+                    <IconButton 
+                        onClick={() => setIsSearchActive(!isSearchActive)}
+                        sx={{ 
+                            bgcolor: isSearchActive ? '#3F8CFF' : '#F4F9FD', 
+                            color: isSearchActive ? 'white' : '#0A1629',
+                            borderRadius: '14px', width: 44, height: 44,
+                            '&:hover': { bgcolor: isSearchActive ? '#2670e8' : '#e2e8f0' }
+                        }}
+                    >
+                        <SearchIcon fontSize="small" />
                     </IconButton>
                     <IconButton sx={{ bgcolor: '#F4F9FD', borderRadius: '14px', width: 44, height: 44 }}>
                         <PushPinIcon sx={{ color: '#0A1629' }} fontSize="small" />
@@ -179,6 +193,31 @@ export default function ChatArea({ conversationId, conversationName, messages, c
                     </IconButton>
                 </Box>
             </Box>
+
+            {/* Search Bar Sub-header */}
+            {isSearchActive && (
+                <Box sx={{ display: 'flex', alignItems: 'center', px: 4, py: 1.5, borderBottom: '1px solid #E6EBF5' }}>
+                    <SearchIcon sx={{ color: '#0A1629', mr: 1.5 }} />
+                    <InputBase 
+                        placeholder="Search" 
+                        autoFocus
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        sx={{ flex: 1, fontSize: 16, color: '#0A1629', fontFamily: 'Nunito Sans' }} 
+                    />
+                    {searchQuery && (
+                        <IconButton size="small" onClick={() => setSearchQuery('')} sx={{ color: '#A0AEC0', mr: 1, p: 0.5 }}>
+                            <CancelIcon fontSize="small" />
+                        </IconButton>
+                    )}
+                    <IconButton sx={{ color: '#0A1629', mr: 1, borderRadius: '8px' }}>
+                        <CalendarTodayOutlinedIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton sx={{ color: '#0A1629', borderRadius: '8px' }} onClick={() => { setIsSearchActive(false); setSearchQuery(''); }}>
+                        <CloseIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+            )}
 
             {/* Chat History */}
             <Box sx={{ flex: 1, overflowY: 'auto', p: 4, display: 'flex', flexDirection: 'column', gap: 2 }} className="custom-scrollbar">
