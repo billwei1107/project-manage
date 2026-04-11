@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import type { ProjectTask } from '../../pages/projects/ProjectDetail';
+import type { TaskItem } from '../../pages/projects/ProjectDetail';
 
 /**
  * @file TaskTimelineBoard.tsx
@@ -12,7 +12,7 @@ import type { ProjectTask } from '../../pages/projects/ProjectDetail';
  */
 
 interface Props {
-    tasks: ProjectTask[];
+    tasks: TaskItem[];
 }
 
 const TimelineTooltip = styled(({ className, ...props }: TooltipProps) => (
