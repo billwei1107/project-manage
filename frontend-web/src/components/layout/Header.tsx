@@ -94,7 +94,7 @@ export default function Header({
                     height: 48
                 }}>
                     <Typography sx={{ color: '#0A1629', fontFamily: 'Nunito Sans', fontSize: 16, fontWeight: 400, mr: 1.5 }}>
-                        Nov 16, 2020 - Dec 16, 2020
+                        2024年11月16日 - 2024年12月16日
                     </Typography>
                     <CalendarTodayOutlinedIcon sx={{ color: '#0A1629', fontSize: 20 }} />
                 </Box>
@@ -136,7 +136,7 @@ export default function Header({
                         {user?.name?.charAt(0)}
                     </Avatar>
                     <Typography sx={{ color: '#0A1629', fontFamily: 'Nunito Sans', fontSize: 16, fontWeight: 700, display: { xs: 'none', sm: 'block' } }}>
-                        {user?.name || 'Evan Yates'}
+                        {user?.name || '使用者'}
                     </Typography>
                 </Box>
             </Toolbar>

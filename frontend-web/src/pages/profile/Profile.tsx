@@ -34,7 +34,7 @@ const dummyProjects = [
     {
         id: 'PN0001265',
         title: 'Medical App (iOS native)',
-        date: 'Sep 12, 2020',
+        date: '2020年9月12日',
         priority: 'Medium',
         allTasks: 34,
         activeTasks: 13,
@@ -46,7 +46,7 @@ const dummyProjects = [
     {
         id: 'PN0001221',
         title: 'Food Delivery Service',
-        date: 'Sep 10, 2020',
+        date: '2020年9月10日',
         priority: 'Medium',
         allTasks: 50,
         activeTasks: 24,
@@ -58,7 +58,7 @@ const dummyProjects = [
     {
         id: 'PN0001290',
         title: 'Internal Project',
-        date: 'May 28, 2020',
+        date: '2020年5月28日',
         priority: 'Low',
         allTasks: 23,
         activeTasks: 20,
@@ -71,32 +71,32 @@ const dummyProjects = [
 
 // Dummy Team Data
 const dummyTeam = [
-    { id: 1, name: 'Shawn Stone', role: 'UI/UX Designer', level: 'Middle', initials: 'S' },
-    { id: 2, name: 'Randy Delgado', role: 'UI/UX Designer', level: 'Junior', initials: 'R' },
-    { id: 3, name: 'Emily Tyler', role: 'Copywriter', level: 'Middle', initials: 'E' },
-    { id: 4, name: 'Blake Silva', role: 'IOS Developer', level: 'Senior', initials: 'B' },
-    { id: 5, name: 'Oscar Holloway', role: 'UI/UX Designer', level: 'Middle', initials: 'O' },
-    { id: 6, name: 'Wayne Marsh', role: 'Copywriter', level: 'Junior', initials: 'W' },
-    { id: 7, name: 'Jeremy Barrett', role: 'UI/UX Designer', level: 'Middle', initials: 'J' },
+    { id: 1, name: 'Shawn Stone', role: 'UI/UX 設計師', level: '中階', initials: 'S' },
+    { id: 2, name: 'Randy Delgado', role: 'UI/UX 設計師', level: '初階', initials: 'R' },
+    { id: 3, name: 'Emily Tyler', role: '文案企劃', level: '中階', initials: 'E' },
+    { id: 4, name: 'Blake Silva', role: 'IOS 開發工程師', level: '資深', initials: 'B' },
+    { id: 5, name: 'Oscar Holloway', role: 'UI/UX 設計師', level: '中階', initials: 'O' },
+    { id: 6, name: 'Wayne Marsh', role: '文案企劃', level: '初階', initials: 'W' },
+    { id: 7, name: 'Jeremy Barrett', role: 'UI/UX 設計師', level: '中階', initials: 'J' },
 ];
 
 // Dummy Vacations Data
 const dummyBalances = [
-    { type: 'Vacation', current: 12, total: 16, color: '#00C2FF' },
-    { type: 'Sick Leave', current: 6, total: 12, color: '#FF4D4F' },
-    { type: 'Work remotely', current: 42, total: 50, color: '#722ED1' }
+    { type: '特休', current: 12, total: 16, color: '#00C2FF' },
+    { type: '病假', current: 6, total: 12, color: '#FF4D4F' },
+    { type: '遠距辦公', current: 42, total: 50, color: '#722ED1' }
 ];
 
 const dummyRequests = [
-    { id: 1, type: 'Sick Leave', duration: '3 days', start: 'Sep 13, 2020', end: 'Sep 16, 2020', status: 'Pending', color: '#FF4D4F', statusBg: '#FFB800' },
-    { id: 2, type: 'Work remotely', duration: '1 day', start: 'Sep 1, 2020', end: 'Sep 2, 2020', status: 'Approved', color: '#722ED1', statusBg: '#0AC947' },
-    { id: 3, type: 'Vacation', duration: '1 day', start: 'Sep 1, 2020', end: 'Sep 2, 2020', status: 'Approved', color: '#00C2FF', statusBg: '#0AC947' },
+    { id: 1, type: '病假', duration: '3 天', start: '2020年9月13日', end: '2020年9月16日', status: '審核中', color: '#FF4D4F', statusBg: '#FFB800' },
+    { id: 2, type: '遠距辦公', duration: '1 天', start: '2020年9月1日', end: '2020年9月2日', status: '已核准', color: '#722ED1', statusBg: '#0AC947' },
+    { id: 3, type: '特休', duration: '1 天', start: '2020年9月1日', end: '2020年9月2日', status: '已核准', color: '#00C2FF', statusBg: '#0AC947' },
 ];
 
 export default function Profile() {
     const { user, checkAuth } = useAuthStore();
     const [isUploading, setIsUploading] = useState(false);
-    const [activeTab, setActiveTab] = useState('My vacations'); // Projects, Team, My vacations
+    const [activeTab, setActiveTab] = useState('我的休假'); // 參與專案, 所屬團隊, 我的休假
     const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
     const [isSettingsMode, setIsSettingsMode] = useState(false);
     const [settingsTab, setSettingsTab] = useState('Notifications');
@@ -172,7 +172,7 @@ export default function Profile() {
             {/* Header Title Row */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography sx={{ fontSize: 36, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629' }}>
-                    My Profile
+                    我的個人檔案
                 </Typography>
                 <IconButton
                     onClick={() => setIsSettingsMode(!isSettingsMode)}
@@ -243,24 +243,24 @@ export default function Profile() {
                         {user.name || 'User'}
                     </Typography>
                     <Typography sx={{ fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans', color: '#7D8592', mb: 4 }}>
-                        UI/UX Designer
+                        UI/UX 設計師
                     </Typography>
 
                     {/* Main info */}
                     <Typography sx={{ fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629', mb: 2 }}>
-                        Main info
+                        主要資訊
                     </Typography>
-                    <ProfileInput label="Position" value="UI/UX Designer" />
-                    <ProfileInput label="Company" value="Cadabra" />
-                    <ProfileInput label="Location" value="NYC, New York, USA" icon={<LocationOnOutlinedIcon sx={{ fontSize: 20 }} />} />
-                    <ProfileInput label="Birthday Date" value="May 19, 1996" icon={<CalendarTodayOutlinedIcon sx={{ fontSize: 20 }} />} />
+                    <ProfileInput label="職位" value="UI/UX 設計師" />
+                    <ProfileInput label="公司" value="Cadabra" />
+                    <ProfileInput label="地點" value="NYC, New York, USA" icon={<LocationOnOutlinedIcon sx={{ fontSize: 20 }} />} />
+                    <ProfileInput label="生日" value="1996年5月19日" icon={<CalendarTodayOutlinedIcon sx={{ fontSize: 20 }} />} />
 
                     {/* Contact Info */}
                     <Typography sx={{ fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', color: '#0A1629', mt: 4, mb: 2 }}>
-                        Contact Info
+                        聯絡資訊
                     </Typography>
-                    <ProfileInput label="Email" value={user.email || user.username || ''} />
-                    <ProfileInput label="Mobile Number" value="+1 675 346 23-10" />
+                    <ProfileInput label="電子郵件" value={user.email || user.username || ''} />
+                    <ProfileInput label="手機號碼" value="+1 675 346 23-10" />
                     <ProfileInput label="Skype" value="Evan 2256" />
 
                 </Box>
@@ -291,7 +291,7 @@ export default function Profile() {
                                     justifyContent: 'center'
                                 }}>
                                     <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontSize: 16 }}>
-                                        {settingsTab} settings coming soon...
+                                        {settingsTab} 設定即將推出...
                                     </Typography>
                                 </Box>
                             )}
@@ -306,7 +306,7 @@ export default function Profile() {
                             display: 'flex', bgcolor: '#E6EDF5', borderRadius: '24px', 
                             p: '4px', width: 'fit-content' 
                         }}>
-                            {['Projects', 'Team', 'My vacations'].map((tab) => {
+                            {['參與專案', '所屬團隊', '我的休假'].map((tab) => {
                                 const isActive = activeTab === tab;
                                 return (
                                     <Box
@@ -328,7 +328,7 @@ export default function Profile() {
                         </Box>
 
                         {/* Filter & Dropdown (Only for Projects) */}
-                        {activeTab === 'Projects' && (
+                        {activeTab === '參與專案' && (
                             <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                                 <IconButton sx={{ bgcolor: 'white', borderRadius: '12px', boxShadow: '0px 2px 8px rgba(0,0,0,0.05)' }}>
                                     <FilterAltOutlinedIcon sx={{ color: '#0A1629' }} />
@@ -343,13 +343,13 @@ export default function Profile() {
                                         '&:hover': { bgcolor: '#F4F9FD' }
                                     }}
                                 >
-                                    Current Projects
+                                    目前參與專案
                                 </Button>
                             </Box>
                         )}
 
                         {/* Add Request Button (Only for My vacations) */}
-                        {activeTab === 'My vacations' && (
+                        {activeTab === '我的休假' && (
                             <Button
                                 variant="contained"
                                 onClick={() => setIsRequestModalOpen(true)}
@@ -360,14 +360,14 @@ export default function Profile() {
                                     '&:hover': { bgcolor: '#3377E6' }
                                 }}
                             >
-                                + Add Request
+                                + 新增假單
                             </Button>
                         )}
 
                     </Box>
 
                     {/* Projects Listing */}
-                    {activeTab === 'Projects' ? (
+                    {activeTab === '參與專案' ? (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                             {dummyProjects.map(proj => (
                                 <Box key={proj.id} sx={{
@@ -398,7 +398,7 @@ export default function Profile() {
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                                                     <CalendarTodayOutlinedIcon sx={{ fontSize: 14, color: '#7D8592' }} />
                                                     <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans' }}>
-                                                        Created {proj.date}
+                                                        建立於 {proj.date}
                                                     </Typography>
                                                 </Box>
                                                 <Typography sx={{ 
@@ -421,24 +421,24 @@ export default function Profile() {
                                         flexWrap: 'wrap'
                                     }}>
                                         <Box sx={{ position: 'absolute', opacity: 0 }}>
-                                            <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 2 }}>Project Data</Typography>
+                                            <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 2 }}>專案數據</Typography>
                                         </Box>
                                         
                                         <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                             <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 2 }}>
-                                                Project Data
+                                                專案數據
                                             </Typography>
                                             <Box sx={{ display: 'flex', gap: 4 }}>
                                                 <Box>
-                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>All tasks</Typography>
+                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>所有任務</Typography>
                                                     <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>{proj.allTasks}</Typography>
                                                 </Box>
                                                 <Box>
-                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>Active tasks</Typography>
+                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>進行中任務</Typography>
                                                     <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>{proj.activeTasks}</Typography>
                                                 </Box>
                                                 <Box>
-                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>Assignees</Typography>
+                                                    <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 0.5 }}>負責人</Typography>
                                                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                                                         {proj.assignees.map((a, i) => (
                                                             <Avatar key={i} sx={{ width: 24, height: 24, bgcolor: '#C418E6', fontSize: 10, border: '2px solid white', ml: i > 0 ? -1 : 0 }}>{a}</Avatar>
@@ -454,7 +454,7 @@ export default function Profile() {
                                 </Box>
                             ))}
                         </Box>
-                    ) : activeTab === 'Team' ? (
+                    ) : activeTab === '所屬團隊' ? (
                         <Box sx={{ 
                             display: 'grid', 
                             gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3, 1fr)', xl: 'repeat(4, 1fr)' },
@@ -492,7 +492,7 @@ export default function Profile() {
                                 </Box>
                             ))}
                         </Box>
-                    ) : activeTab === 'My vacations' ? (
+                    ) : activeTab === '我的休假' ? (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                             
                             {/* Balances Grid */}
@@ -515,7 +515,7 @@ export default function Profile() {
                                             {item.type}
                                         </Typography>
                                         <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 400, fontFamily: 'Nunito Sans' }}>
-                                            {item.current}/{item.total} days availible
+                                            剩餘 {item.current}/{item.total} 天
                                         </Typography>
                                     </Box>
                                 ))}
@@ -524,7 +524,7 @@ export default function Profile() {
                             {/* My Requests Section */}
                             <Box>
                                 <Typography sx={{ color: '#0A1629', fontSize: 22, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 3 }}>
-                                    My Requests
+                                    我的假單紀錄
                                 </Typography>
                                 
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -537,7 +537,7 @@ export default function Profile() {
                                         }}>
                                             
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Request Type</Typography>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>假單類型</Typography>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                                     <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: req.color }} />
                                                     <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>{req.type}</Typography>
@@ -545,17 +545,17 @@ export default function Profile() {
                                             </Box>
 
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Duration</Typography>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>時長</Typography>
                                                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.duration}</Typography>
                                             </Box>
 
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>Start Day</Typography>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>開始日期</Typography>
                                                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.start}</Typography>
                                             </Box>
 
                                             <Box sx={{ flex: 1 }}>
-                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>End Day</Typography>
+                                                <Typography sx={{ color: '#7D8592', fontSize: 12, fontWeight: 400, fontFamily: 'Nunito Sans', mb: 1 }}>結束日期</Typography>
                                                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 400, fontFamily: 'Nunito Sans' }}>{req.end}</Typography>
                                             </Box>
 

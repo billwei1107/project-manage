@@ -78,7 +78,7 @@ export default function Calendar() {
     
     // We generate all 7 days intervals
     const days = eachDayOfInterval({ start: startDate, end: endDate });
-    const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekDays = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'];
 
     // Helper to get events for a specific day
     const getItemsForDay = (day: Date) => {
@@ -109,7 +109,7 @@ export default function Calendar() {
             {/* Page Header Area */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4, mt: 1 }}>
                 <Typography sx={{ color: '#0A1629', fontSize: 36, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                    Calendar
+                    行事曆
                 </Typography>
                 <Button
                     variant="contained"
@@ -127,7 +127,7 @@ export default function Calendar() {
                         '&:hover': { bgcolor: '#2b75e3' }
                     }}
                 >
-                    Add Event
+                    新增活動
                 </Button>
             </Box>
 

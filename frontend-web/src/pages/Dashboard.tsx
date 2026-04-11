@@ -22,23 +22,23 @@ import ActivityStream from '../components/dashboard/ActivityStream';
  */
 
 const MOCK_WORKLOAD = [
-    { name: 'Shawn Stone', role: 'UI/UX Designer', level: 'Middle', progress: 45, color: '#3F8CFF' },
-    { name: 'Randy Delgado', role: 'UX Designer', level: 'Junior', progress: 60, color: '#0AC947' },
-    { name: 'Emily Jones', role: 'Developer', level: 'Senior', progress: 85, color: '#FFBD21' },
-    { name: 'Jasson Pan', role: 'Project Manager', level: 'Middle', progress: 30, color: '#E78175' },
+    { name: 'Shawn Stone', role: 'UI/UX 設計師', level: '中階', progress: 45, color: '#3F8CFF' },
+    { name: 'Randy Delgado', role: 'UX 設計師', level: '初階', progress: 60, color: '#0AC947' },
+    { name: 'Emily Jones', role: '前端工程師', level: '資深', progress: 85, color: '#FFBD21' },
+    { name: 'Jasson Pan', role: '專案經理', level: '中階', progress: 30, color: '#E78175' },
 ];
 
 const MOCK_EVENTS = [
-    { time: '10:30 AM', title: 'Presentation of the new department' },
-    { time: '11:00 AM', title: "Anna's Birthday" },
-    { time: '02:00 PM', title: "Ray's Birthday" },
+    { time: '10:30 AM', title: '新部門簡報會議' },
+    { time: '11:00 AM', title: "Anna 的生日派對" },
+    { time: '02:00 PM', title: "Ray 的歡送會" },
 ];
 
 const MOCK_ACTIVITIES = [
-    { user: 'Shawn Stone', action: 'updated the status of', target: 'Mind Map', time: 'Just now' },
-    { user: 'Randy Delgado', action: 'attached files to', target: 'Project Medical App', time: '2h ago' },
-    { user: 'Emily Jones', action: 'left a comment on', target: 'Food Delivery Service', time: '3h ago' },
-    { user: 'Jasson Pan', action: 'completed task', target: 'UI Components', time: '1d ago' },
+    { user: 'Shawn Stone', action: '更新了狀態：', target: '心智圖', time: '剛剛' },
+    { user: 'Randy Delgado', action: '上傳了檔案至：', target: '醫療 App 專案', time: '2 小時前' },
+    { user: 'Emily Jones', action: '新增了留言於：', target: '外送服務架構', time: '3 小時前' },
+    { user: 'Jasson Pan', action: '完成了任務：', target: 'UI 元件庫', time: '1 天前' },
 ];
 
 export default function Dashboard() {
@@ -71,10 +71,10 @@ export default function Dashboard() {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 5 }}>
                 <Box>
                     <Typography sx={{ color: '#0A1629', fontSize: { xs: 24, md: 32 }, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
-                        Welcome back, Evan!
+                        歡迎回來！
                     </Typography>
                     <Typography sx={{ color: '#7D8592', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans', mt: 0.5 }}>
-                        Dashboard
+                        儀表板
                     </Typography>
                 </Box>
                 <Button
@@ -93,7 +93,7 @@ export default function Dashboard() {
                         fontSize: 16
                     }}
                 >
-                    Add New Project
+                    新增專案
                 </Button>
             </Box>
 
@@ -103,10 +103,10 @@ export default function Dashboard() {
                     <Box sx={{ mb: 5 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                             <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
-                                Workload
+                                團隊工作量
                             </Typography>
                             <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
-                                View All
+                                查看全部
                             </Typography>
                         </Box>
                         <Box sx={{
@@ -126,7 +126,7 @@ export default function Dashboard() {
                     <Box sx={{ mb: 4 }}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                             <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
-                                Projects
+                                專案列表
                             </Typography>
                         </Box>
                         <Box>
@@ -135,7 +135,7 @@ export default function Dashboard() {
                                     key={project.id}
                                     pn={`PN0001${idx}${4}`}
                                     title={project.title}
-                                    progressType={project.progress > 70 ? 'High' : (project.progress > 30 ? 'Medium' : 'Low')}
+                                    progressType={project.progress > 70 ? '高' : (project.progress > 30 ? '中' : '低')}
                                     progressColor={project.progress > 70 ? '#0AC947' : (project.progress > 30 ? '#FFBD21' : '#E78175')}
                                     allTasks={Math.floor(Math.random() * 50) + 10}
                                     activeTasks={Math.floor(Math.random() * 20) + 5}
@@ -152,7 +152,7 @@ export default function Dashboard() {
                                     border: '1px dashed #7D8592'
                                 }}>
                                     <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                                        No active projects right now.
+                                        目前沒有進行中的專案。
                                     </Typography>
                                 </Box>
                             )}

@@ -30,7 +30,7 @@ export default function NearestEvents({ events }: { events: EventItem[] }) {
                     <Typography
                         onClick={() => navigate('/admin/events')}
                         sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer', '&:hover': { color: '#3F8CFF' } }}>
-                        View All
+                        查看全部
                     </Typography>
                     <IconButton onClick={() => setIsAddOpen(true)} size="small" sx={{ bgcolor: 'rgba(63,140,255,0.1)', color: '#3F8CFF', '&:hover': { bgcolor: 'rgba(63,140,255,0.2)' } }}>
                         <AddIcon fontSize="small" />

@@ -18,10 +18,10 @@ export default function ActivityStream({ activities }: { activities: ActivityIte
         }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                 <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
-                    Activity Stream
+                    最新動態
                 </Typography>
                 <Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
-                    View All
+                    查看全部
                 </Typography>
             </Box>
 

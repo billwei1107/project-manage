@@ -74,8 +74,8 @@ function App() {
             </Route>
 
             <Route path="/client" element={<ClientLayout />}>
-              <Route index element={<div>Client Overview (Coming Soon)</div>} />
-              <Route path="projects" element={<div>My Projects List</div>} />
+              <Route index element={<div>客戶總覽 (敬請期待)</div>} />
+              <Route path="projects" element={<div>我的專案列表</div>} />
             </Route>
           </Route>
 

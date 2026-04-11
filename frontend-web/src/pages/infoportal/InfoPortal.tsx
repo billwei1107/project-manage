@@ -46,7 +46,7 @@ const InfoPortal: React.FC = () => {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography variant="h4" sx={{ fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans' }}>
-                    Info Portal
+                    資訊大廳
                 </Typography>
                 <Button
                     variant="contained"
@@ -66,7 +66,7 @@ const InfoPortal: React.FC = () => {
                         }
                     }}
                 >
-                    Add Folder
+                    新增資料夾
                 </Button>
             </Box>
 
@@ -82,10 +82,10 @@ const InfoPortal: React.FC = () => {
                     }}>
                         <CardContent sx={{ p: { xs: 3, md: 5 }, pr: { md: '250px' }, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                             <Typography variant="h5" sx={{ fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', mb: 2 }}>
-                                Your project data warehouse
+                                您的專案資料庫
                             </Typography>
                             <Typography variant="body1" sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', maxWidth: '400px', lineHeight: 1.6 }}>
-                                Add project data, create thematic pages, edit data, share information with team members
+                                新增專案資料、建立主題頁面、編輯資料，並與團隊成員共享資訊
                             </Typography>
                         </CardContent>
                         {/* Illustration Container */}
@@ -113,7 +113,7 @@ const InfoPortal: React.FC = () => {
                     }}>
                         <CardContent sx={{ p: { xs: 3, md: 4 }, display: 'flex', flexDirection: 'column', height: '100%' }}>
                             <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', fontWeight: 600, mb: 1, fontSize: 13 }}>
-                                Current Projects
+                                目前專案
                             </Typography>
                             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                                 <Box>
@@ -121,7 +121,7 @@ const InfoPortal: React.FC = () => {
                                         10
                                     </Typography>
                                     <Typography sx={{ color: '#22C55E', fontFamily: 'Nunito Sans', fontWeight: 700, mt: 1, fontSize: 14 }}>
-                                        Growth +3
+                                        成長 +3
                                     </Typography>
                                 </Box>
                                 <Box sx={{ mr: 2 }}>
@@ -131,7 +131,7 @@ const InfoPortal: React.FC = () => {
 
                             <Box sx={{ mt: 'auto' }}>
                                 <Typography sx={{ color: '#A0AABF', fontFamily: 'Nunito Sans', fontSize: 12 }}>
-                                    Ongoing projects last month - 7
+                                    上個月進行中專案 - 7
                                 </Typography>
                             </Box>
                         </CardContent>
@@ -161,7 +161,7 @@ const InfoPortal: React.FC = () => {
                                     {folder.title}
                                 </Typography>
                                 <Typography sx={{ color: '#A0AABF', fontFamily: 'Nunito Sans', fontSize: 13 }}>
-                                    {folder.pages} pages
+                                    {folder.pages} 頁
                                 </Typography>
                             </CardContent>
                         </Card>

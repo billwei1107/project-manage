@@ -89,13 +89,13 @@ export default function Login() {
                         <Box sx={{ width: 6, height: 6, bgcolor: '#fff', borderRadius: '50%', position: 'absolute', right: 12, bottom: 14 }} />
                     </Box>
                     <Typography sx={{ color: 'white', fontWeight: 800, fontSize: 24, fontFamily: 'Nunito Sans' }}>
-                        Project Manage
+                        專案管理系統
                     </Typography>
                 </Box>
 
                 <Typography sx={{ color: 'white', fontSize: { xs: 32, md: 40, lg: 48 }, fontWeight: 800, fontFamily: 'Nunito Sans', lineHeight: 1.2, mb: 6 }}>
-                    Your place to work<br/>
-                    Plan. Create. Control.
+                    您的工作專屬空間<br/>
+                    規劃。建立。掌控。
                 </Typography>
 
                 <Box 
@@ -127,7 +127,7 @@ export default function Login() {
             >
                 <Box sx={{ width: '100%', maxWidth: 380 }}>
                     <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans', mb: 5, textAlign: 'center' }}>
-                        Sign In to Project Manage
+                        登入專案管理系統
                     </Typography>
 
                     {error && (
@@ -139,7 +139,7 @@ export default function Login() {
                     {/* Email Input */}
                     <Box sx={{ mb: 3 }}>
                         <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
-                            Email Address (Employee ID)
+                            電子郵件 (員工編號)
                         </Typography>
                         <TextField
                             fullWidth
@@ -164,7 +164,7 @@ export default function Login() {
                     {/* Password Input */}
                     <Box sx={{ mb: 2 }}>
                         <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1.5 }}>
-                            Password
+                            密碼
                         </Typography>
                         <TextField
                             fullWidth
@@ -207,10 +207,10 @@ export default function Login() {
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 5 }}>
                         <FormControlLabel
                             control={<Checkbox defaultChecked sx={{ color: '#A0AABF', '&.Mui-checked': { color: '#0A1629' } }} />}
-                            label={<Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans' }}>Remember me</Typography>}
+                            label={<Typography sx={{ color: '#7D8592', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans' }}>記住我</Typography>}
                         />
                         <Link href="#" underline="none" sx={{ color: '#A0AABF', fontSize: 14, fontWeight: 600, fontFamily: 'Nunito Sans', '&:hover': { color: '#3F8CFF' } }}>
-                            Forgot Password?
+                            忘記密碼？
                         </Link>
                     </Box>
 
@@ -237,11 +237,11 @@ export default function Login() {
                                 '&:hover': { bgcolor: '#3377E6' }
                             }}
                         >
-                            {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+                            {isLoading ? <CircularProgress size={24} color="inherit" /> : '登入'}
                         </Button>
 
                         <Link component="button" onClick={() => navigate('/signup')} underline="none" sx={{ color: '#3F8CFF', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer' }}>
-                            Don't have an account?
+                            還沒有帳號？前往註冊
                         </Link>
                     </Box>
 

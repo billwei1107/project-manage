@@ -48,7 +48,7 @@ export default function ProjectRowCard({
 
             <Box sx={{ width: '15%' }}>
                 <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 600, mb: 0.5, fontFamily: 'Nunito Sans' }}>
-                    Progress
+                    進度
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 6, height: 6, bgcolor: progressColor, borderRadius: '50%' }} />
@@ -60,7 +60,7 @@ export default function ProjectRowCard({
 
             <Box sx={{ width: '15%' }}>
                 <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 600, mb: 0.5, fontFamily: 'Nunito Sans' }}>
-                    All Tasks
+                    所有任務
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                     {allTasks}
@@ -69,7 +69,7 @@ export default function ProjectRowCard({
 
             <Box sx={{ width: '15%' }}>
                 <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 600, mb: 0.5, fontFamily: 'Nunito Sans' }}>
-                    Active Tasks
+                    進行中任務
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                     {activeTasks}
@@ -78,7 +78,7 @@ export default function ProjectRowCard({
 
             <Box sx={{ flexGrow: 1 }}>
                 <Typography sx={{ color: '#7D8592', fontSize: 13, fontWeight: 600, mb: 0.5, fontFamily: 'Nunito Sans' }}>
-                    Assignees
+                    負責人
                 </Typography>
                 <AvatarGroup max={4} sx={{ '& .MuiAvatar-root': { width: 28, height: 28, fontSize: 12, border: '2px solid #fff' } }}>
                     {assignees.map((a, i) => (

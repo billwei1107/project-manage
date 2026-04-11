@@ -66,7 +66,7 @@ const MOCK_CALENDAR_DATA: EmployeeCalendar[] = [
 ];
 
 const DAYS = Array.from({ length: 29 }, (_, i) => i + 1);
-const DAY_LETTERS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAY_LETTERS = ['一', '二', '三', '四', '五', '六', '日'];
 
 const COLORS = {
     vacation: '#1CC0E0',
@@ -96,11 +96,11 @@ export default function Vacations() {
             <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: COLORS[type] }} />
-                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>Approved</Typography>
+                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>已核准</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Box sx={{ width: 8, height: 8, borderRadius: '50%', border: `1.5px solid ${COLORS[type]}` }} />
-                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>Pending</Typography>
+                    <Typography sx={{ color: '#0A1629', fontSize: 13, fontWeight: 700, fontFamily: 'Nunito Sans' }}>待審核</Typography>
                 </Box>
             </Box>
         </Box>
@@ -119,14 +119,14 @@ export default function Vacations() {
                 gap: 3
             }}>
                 <Typography sx={{ fontSize: 32, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', width: { xs: '100%', md: 'auto' } }}>
-                    Vacations
+                    差勤管理
                 </Typography>
 
                 {/* Segmented Control */}
                 <Box sx={{ display: 'flex', bgcolor: '#E6EDF5', borderRadius: '24px', p: '4px', alignSelf: { xs: 'stretch', md: 'center' } }}>
                     {[
-                        { id: 'Employees_vacations', label: 'Employees\' vacations' },
-                        { id: 'Calendar', label: 'Calendar' }
+                        { id: 'Employees_vacations', label: '員工休假名單' },
+                        { id: 'Calendar', label: '行事曆' }
                     ].map((tab) => (
                         <Box
                             key={tab.id}
@@ -170,7 +170,7 @@ export default function Vacations() {
                         '&:hover': { bgcolor: '#3377E6' }
                     }}
                 >
-                    Add Request
+                    新增假單
                 </Button>
             </Box>
 
@@ -208,9 +208,9 @@ export default function Vacations() {
                             </Box>
 
                             <Box sx={{ display: 'flex', justifyContent: { xs: 'space-between', md: 'flex-end' }, gap: { xs: 1, sm: 4 }, width: { xs: '100%', md: 'auto' } }}>
-                                <StatColumn label="Vacations" value={employee.vacations} />
-                                <StatColumn label="Sick Leave" value={employee.sickLeave} />
-                                <StatColumn label="Work remotely" value={employee.workRemotely} />
+                                <StatColumn label="特休假" value={employee.vacations} />
+                                <StatColumn label="病假" value={employee.sickLeave} />
+                                <StatColumn label="遠距工作" value={employee.workRemotely} />
                             </Box>
                         </Box>
                     ))}
@@ -224,7 +224,7 @@ export default function Vacations() {
                     {/* Header Row */}
                     <Box sx={{ display: 'flex', borderBottom: '1px solid #E6EDF5', minWidth: 1000 }}>
                         <Box sx={{ width: 220, p: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRight: '1px solid #E6EDF5' }}>
-                            <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 800, fontFamily: 'Nunito Sans' }}>Employees</Typography>
+                            <Typography sx={{ color: '#0A1629', fontSize: 14, fontWeight: 800, fontFamily: 'Nunito Sans' }}>員工</Typography>
                             <IconButton size="small" sx={{ bgcolor: '#F4F9FD', borderRadius: '8px' }}>
                                 <SearchIcon fontSize="small" sx={{ color: '#0A1629' }} />
                             </IconButton>
@@ -233,7 +233,7 @@ export default function Vacations() {
                         <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                             <Box sx={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', p: '14px 24px', borderBottom: '1px solid #E6EDF5' }}>
                                 <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 800, fontFamily: 'Nunito Sans', flex: 1, textAlign: 'center' }}>
-                                    First month (September)
+                                    第一週 (九月)
                                 </Typography>
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <ArrowBackIcon sx={{ color: '#A0AABF', fontSize: 20, cursor: 'pointer' }} />
@@ -301,9 +301,9 @@ export default function Vacations() {
 
                     {/* Footer Legend */}
                     <Box sx={{ display: 'flex', minWidth: 1000, borderTop: '1px solid #E6EDF5', p: 3, gap: 10 }}>
-                        <LegendItem label="Sick Leave" type="sick" />
-                        <LegendItem label="Work remotely" type="remote" />
-                        <LegendItem label="Vacation" type="vacation" />
+                        <LegendItem label="病假" type="sick" />
+                        <LegendItem label="遠距工作" type="remote" />
+                        <LegendItem label="特休假" type="vacation" />
                     </Box>
                 </Box>
             )}

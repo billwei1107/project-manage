@@ -35,19 +35,19 @@ interface MockProjectInfo {
 
 const MOCK_PROJECTS: MockProjectInfo[] = [
     {
-        id: '1', code: 'PN0001265', name: 'Medical App (iOS native)', date: 'Created Sep 12, 2020',
+        id: '1', code: 'PN0001265', name: 'Medical App (iOS native)', date: '建立於 2020年9月12日',
         priority: 'Medium', allTasks: 34, activeTasks: 13,
         assigneeAvatars: ['/avatars/user1.png', '/avatars/user2.png', '/avatars/user3.png'], extraAssignees: 2,
         logoColor: '#F5F8FE'
     },
     {
-        id: '2', code: 'PN0001221', name: 'Food Delivery Service', date: 'Created Sep 10, 2020',
+        id: '2', code: 'PN0001221', name: 'Food Delivery Service', date: '建立於 2020年9月10日',
         priority: 'Medium', allTasks: 50, activeTasks: 24,
         assigneeAvatars: ['/avatars/user4.png', '/avatars/user5.png', '/avatars/user6.png'], extraAssignees: 0,
         logoColor: '#FDF7EB'
     },
     {
-        id: '3', code: 'PN0001290', name: 'Internal Project', date: 'Created May 28, 2020',
+        id: '3', code: 'PN0001290', name: 'Internal Project', date: '建立於 2020年5月28日',
         priority: 'Low', allTasks: 23, activeTasks: 20,
         assigneeAvatars: ['/avatars/user1.png', '/avatars/user3.png', '/avatars/user4.png'], extraAssignees: 5,
         logoColor: '#3F8CFF'
@@ -55,7 +55,7 @@ const MOCK_PROJECTS: MockProjectInfo[] = [
 ];
 
 export default function EmployeeProfile() {
-    const [activeTab, setActiveTab] = useState<'Projects' | 'Team' | 'My vacations'>('Projects');
+    const [activeTab, setActiveTab] = useState<'參與專案' | '所屬團隊' | '我的休假'>('參與專案');
 
     const ProfileField = ({ label, value, icon, fullWidth = true }: { label: string, value: string, icon?: React.ReactNode, fullWidth?: boolean }) => (
         <Box sx={{ mb: 2.5, width: fullWidth ? '100%' : 'auto' }}>
@@ -99,7 +99,7 @@ export default function EmployeeProfile() {
 
             {/* Page Title */}
             <Typography sx={{ fontSize: 32, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', mb: 4 }}>
-                Employee's Profile
+                員工個人檔案
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 4, flex: 1 }}>
@@ -125,25 +125,25 @@ export default function EmployeeProfile() {
                             Allen Perkins
                         </Typography>
                         <Typography sx={{ fontSize: 14, fontWeight: 600, color: '#7D8592', fontFamily: 'Nunito Sans' }}>
-                            UI/UX Designer
+                            UI/UX 設計師
                         </Typography>
                     </Box>
 
                     {/* Main Info */}
                     <Typography sx={{ fontSize: 16, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', mb: 2.5 }}>
-                        Main info
+                        主要資訊
                     </Typography>
-                    <ProfileField label="Position" value="UI/UX Designer" />
-                    <ProfileField label="Company" value="Cadabra" />
-                    <ProfileField label="Location" value="NYC, New York, USA" icon={<LocationOnOutlinedIcon sx={{ fontSize: 20 }} />} />
-                    <ProfileField label="Birthday Date" value="May 19, 1996" icon={<CalendarTodayOutlinedIcon sx={{ fontSize: 20 }} />} />
+                    <ProfileField label="職位" value="UI/UX 設計師" />
+                    <ProfileField label="公司" value="Cadabra" />
+                    <ProfileField label="地點" value="NYC, New York, USA" icon={<LocationOnOutlinedIcon sx={{ fontSize: 20 }} />} />
+                    <ProfileField label="生日" value="1996年5月19日" icon={<CalendarTodayOutlinedIcon sx={{ fontSize: 20 }} />} />
 
                     {/* Contact Info */}
                     <Typography sx={{ fontSize: 16, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', mb: 2.5, mt: 4 }}>
-                        Contact Info
+                        聯絡資訊
                     </Typography>
-                    <ProfileField label="Email" value="evanyates@gmail.com" />
-                    <ProfileField label="Mobile Number" value="+1 675 346 23-10" />
+                    <ProfileField label="電子郵件" value="evanyates@gmail.com" />
+                    <ProfileField label="手機號碼" value="+1 675 346 23-10" />
                     <ProfileField label="Skype" value="Evan 2256" />
                 </Box>
 
@@ -154,7 +154,7 @@ export default function EmployeeProfile() {
                     <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', mb: 3, gap: 2 }}>
 
                         <Box sx={{ display: 'flex', bgcolor: '#E6EDF5', borderRadius: '24px', p: '4px' }}>
-                            {['Projects', 'Team', 'My vacations'].map((tab) => (
+                            {['參與專案', '所屬團隊', '我的休假'].map((tab) => (
                                 <Box
                                     key={tab}
                                     onClick={() => setActiveTab(tab as any)}
@@ -184,13 +184,13 @@ export default function EmployeeProfile() {
                                     '&:hover': { bgcolor: '#F8FAFC' }
                                 }}
                             >
-                                Current Projects
+                                目前參與專案
                             </Button>
                         </Box>
                     </Box>
 
                     {/* Project Cards List */}
-                    {activeTab === 'Projects' && (
+                    {activeTab === '參與專案' && (
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
                             {MOCK_PROJECTS.map((proj) => (
                                 <Box
@@ -235,13 +235,13 @@ export default function EmployeeProfile() {
                                     {/* Project Data (Right side) */}
                                     <Box sx={{ flex: 1, width: '100%', py: 1 }}>
                                         <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 800, fontFamily: 'Nunito Sans', mb: 2.5 }}>
-                                            Project Data
+                                            專案數據
                                         </Typography>
                                         
                                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                             <Box>
                                                 <Typography sx={{ color: '#A0AABF', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1 }}>
-                                                    All tasks
+                                                    所有任務
                                                 </Typography>
                                                 <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                                                     {proj.allTasks}
@@ -249,7 +249,7 @@ export default function EmployeeProfile() {
                                             </Box>
                                             <Box>
                                                 <Typography sx={{ color: '#A0AABF', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1 }}>
-                                                    Active tasks
+                                                    進行中任務
                                                 </Typography>
                                                 <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                                                     {proj.activeTasks}
@@ -257,7 +257,7 @@ export default function EmployeeProfile() {
                                             </Box>
                                             <Box>
                                                 <Typography sx={{ color: '#A0AABF', fontSize: 12, fontWeight: 700, fontFamily: 'Nunito Sans', mb: 1 }}>
-                                                    Assignees
+                                                    負責人
                                                 </Typography>
                                                 <AvatarGroup
                                                     max={4}

@@ -33,14 +33,14 @@ interface MockEmployee {
 }
 
 const MOCK_EMPLOYEES: MockEmployee[] = [
-    { id: '1', name: 'Evan Yates', email: 'evanyates@gmail.com', gender: 'Male', birthday: 'Apr 12, 1995', age: 25, position: 'UI/UX Designer', level: 'Middle', avatar: '/avatars/evan.png' },
-    { id: '2', name: 'Lenora Fowler', email: 'eravi@ec.gov', gender: 'Female', birthday: 'Apr 28, 1998', age: 23, position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/lenora.png' },
-    { id: '3', name: 'Winnie McGuire', email: 'winnie3498@gmail.com', gender: 'Female', birthday: 'Apr 12, 1995', age: 25, position: 'Copywriter', level: 'Senior', avatar: '/avatars/winnie.png' },
-    { id: '4', name: 'James Williamson', email: 'williamsonj@gmail.com', gender: 'Male', birthday: 'Sep 23, 1992', age: 28, position: 'iOS Developer', level: 'Middle', avatar: '/avatars/james.png' },
-    { id: '5', name: 'Emily Tyler', email: 'tyleremily24@gmail.com', gender: 'Female', birthday: 'May 16, 1996', age: 24, position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/emily.png' },
-    { id: '6', name: 'Thomas Schneider', email: 'thomas.s@gmail.com', gender: 'Male', birthday: 'Apr 28, 1998', age: 23, position: 'Sales Manager', level: 'Junior', avatar: '/avatars/thomas.png' },
-    { id: '7', name: 'Sallie Long', email: 'sallielong@gmail.com', gender: 'Female', birthday: 'Apr 12, 1995', age: 25, position: 'Copywriter', level: 'Middle', avatar: '/avatars/sallie.png' },
-    { id: '8', name: 'Kathryn Guerrero', email: 'kathryn1992@gmail.com', gender: 'Female', birthday: 'Sep 23, 1992', age: 28, position: 'iOS Developer', level: 'Senior', avatar: '/avatars/kathryn.png' }
+    { id: '1', name: 'Evan Yates', email: 'evanyates@gmail.com', gender: '男', birthday: '1995年4月12日', age: 25, position: 'UI/UX 設計師', level: '中階', avatar: '/avatars/evan.png' },
+    { id: '2', name: 'Lenora Fowler', email: 'eravi@ec.gov', gender: '女', birthday: '1998年4月28日', age: 23, position: 'UI/UX 設計師', level: '初階', avatar: '/avatars/lenora.png' },
+    { id: '3', name: 'Winnie McGuire', email: 'winnie3498@gmail.com', gender: '女', birthday: '1995年4月12日', age: 25, position: '文案企劃', level: '資深', avatar: '/avatars/winnie.png' },
+    { id: '4', name: 'James Williamson', email: 'williamsonj@gmail.com', gender: '男', birthday: '1992年9月23日', age: 28, position: 'iOS 開發工程師', level: '中階', avatar: '/avatars/james.png' },
+    { id: '5', name: 'Emily Tyler', email: 'tyleremily24@gmail.com', gender: '女', birthday: '1996年5月16日', age: 24, position: 'UI/UX 設計師', level: '初階', avatar: '/avatars/emily.png' },
+    { id: '6', name: 'Thomas Schneider', email: 'thomas.s@gmail.com', gender: '男', birthday: '1998年4月28日', age: 23, position: '業務經理', level: '初階', avatar: '/avatars/thomas.png' },
+    { id: '7', name: 'Sallie Long', email: 'sallielong@gmail.com', gender: '女', birthday: '1995年4月12日', age: 25, position: '文案企劃', level: '中階', avatar: '/avatars/sallie.png' },
+    { id: '8', name: 'Kathryn Guerrero', email: 'kathryn1992@gmail.com', gender: '女', birthday: '1992年9月23日', age: 28, position: 'iOS 開發工程師', level: '資深', avatar: '/avatars/kathryn.png' }
 ];
 
 interface MockActivity {
@@ -56,14 +56,14 @@ interface MockActivity {
 }
 
 const MOCK_ACTIVITIES: MockActivity[] = [
-    { id: '1', name: 'Shawn Stone', position: 'UI/UX Designer', level: 'Middle', avatar: '/avatars/shawn.png', backlog: 0, inProgress: 16, inReview: 6, isInactive: false },
-    { id: '2', name: 'Randy Delgado', position: 'UI/UX Designer', level: 'Junior', avatar: '/avatars/randy.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
-    { id: '3', name: 'Emily Tyler', position: 'Copywriter', level: 'Middle', avatar: '/avatars/emily.png', backlog: 0, inProgress: 20, inReview: 2, isInactive: false },
-    { id: '4', name: 'Louis Castro', position: 'Copywriter', level: 'Senior', avatar: '/avatars/louis.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
-    { id: '5', name: 'Millie Harvey', position: 'Android Developer', level: 'Junior', avatar: '/avatars/millie.png', backlog: 1, inProgress: 14, inReview: 3, isInactive: false },
-    { id: '6', name: 'Ethel Weber', position: 'Copywriter', level: 'Junior', avatar: '/avatars/ethel.png', backlog: 0, inProgress: 8, inReview: 6, isInactive: true },
-    { id: '7', name: 'Charlie Palmer', position: 'Copywriter', level: 'Senior', avatar: '/avatars/charlie.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
-    { id: '8', name: 'Pearl Sims', position: 'Project Manager', level: 'Middle', avatar: '/avatars/pearl.png', backlog: 0, inProgress: 4, inReview: 6, isInactive: true }
+    { id: '1', name: 'Shawn Stone', position: 'UI/UX 設計師', level: '中階', avatar: '/avatars/shawn.png', backlog: 0, inProgress: 16, inReview: 6, isInactive: false },
+    { id: '2', name: 'Randy Delgado', position: 'UI/UX 設計師', level: '初階', avatar: '/avatars/randy.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '3', name: 'Emily Tyler', position: '文案企劃', level: '中階', avatar: '/avatars/emily.png', backlog: 0, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '4', name: 'Louis Castro', position: '文案企劃', level: '資深', avatar: '/avatars/louis.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '5', name: 'Millie Harvey', position: 'Android 開發', level: '初階', avatar: '/avatars/millie.png', backlog: 1, inProgress: 14, inReview: 3, isInactive: false },
+    { id: '6', name: 'Ethel Weber', position: '文案企劃', level: '初階', avatar: '/avatars/ethel.png', backlog: 0, inProgress: 8, inReview: 6, isInactive: true },
+    { id: '7', name: 'Charlie Palmer', position: '文案企劃', level: '資深', avatar: '/avatars/charlie.png', backlog: 1, inProgress: 20, inReview: 2, isInactive: false },
+    { id: '8', name: 'Pearl Sims', position: '專案經理', level: '中階', avatar: '/avatars/pearl.png', backlog: 0, inProgress: 4, inReview: 6, isInactive: true }
 ];
 
 export default function EmployeeList() {
@@ -90,12 +90,12 @@ export default function EmployeeList() {
                 
                 {/* Title */}
                 <Typography sx={{ fontSize: 32, fontWeight: 800, color: '#0A1629', fontFamily: 'Nunito Sans', flexShrink: 0 }}>
-                    Employees (28)
+                    員工 (28)
                 </Typography>
 
                 {/* Segmented Control */}
                 <Box sx={{ display: 'flex', bgcolor: '#E6EDF5', borderRadius: '24px', p: '4px', flexShrink: 0 }}>
-                    <Box
+                        <Box
                         onClick={() => setActiveTab('List')}
                         sx={{
                             py: 1, px: 5, borderRadius: '20px', cursor: 'pointer', transition: 'all 0.2s',
@@ -105,7 +105,7 @@ export default function EmployeeList() {
                             boxShadow: activeTab === 'List' ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none'
                         }}
                     >
-                        List
+                        列表
                     </Box>
                     <Box
                         onClick={() => setActiveTab('Activity')}
@@ -117,7 +117,7 @@ export default function EmployeeList() {
                             boxShadow: activeTab === 'Activity' ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none'
                         }}
                     >
-                        Activity
+                        動態
                     </Box>
                 </Box>
 
@@ -179,25 +179,25 @@ export default function EmployeeList() {
 
                             {/* 2. Gender */}
                             <Box sx={{ flex: { xs: '1 1 45%', md: '1' } }}>
-                                <ColumnHeaderLabel title="Gender" />
+                                <ColumnHeaderLabel title="性別" />
                                 <ColumnValueLabel value={employee.gender} />
                             </Box>
 
                             {/* 3. Birthday */}
                             <Box sx={{ flex: { xs: '1 1 45%', md: '1' } }}>
-                                <ColumnHeaderLabel title="Birthday" />
+                                <ColumnHeaderLabel title="生日" />
                                 <ColumnValueLabel value={employee.birthday} />
                             </Box>
 
                             {/* 4. Full Age */}
                             <Box sx={{ flex: { xs: '1 1 45%', md: '0.8' } }}>
-                                <ColumnHeaderLabel title="Full age" />
+                                <ColumnHeaderLabel title="年齡" />
                                 <ColumnValueLabel value={employee.age} />
                             </Box>
 
                             {/* 5. Position & Label */}
                             <Box sx={{ flex: { xs: '1 1 45%', md: '1.5' }, pr: { md: 2 } }}>
-                                <ColumnHeaderLabel title="Position" />
+                                <ColumnHeaderLabel title="職位" />
                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                                     <ColumnValueLabel value={employee.position} />
                                     <Box sx={{ border: '1px solid #D8E0F0', borderRadius: '8px', px: 1, py: 0.25 }}>
@@ -224,7 +224,7 @@ export default function EmployeeList() {
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto', pb: 2 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'white', borderRadius: '16px', py: 1.5, px: 3, gap: 3, boxShadow: '0px 2px 14px rgba(0,0,0,0.03)' }}>
                     <Typography sx={{ color: '#0A1629', fontSize: 15, fontWeight: 600, fontFamily: 'Nunito Sans' }}>
-                        1-8 of 28
+                        1-8 筆 (共 28 筆)
                     </Typography>
                     <Box sx={{ display: 'flex', gap: 2 }}>
                         <IconButton size="small" sx={{ p: 0, '&:hover': { bgcolor: 'transparent' } }}>
@@ -288,15 +288,15 @@ export default function EmployeeList() {
                             <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', borderTop: '1px dashed #E6EDF5', pt: 2 }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.backlog}</Typography>
-                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Backlog<br/>tasks</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>待辦任務</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.inProgress}</Typography>
-                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Tasks<br/>In Progress</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>進行中任務</Typography>
                                 </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                                     <Typography sx={{ color: '#0A1629', fontSize: 24, fontWeight: 800, fontFamily: 'Nunito Sans' }}>{act.inReview}</Typography>
-                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>Tasks<br/>In Review</Typography>
+                                    <Typography sx={{ color: '#A0AABF', fontSize: 11, fontWeight: 600, fontFamily: 'Nunito Sans', textAlign: 'center', lineHeight: 1.2, mt: 0.5 }}>審核中任務</Typography>
                                 </Box>
                             </Box>
                         </Box>

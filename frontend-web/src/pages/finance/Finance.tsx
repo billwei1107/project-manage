@@ -111,7 +111,7 @@ export const Finance: React.FC = () => {
                             label="選擇專案"
                             onChange={(e) => setSelectedProject(e.target.value)}
                         >
-                            <MenuItem value="ALL">全部專案 (All Projects)</MenuItem>
+                            <MenuItem value="ALL">全部專案</MenuItem>
                             {projects.map((p: any) => (
                                 <MenuItem key={p.id} value={p.id}>{p.title}</MenuItem>
                             ))}
@@ -204,9 +204,9 @@ export const Finance: React.FC = () => {
             <Paper sx={{ width: '100%', mb: 2, borderRadius: 2, overflow: 'hidden' }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: '#f5f5f5' }}>
                     <Tabs value={tabIndex} onChange={handleTabChange}>
-                        <Tab label="全部紀錄 (All)" />
-                        <Tab label="收入 (Income)" />
-                        <Tab label="支出 (Expenses)" />
+                        <Tab label="全部紀錄" />
+                        <Tab label="收入" />
+                        <Tab label="支出" />
                     </Tabs>
                 </Box>
 
@@ -252,7 +252,7 @@ export const Finance: React.FC = () => {
                                             {selectedProject === 'ALL' && (
                                                 <TableCell>
                                                     <Typography variant="body2" color="textSecondary">
-                                                        {projects.find((p: any) => p.id === row.projectId)?.title || 'Unknown'}
+                                                        {projects.find((p: any) => p.id === row.projectId)?.title || '未知'}
                                                     </Typography>
                                                 </TableCell>
                                             )}
