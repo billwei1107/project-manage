@@ -1,6 +1,9 @@
-import { Box, Typography, alpha } from '@mui/material';
+import { Box, Typography, alpha, IconButton } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import AddEventModal from '../events/AddEventModal';
 
 interface EventItem {
     time: string;
@@ -9,6 +12,7 @@ interface EventItem {
 
 export default function NearestEvents({ events }: { events: EventItem[] }) {
     const navigate = useNavigate();
+    const [isAddOpen, setIsAddOpen] = useState(false);
 
     return (
         <Box sx={{
@@ -22,11 +26,16 @@ export default function NearestEvents({ events }: { events: EventItem[] }) {
                 <Typography sx={{ color: '#0A1629', fontSize: 20, fontWeight: 800, fontFamily: 'Nunito Sans' }}>
                     近期活動
                 </Typography>
-                <Typography
-                    onClick={() => navigate('/admin/events')}
-                    sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer', '&:hover': { color: '#3F8CFF' } }}>
-                    View All
-                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography
+                        onClick={() => navigate('/admin/events')}
+                        sx={{ color: '#7D8592', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans', cursor: 'pointer', '&:hover': { color: '#3F8CFF' } }}>
+                        View All
+                    </Typography>
+                    <IconButton onClick={() => setIsAddOpen(true)} size="small" sx={{ bgcolor: 'rgba(63,140,255,0.1)', color: '#3F8CFF', '&:hover': { bgcolor: 'rgba(63,140,255,0.2)' } }}>
+                        <AddIcon fontSize="small" />
+                    </IconButton>
+                </Box>
             </Box>
 
             {events.map((ev, i) => (
@@ -56,6 +65,8 @@ export default function NearestEvents({ events }: { events: EventItem[] }) {
                     </Box>
                 </Box>
             ))}
+
+            <AddEventModal open={isAddOpen} onClose={() => setIsAddOpen(false)} />
         </Box>
     );
 }
