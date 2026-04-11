@@ -8,21 +8,19 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
  * @description 水平任務列表卡片 / Horizontal Task Row Card
  */
 
-export interface TaskItem {
-    id: string;
-    name: string;
-    status: 'done' | 'in_progress' | 'in_review' | 'todo';
-    estimate: string;
-    spentTime: string;
-    assigneeAvatar?: string;
-    priority: 'low' | 'medium' | 'high';
-}
+import type { Task } from '../../types/project';
 
-const statusConfigs = {
-    done: { label: 'Done', color: '#00D097', bgcolor: '#E0F9F2' },
-    in_progress: { label: 'In Progress', color: '#3F8CFF', bgcolor: 'rgba(63, 140, 255, 0.12)' },
-    in_review: { label: 'In Review', color: '#C418E6', bgcolor: 'rgba(196, 24, 230, 0.11)' },
-    todo: { label: 'To Do', color: '#7D8592', bgcolor: 'rgba(125, 133, 146, 0.14)' },
+// Map missing frontend-only properties gracefully if they don't exist
+// Task extends real backend task with optional UI properties if needed
+export type TaskItem = Task & {
+    spentTime?: string;
+    priority?: 'low' | 'medium' | 'high';
+};
+
+const statusConfigs: Record<string, { label: string, color: string, bgcolor: string }> = {
+    DONE: { label: '已完成', color: '#00D097', bgcolor: '#E0F9F2' },
+    DOING: { label: '進行中', color: '#3F8CFF', bgcolor: 'rgba(63, 140, 255, 0.12)' },
+    TODO: { label: '待辦', color: '#7D8592', bgcolor: 'rgba(125, 133, 146, 0.14)' },
 };
 
 const priorityConfigs = {
@@ -32,9 +30,9 @@ const priorityConfigs = {
 };
 
 export default function TaskRowCard({ task }: { task: TaskItem }) {
-    const sConf = statusConfigs[task.status];
-    const pConf = priorityConfigs[task.priority];
-    const PriorityIcon = pConf.icon;
+    const sConf = statusConfigs[task.status] || statusConfigs['TODO'];
+    const pConf = task.priority ? priorityConfigs[task.priority] : null;
+    const PriorityIcon = pConf?.icon;
 
     return (
         <Box sx={{
@@ -50,50 +48,50 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Task Name */}
             <Box sx={{ flex: 2, minWidth: 150 }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    Task Name
+                    任務名稱
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 400 }}>
-                    {task.name}
+                    {task.title}
                 </Typography>
             </Box>
 
-            {/* Estimate */}
+            {/* Estimate / Deadline */}
             <Box sx={{ flex: 1, minWidth: 80, display: { xs: 'none', sm: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    Estimate
+                    預計期限
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans' }}>
-                    {task.estimate}
+                    {task.deadline || '無期限'}
                 </Typography>
             </Box>
 
             {/* Spent Time */}
             <Box sx={{ flex: 1, minWidth: 80, display: { xs: 'none', md: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    Spent Time
+                    花費時間
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans' }}>
-                    {task.spentTime}
+                    {task.spentTime || '--'}
                 </Typography>
             </Box>
 
             {/* Assignee */}
             <Box sx={{ flex: 1, minWidth: 60, display: { xs: 'none', sm: 'block' } }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    Assignee
+                    負責人
                 </Typography>
-                <Avatar src={task.assigneeAvatar} sx={{ width: 24, height: 24 }} />
+                <Avatar src={task.assignee?.avatar} sx={{ width: 24, height: 24 }} />
             </Box>
 
             {/* Priority */}
             <Box sx={{ flex: 1, minWidth: 80 }}>
                 <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    Priority
+                    優先度
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <PriorityIcon sx={{ color: pConf.color, fontSize: 16 }} />
-                    <Typography sx={{ color: pConf.color, fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                        {pConf.label}
+                    {PriorityIcon && <PriorityIcon sx={{ color: pConf?.color, fontSize: 16 }} />}
+                    <Typography sx={{ color: pConf?.color || '#91929E', fontSize: 14, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                        {pConf?.label || '--'}
                     </Typography>
                 </Box>
             </Box>
@@ -119,7 +117,7 @@ export default function TaskRowCard({ task }: { task: TaskItem }) {
             {/* Check Circle */}
             <Box sx={{ ml: 'auto' }}>
                 <IconButton>
-                    <RadioButtonUncheckedIcon sx={{ color: task.status === 'done' ? '#3F8CFF' : 'rgba(125, 133, 146, 0.4)' }} />
+                    <RadioButtonUncheckedIcon sx={{ color: task.status === 'DONE' ? '#3F8CFF' : 'rgba(125, 133, 146, 0.4)' }} />
                 </IconButton>
             </Box>
         </Box>

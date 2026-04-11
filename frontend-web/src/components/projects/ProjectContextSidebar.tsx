@@ -30,21 +30,21 @@ export default function ProjectContextSidebar({
             </IconButton>
 
             <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                Project Number
+                專案編號
             </Typography>
             <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', mb: 3 }}>
                 {projectNumber}
             </Typography>
 
             <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 700, mb: 1 }}>
-                Description
+                專案描述
             </Typography>
             <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', opacity: 0.7, lineHeight: 1.5, mb: 3 }}>
                 {description}
             </Typography>
 
             <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                Reporter
+                建立者
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Avatar src={reporter.avatar} sx={{ width: 24, height: 24, mr: 1 }} />
@@ -54,7 +54,7 @@ export default function ProjectContextSidebar({
             </Box>
 
             <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                Assignees
+                參與成員
             </Typography>
             <Box sx={{ mb: 3 }}>
                 <AvatarGroup max={4} sx={{ justifyContent: 'flex-end', '& .MuiAvatar-root': { width: 24, height: 24, fontSize: 12, border: '2px solid white' } }}>
@@ -66,7 +66,7 @@ export default function ProjectContextSidebar({
             </Box>
 
             <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                Priority
+                專案優先度
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                 <Typography sx={{ color: '#FFBD21', mr: 0.5 }}>↑</Typography>
@@ -76,7 +76,7 @@ export default function ProjectContextSidebar({
             </Box>
 
             <Typography sx={{ color: '#91929E', fontSize: 14, fontFamily: 'Nunito Sans', mb: 1 }}>
-                Dead Line
+                截止日期
             </Typography>
             <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', mb: 4 }}>
                 {deadLine}
@@ -85,7 +85,7 @@ export default function ProjectContextSidebar({
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
                 <CalendarMonthOutlinedIcon sx={{ color: '#7D8592', fontSize: 20 }} />
                 <Typography sx={{ color: '#7D8592', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
-                    Created {createdDate}
+                    建立於 {createdDate}
                 </Typography>
             </Box>
 

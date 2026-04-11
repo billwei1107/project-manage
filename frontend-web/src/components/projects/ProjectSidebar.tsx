@@ -1,9 +1,9 @@
 import { Box, Typography } from '@mui/material';
 import { KeyboardArrowDown, ChevronRight } from '@mui/icons-material';
-import type { ProjectEntry } from '../../pages/projects/dummyData';
+import type { Project } from '../../api/projects';
 
 interface ProjectSidebarProps {
-    projects: ProjectEntry[];
+    projects: Project[];
     activeProjectId: string;
     onSelectProject: (id: string) => void;
 }
@@ -26,7 +26,7 @@ export default function ProjectSidebar({ projects, activeProjectId, onSelectProj
             {/* Header */}
             <Box sx={{ p: 3, display: 'flex', alignItems: 'center', gap: 1, borderBottom: '1px solid #E4E6E8' }}>
                 <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                    當前專案 (Current Projects)
+                    當前專案
                 </Typography>
                 <KeyboardArrowDown sx={{ color: '#0A1629' }} />
             </Box>
@@ -71,7 +71,7 @@ export default function ProjectSidebar({ projects, activeProjectId, onSelectProj
                             )}
 
                             <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                                {project.code}
+                                {project.id.substring(0, 8)}
                             </Typography>
                             <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: isActive ? 700 : 400 }}>
                                 {project.title}

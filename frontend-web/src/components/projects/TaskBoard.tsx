@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import type { Task } from '../../pages/projects/dummyData';
+import type { Task } from '../../types/project';
 import TaskCard from './TaskCard';
 
 interface TaskBoardProps {
@@ -8,10 +8,8 @@ interface TaskBoardProps {
 
 export default function TaskBoard({ tasks }: TaskBoardProps) {
     const todoTasks = tasks.filter((t) => t.status === 'TODO');
-    const inProgressTasks = tasks.filter((t) => t.status === 'IN_PROGRESS');
-    const inReviewTasks = tasks.filter((t) => t.status === 'IN_REVIEW');
+    const inProgressTasks = tasks.filter((t) => t.status === 'DOING');
     const doneTasks = tasks.filter((t) => t.status === 'DONE');
-    const backlogTasks = tasks.filter((t) => t.status === 'BACKLOG');
 
     const renderColumn = (title: string, columnTasks: Task[], isBacklog = false) => (
         <Box sx={{ flex: 1, minWidth: 220, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -55,26 +53,9 @@ export default function TaskBoard({ tasks }: TaskBoardProps) {
             <Box sx={{ display: 'flex', gap: 3, overflowX: 'auto', pb: 2 }}>
                 {renderColumn('待辦事項 (To Do)', todoTasks)}
                 {renderColumn('進行中 (In Progress)', inProgressTasks)}
-                {renderColumn('審核中 (In Review)', inReviewTasks)}
                 {renderColumn('已完成 (Done)', doneTasks)}
             </Box>
 
-            {/* Backlog Section */}
-            {backlogTasks.length > 0 && (
-                <Box sx={{ mt: 2, bgcolor: '#E6EDF5', borderRadius: '14px', p: 3, position: 'relative' }}>
-                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 700, textAlign: 'center', mb: 3 }}>
-                        積壓任務 (Backlog)
-                    </Typography>
-                    
-                    <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-                        {backlogTasks.map(task => (
-                            <Box key={task.id} sx={{ width: { xs: '100%', sm: 'calc(50% - 12px)', md: 'calc(33.333% - 16px)', lg: 245 } }}>
-                                <TaskCard task={task} />
-                            </Box>
-                        ))}
-                    </Box>
-                </Box>
-            )}
         </Box>
     );
 }

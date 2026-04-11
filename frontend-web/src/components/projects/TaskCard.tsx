@@ -1,6 +1,6 @@
 import { Box, Typography, Avatar } from '@mui/material';
 import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
-import type { Task } from '../../pages/projects/dummyData';
+import type { Task } from '../../types/project';
 
 export default function TaskCard({ task }: { task: Task }) {
     return (
@@ -23,7 +23,7 @@ export default function TaskCard({ task }: { task: Task }) {
         >
             {/* Task Code */}
             <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 400 }}>
-                {task.code}
+                {task.id.substring(0, 8)}
             </Typography>
 
             {/* Title */}
@@ -37,20 +37,15 @@ export default function TaskCard({ task }: { task: Task }) {
                     {/* Duration Badge */}
                     <Box sx={{ bgcolor: '#F4F9FD', borderRadius: '8px', px: 1, py: 0.5 }}>
                         <Typography sx={{ color: '#7D8592', fontSize: 12, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                            {task.duration}
+                            {task.deadline || '無期限'}
                         </Typography>
                     </Box>
-
-                    {/* Priority Icon */}
-                    {task.priority === 'low' && <ArrowDownward sx={{ color: '#0AC947', fontSize: 16 }} />}
-                    {task.priority === 'medium' && <ArrowUpward sx={{ color: '#FFBD21', fontSize: 16 }} />}
-                    {task.priority === 'high' && <ArrowUpward sx={{ color: '#FF4C4C', fontSize: 16 }} />}
                 </Box>
 
                 {/* Assignee Avatar */}
-                {task.assigneeAvatar && (
+                {task.assignee?.avatar && (
                     <Avatar
-                        src={task.assigneeAvatar}
+                        src={task.assignee?.avatar}
                         sx={{ width: 24, height: 24, border: '2px solid white' }}
                     />
                 )}

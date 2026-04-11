@@ -4,22 +4,45 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { projectApi } from '../../api/projects';
 import AddProjectModal from '../../components/projects/AddProjectModal';
 
-// 引入新建立的元件與假資料
+// 引入新建立的元件
 import ProjectSidebar from '../../components/projects/ProjectSidebar';
 import TaskBoard from '../../components/projects/TaskBoard';
-import { dummyProjects, dummyTasks } from './dummyData';
+import type { Task } from '../../types/project';
+import { useProjectStore } from '../../stores/useProjectStore';
+import { useEffect } from 'react';
 
 export default function ProjectList() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     
-    // 使用中文假資料以便預覽 UI
-    const [activeProjectId, setActiveProjectId] = useState<string>(dummyProjects[0].id);
+    const { projects, fetchProjects, loading } = useProjectStore();
+    const [activeProjectId, setActiveProjectId] = useState<string>('');
+    const [tasks, setTasks] = useState<Task[]>([]);
+
+    useEffect(() => {
+        fetchProjects();
+    }, [fetchProjects]);
+
+    useEffect(() => {
+        if (projects.length > 0 && !activeProjectId) {
+            setActiveProjectId(projects[0].id);
+        }
+    }, [projects, activeProjectId]);
+
+    useEffect(() => {
+        if (activeProjectId) {
+            projectApi.getTasks(activeProjectId)
+                .then(setTasks)
+                .catch(err => console.error('Failed to fetch tasks:', err));
+        } else {
+            setTasks([]);
+        }
+    }, [activeProjectId]);
 
     const handleSaveProject = async (projectData: any) => {
         try {
             await projectApi.createProject(projectData);
             setIsModalOpen(false);
-            // 此處後續可以串接 real data state
+            fetchProjects();
         } catch (err) {
             console.error('Failed to save project:', err);
             alert('儲存失敗 (Failed to save)');
@@ -38,7 +61,7 @@ export default function ProjectList() {
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                 <Typography sx={{ color: '#0A1629', fontSize: { xs: 24, md: 36 }, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                    專案 (Projects)
+                    專案管理
                 </Typography>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -62,7 +85,7 @@ export default function ProjectList() {
                             }
                         }}
                     >
-                        新增專案 (Add Project)
+                        新增專案
                     </Button>
                 </Box>
             </Box>
@@ -72,7 +95,7 @@ export default function ProjectList() {
                 {/* 側邊專案列表 */}
                 <Box sx={{ display: { xs: 'none', md: 'block' }, position: 'sticky', top: 24 }}>
                     <ProjectSidebar 
-                        projects={dummyProjects} 
+                        projects={projects} 
                         activeProjectId={activeProjectId} 
                         onSelectProject={setActiveProjectId} 
                     />
@@ -83,7 +106,7 @@ export default function ProjectList() {
                     {/* Header line for Tasks */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                         <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                            任務 (Tasks)
+                            任務列表
                         </Typography>
                         
                         {/* Fake Toolbar Icons */}
@@ -100,8 +123,8 @@ export default function ProjectList() {
                         </Box>
                     </Box>
 
-                    {/* 看板的主體，傳入當前選中專案的假 tasks 資料 */}
-                    <TaskBoard tasks={dummyTasks} />
+                    {/* 看板的主體，傳入當前選中專案的 tasks 資料 */}
+                    <TaskBoard tasks={tasks as any} />
                 </Box>
             </Box>
 

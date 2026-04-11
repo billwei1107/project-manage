@@ -76,7 +76,7 @@ export default function Sidebar({
                             <Box sx={{ width: 6, height: 6, bgcolor: '#fff', borderRadius: '50%', position: 'absolute', right: 12, bottom: 14 }} />
                         </Box>
                         <Typography variant="h6" noWrap sx={{ color: '#0A1629', fontWeight: 800, fontSize: '1.25rem', fontFamily: 'Nunito Sans' }}>
-                            Dashboard
+                            專案管理系統
                         </Typography>
                     </Box>
                 )}
@@ -164,7 +164,7 @@ export default function Sidebar({
                             px: 3
                         }}
                     >
-                        Support
+                        客服支援
                     </Button>
                 ) : (
                     <IconButton sx={{ bgcolor: '#3F8CFF', color: '#fff', borderRadius: '14px', p: 1.5 }}>
@@ -172,7 +172,7 @@ export default function Sidebar({
                     </IconButton>
                 )}
 
-                <Tooltip title={isCollapsed ? "Logout" : ''} placement="right">
+                <Tooltip title={isCollapsed ? "登出" : ''} placement="right">
                     <ListItemButton
                         onClick={onLogout}
                         sx={{
@@ -190,7 +190,7 @@ export default function Sidebar({
                         <ListItemIcon sx={{ minWidth: isCollapsed ? 0 : 40, mr: isCollapsed ? 0 : 1.5, justifyContent: 'center', color: 'inherit' }}>
                             <LogoutIcon />
                         </ListItemIcon>
-                        {!isCollapsed && <ListItemText primary="Logout" primaryTypographyProps={{ fontWeight: 600, fontFamily: 'Nunito Sans', fontSize: '1rem' }} />}
+                        {!isCollapsed && <ListItemText primary="登出" primaryTypographyProps={{ fontWeight: 600, fontFamily: 'Nunito Sans', fontSize: '1rem' }} />}
                     </ListItemButton>
                 </Tooltip>
             </Box>

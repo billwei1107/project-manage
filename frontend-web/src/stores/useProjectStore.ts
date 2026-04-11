@@ -3,7 +3,18 @@ import api from '../api/axios';
 
 export interface Project {
     id: string;
-    name: string;
+    title: string;
+    client?: string;
+    budget?: number;
+    startDate?: string;
+    endDate?: string;
+    status: string;
+    progress?: number;
+    description?: string;
+    team?: any[];
+    githubRepo?: string;
+    githubBranch?: string;
+    fileLocation?: string;
 }
 
 interface ProjectState {
@@ -21,12 +32,7 @@ export const useProjectStore = create<ProjectState>((set) => ({
         set({ loading: true });
         try {
             const response = await api.get('/v1/projects');
-            const projectsData = response.data.data.map((p: any) => ({
-                id: p.id,
-                name: p.title
-            }));
-
-            set({ projects: projectsData, loading: false });
+            set({ projects: response.data.data || [], loading: false });
         } catch (error: any) {
             set({ error: error.response?.data?.message || error.message || 'Failed to fetch projects', loading: false });
         }

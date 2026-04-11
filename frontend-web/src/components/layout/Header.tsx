@@ -77,7 +77,7 @@ export default function Header({
                 }}>
                     <SearchIcon sx={{ color: '#7D8592', mr: 2 }} />
                     <InputBase
-                        placeholder="Search"
+                        placeholder="搜尋"
                         sx={{ flex: 1, fontFamily: 'Nunito Sans', color: '#0A1629', fontSize: 16 }}
                     />
                 </Box>

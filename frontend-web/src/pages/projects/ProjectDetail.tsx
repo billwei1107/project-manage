@@ -33,34 +33,19 @@ import DroppableKanbanColumn from '../../components/projects/DroppableKanbanColu
 import TaskKanbanCard from '../../components/projects/TaskKanbanCard';
 import TaskTimelineBoard from '../../components/projects/TaskTimelineBoard';
 
-// Types and mock data
-type SectionType = 'active' | 'backlog';
-export interface ProjectTask {
-    id: string;
-    name: string;
-    estimate: string;
-    spentTime: string;
-    priority: 'low' | 'medium' | 'high';
-    status: 'todo' | 'in_progress' | 'in_review' | 'done';
-    section: SectionType;
-    startDay?: number;
-    duration?: number;
-    assignee?: { name: string; avatar: string; };
-    group?: string; // e.g. 'Design', 'Development'
-}
-
-const mockAssignee = { name: 'Evan Yates', avatar: 'https://placehold.co/24x24' };
-
-const INITIAL_TASKS: ProjectTask[] = [
-    { id: '1', name: 'Research', estimate: '2d 4h', spentTime: '1d 2h', priority: 'medium', status: 'done', section: 'active', assignee: mockAssignee }
-];
+import type { Task } from '../../types/project';
 
 const KANBAN_COLUMNS = [
-    { id: 'todo', label: '待處理' },
-    { id: 'in_progress', label: '進行中' },
-    { id: 'in_review', label: '審核中' },
-    { id: 'done', label: '已完成' }
+    { id: 'TODO', label: '待處理' },
+    { id: 'DOING', label: '進行中' },
+    { id: 'DONE', label: '已完成' }
 ];
+
+export type TaskItem = Task & {
+    spentTime?: string;
+    priority?: 'low' | 'medium' | 'high';
+    section?: 'active' | 'backlog';
+};
 
 export default function ProjectDetail() {
     const { id } = useParams<{ id: string }>();
@@ -74,7 +59,7 @@ export default function ProjectDetail() {
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     // Tasks State
-    const [tasks, setTasks] = useState<ProjectTask[]>(INITIAL_TASKS);
+    const [tasks, setTasks] = useState<TaskItem[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [collapsedGroups, setCollapsedGroups] = useState<string[]>(['Development']);
     
@@ -97,11 +82,14 @@ export default function ProjectDetail() {
             if (id) {
                 const res = await projectApi.getProject(id);
                 setProject(res.data);
+                
+                // Fetch real tasks
+                const tasksRes = await projectApi.getTasks(id);
+                // Map to UI specific type, assuming all are 'active' for now
+                setTasks(tasksRes.map(t => ({ ...t, section: 'active' })));
             }
         } catch (err: any) {
-            console.error('Failed to fetch project API:', err);
-            // fallback mock project 
-            setProject({ id: id || 'PN0001245', title: 'Medical App (iOS native)', description: 'App for maintaining your medical record...', status: 'ACTIVE' } as any);
+            console.error('Failed to fetch project or tasks API:', err);
         } finally {
             setLoading(false);
         }
@@ -143,7 +131,7 @@ export default function ProjectDetail() {
             if (activeAbsIndex > -1) {
                 returnTasks[activeAbsIndex] = {
                     ...returnTasks[activeAbsIndex],
-                    section: overSectionStr as SectionType,
+                    section: overSectionStr as any,
                     status: overStatusStr as any
                 };
             }
@@ -166,6 +154,14 @@ export default function ProjectDetail() {
 
         if (activeIndex !== overIndex) {
             setTasks((items) => arrayMove(items, activeIndex, overIndex));
+        }
+
+        // --- Execute backend update here ---
+        const updatedTask = tasks.find(t => t.id === active.id);
+        if (updatedTask && id) {
+            projectApi.updateTask(active.id as string, {
+                status: overContainer.split('-')[1] as any
+            }).catch(err => console.error('Failed to update task status API:', err));
         }
     };
 
@@ -218,7 +214,7 @@ export default function ProjectDetail() {
                 {showHeaders && (
                     <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
                         <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                            Active Tasks
+                            進行中的任務
                         </Typography>
                     </Box>
                 )}
@@ -239,7 +235,7 @@ export default function ProjectDetail() {
                     <>
                         <Box sx={{ bgcolor: '#E6EDF5', borderRadius: '14px', py: 1, mb: 2 }}>
                             <Typography align="center" sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
-                                Backlog
+                                積壓任務 (Backlog)
                             </Typography>
                         </Box>
                         <Stack spacing={2}>
@@ -320,10 +316,10 @@ export default function ProjectDetail() {
                 sx={{ width: '100%', maxWidth: 450, height: 'auto', mb: 3 }} 
             />
             <Typography sx={{ color: '#0A1629', fontSize: 20, fontFamily: 'Nunito Sans', fontWeight: 800, mb: 0.5, textAlign: 'center' }}>
-                There are no tasks in this project yet
+                專案內目前沒有任何任務
             </Typography>
             <Typography sx={{ color: '#0A1629', fontSize: 20, fontFamily: 'Nunito Sans', fontWeight: 800, mb: 4, textAlign: 'center' }}>
-                Let's add them
+                一起來新增任務吧！
             </Typography>
             <Button 
                 variant="contained" 
@@ -341,7 +337,7 @@ export default function ProjectDetail() {
                     boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)' 
                 }}
             >
-                Add Task
+                新增任務
             </Button>
         </Box>
     );
@@ -354,7 +350,7 @@ export default function ProjectDetail() {
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 4 }}>
                 <Box>
                     <Typography onClick={() => navigate('/admin/projects')} sx={{ color: '#3F8CFF', fontSize: 16, fontFamily: 'Nunito Sans', fontWeight: 600, display: 'flex', alignItems: 'center', cursor: 'pointer', mb: 1 }}>
-                        <ArrowBackIcon sx={{ fontSize: 18, mr: 1 }} /> Back to Projects
+                        <ArrowBackIcon sx={{ fontSize: 18, mr: 1 }} /> 返回專案列表
                     </Typography>
                     <Typography sx={{ color: '#0A1629', fontSize: 36, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
                         {project.title || 'Medical App (iOS native)'}
@@ -362,7 +358,7 @@ export default function ProjectDetail() {
                 </Box>
                 {tasks.length > 0 && (
                     <Button variant="contained" onClick={() => setIsAddTaskOpen(true)} startIcon={<AddIcon />} sx={{ bgcolor: '#3F8CFF', borderRadius: '14px', textTransform: 'none', fontWeight: 700, fontFamily: 'Nunito Sans', fontSize: 16, px: 3, py: 1.5, boxShadow: '0px 6px 12px rgba(63, 140, 255, 0.26)', alignSelf: 'center' }}>
-                        Add Task
+                        新增任務
                     </Button>
                 )}
             </Box>
@@ -375,7 +371,7 @@ export default function ProjectDetail() {
                 <Grid size={{ xs: 12, lg: 9 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
                         <Typography sx={{ color: '#0A1629', fontSize: 22, fontFamily: 'Nunito Sans', fontWeight: 700 }}>
-                            Tasks
+                            任務
                         </Typography>
 
                         <Box sx={{ display: 'flex', gap: 2 }}>

@@ -124,15 +124,15 @@ export default function AdminLayout() {
     };
 
     const menuItems: NavItem[] = [
-        { text: 'Dashboard', icon: <DashboardIcon />, path: '/admin' },
-        { text: 'Projects', icon: <FolderIcon />, path: '/admin/projects' },
-        { text: 'Calendar', icon: <CalendarMonthIcon />, path: '/admin/calendar' },
-        { text: 'Vacations', icon: <FlightIcon sx={{ transform: 'rotate(45deg)' }} />, path: '/admin/vacations' },
-        { text: 'Employees', icon: <GroupIcon />, path: '/admin/employees' },
-        { text: 'Messenger', icon: <MessageIcon />, path: '/admin/messenger' },
-        { text: 'Info Portal', icon: <InfoIcon />, path: '/admin/info-portal' },
+        { text: '儀表板', icon: <DashboardIcon />, path: '/admin' },
+        { text: '專案管理', icon: <FolderIcon />, path: '/admin/projects' },
+        { text: '行事曆', icon: <CalendarMonthIcon />, path: '/admin/calendar' },
+        { text: '差勤管理', icon: <FlightIcon sx={{ transform: 'rotate(45deg)' }} />, path: '/admin/vacations' },
+        { text: '員工管理', icon: <GroupIcon />, path: '/admin/employees' },
+        { text: '即時通訊', icon: <MessageIcon />, path: '/admin/messenger' },
+        { text: '資訊中心', icon: <InfoIcon />, path: '/admin/info-portal' },
         ...(user?.role === 'ADMIN' ? [
-            { text: 'Accounts', icon: <ManageAccountsIcon />, path: '/admin/accounts' }
+            { text: '帳號管理', icon: <ManageAccountsIcon />, path: '/admin/accounts' }
         ] : []),
     ];
 

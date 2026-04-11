@@ -15,8 +15,8 @@ const priorityConfigs = {
 };
 
 export default function TaskKanbanCard({ task }: { task: TaskItem }) {
-    const pConf = priorityConfigs[task.priority];
-    const PriorityIcon = pConf.icon;
+    const pConf = task.priority ? priorityConfigs[task.priority] : null;
+    const PriorityIcon = pConf?.icon;
 
     return (
         <Stack sx={{
@@ -30,10 +30,10 @@ export default function TaskKanbanCard({ task }: { task: TaskItem }) {
         }}>
             <Box>
                 <Typography sx={{ color: '#91929E', fontSize: 12, fontFamily: 'Nunito Sans', mb: 0.5 }}>
-                    TS00{task.id.padStart(5, '0')}
+                    {task.id.substring(0, 8)}
                 </Typography>
                 <Typography sx={{ color: '#0A1629', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 400, lineHeight: 1.5 }}>
-                    {task.name}
+                    {task.title}
                 </Typography>
             </Box>
 
@@ -49,11 +49,11 @@ export default function TaskKanbanCard({ task }: { task: TaskItem }) {
                         fontWeight: 700,
                         fontFamily: 'Nunito Sans'
                     }}>
-                        {task.estimate}
+                        {task.deadline || '無期限'}
                     </Box>
-                    <PriorityIcon sx={{ color: pConf.color, fontSize: 16 }} />
+                    {PriorityIcon && pConf && <PriorityIcon sx={{ color: pConf.color, fontSize: 16 }} />}
                 </Box>
-                <Avatar src={task.assigneeAvatar} sx={{ width: 24, height: 24 }} />
+                <Avatar src={task.assignee?.avatar} sx={{ width: 24, height: 24 }} />
             </Box>
         </Stack>
     );
