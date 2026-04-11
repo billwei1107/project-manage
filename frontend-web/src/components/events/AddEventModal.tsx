@@ -9,7 +9,9 @@ import {
     Typography,
     Box,
     Switch,
-    alpha
+    alpha,
+    Checkbox,
+    FormControlLabel
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -33,7 +35,11 @@ export default function AddEventModal({ open, onClose, onSubmit }: AddEventModal
         date: null as Dayjs | null,
         time: null as Dayjs | null,
         description: '',
-        repeatEvent: false
+        repeatEvent: true, // as per screenshot, it's expanded
+        repeatType: 'Daily',
+        repeatDays: ['Tue', 'Fri'],
+        repeatEveryDay: true,
+        repeatTime: null as Dayjs | null
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,6 +251,113 @@ export default function AddEventModal({ open, onClose, onSubmit }: AddEventModal
                         }}
                     />
                 </Box>
+
+                {formData.repeatEvent && (
+                    <Box sx={{ mb: 4 }}>
+                        <CustomLabel text="Complete this task" />
+                        <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+                            {['Daily', 'Weekly', 'Monthly'].map(type => (
+                                <Button
+                                    key={type}
+                                    variant={formData.repeatType === type ? "contained" : "outlined"}
+                                    onClick={() => setFormData({ ...formData, repeatType: type })}
+                                    sx={{
+                                        flex: 1,
+                                        borderRadius: '12px',
+                                        py: 1,
+                                        textTransform: 'none',
+                                        fontWeight: 700,
+                                        fontFamily: 'Nunito Sans',
+                                        fontSize: 14,
+                                        bgcolor: formData.repeatType === type ? '#3F8CFF' : 'transparent',
+                                        color: formData.repeatType === type ? 'white' : '#A0AEC0',
+                                        borderColor: formData.repeatType === type ? '#3F8CFF' : '#E6EDF5',
+                                        boxShadow: formData.repeatType === type ? '0px 6px 12px rgba(63, 140, 255, 0.26)' : 'none',
+                                        '&:hover': {
+                                            bgcolor: formData.repeatType === type ? '#3377E6' : '#F8F9FA'
+                                        }
+                                    }}
+                                >
+                                    {type}
+                                </Button>
+                            ))}
+                        </Box>
+
+                        <CustomLabel text="On these days" />
+                        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
+                                const isActive = formData.repeatDays.includes(day);
+                                return (
+                                    <Button
+                                        key={day}
+                                        onClick={() => {
+                                            const newDays = isActive 
+                                                ? formData.repeatDays.filter(d => d !== day)
+                                                : [...formData.repeatDays, day];
+                                            setFormData({ ...formData, repeatDays: newDays });
+                                        }}
+                                        sx={{
+                                            minWidth: 0,
+                                            width: 44,
+                                            height: 44,
+                                            borderRadius: '12px',
+                                            bgcolor: isActive ? '#3F8CFF' : '#F8F9FA',
+                                            color: isActive ? 'white' : '#A0AEC0',
+                                            fontWeight: 700,
+                                            fontSize: 14,
+                                            fontFamily: 'Nunito Sans',
+                                            textTransform: 'none',
+                                            p: 0,
+                                            '&:hover': {
+                                                bgcolor: isActive ? '#3377E6' : '#E2E8F0'
+                                            }
+                                        }}
+                                    >
+                                        {day}
+                                    </Button>
+                                );
+                            })}
+                        </Box>
+
+                        <Box sx={{ mb: 3 }}>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox 
+                                        checked={formData.repeatEveryDay}
+                                        onChange={(e) => setFormData({ ...formData, repeatEveryDay: e.target.checked })}
+                                        sx={{ 
+                                            color: '#E6EDF5',
+                                            '&.Mui-checked': {
+                                                color: '#0A1629',
+                                            },
+                                            '& .MuiSvgIcon-root': { fontSize: 28 }
+                                        }}
+                                    />
+                                }
+                                label={
+                                    <Typography sx={{ color: '#0A1629', fontSize: 16, fontWeight: 700, fontFamily: 'Nunito Sans' }}>
+                                        Repeat every day
+                                    </Typography>
+                                }
+                            />
+                        </Box>
+
+                        <Box sx={{ mb: 2 }}>
+                            <CustomLabel text="Time" />
+                            <TimePicker
+                                value={formData.repeatTime}
+                                onChange={(val) => setFormData({ ...formData, repeatTime: val })}
+                                slotProps={{ 
+                                    textField: { 
+                                        fullWidth: true,
+                                        placeholder: "Select Time",
+                                        sx: customInputStyle
+                                    } 
+                                }}
+                            />
+                        </Box>
+                    </Box>
+                )}
 
                 <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
                     <Button
