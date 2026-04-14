@@ -7,6 +7,8 @@ import {
 } from '@mui/material';
 import { useState, useEffect } from 'react';
 import { projectApi } from '../api/projects';
+import { eventApi } from '../api/events';
+import { hrApi } from '../api/hr';
 import type { Project } from '../types/project';
 import AddIcon from '@mui/icons-material/Add';
 import WorkloadCard from '../components/dashboard/WorkloadCard';
@@ -21,20 +23,10 @@ import ActivityStream from '../components/dashboard/ActivityStream';
  * @description_zh 現代化 CRM 儀表板，符合 Figma 視覺設計
  */
 
-const MOCK_WORKLOAD = [
-    { name: 'Shawn Stone', role: 'UI/UX 設計師', level: '中階', progress: 45, color: '#3F8CFF' },
-    { name: 'Randy Delgado', role: 'UX 設計師', level: '初階', progress: 60, color: '#0AC947' },
-    { name: 'Emily Jones', role: '前端工程師', level: '資深', progress: 85, color: '#FFBD21' },
-    { name: 'Jasson Pan', role: '專案經理', level: '中階', progress: 30, color: '#E78175' },
-];
-
-const MOCK_EVENTS = [
-    { time: '10:30 AM', title: '新部門簡報會議' },
-    { time: '11:00 AM', title: "Anna 的生日派對" },
-    { time: '02:00 PM', title: "Ray 的歡送會" },
-];
+const COLORS = ['#3F8CFF', '#0AC947', '#FFBD21', '#E78175', '#F55B5D', '#8C3FFF'];
 
 const MOCK_ACTIVITIES = [
+    { user: '系統助理', action: '準備了', target: '最新的專案資料', time: '剛剛' },
     { user: 'Shawn Stone', action: '更新了狀態：', target: '心智圖', time: '剛剛' },
     { user: 'Randy Delgado', action: '上傳了檔案至：', target: '醫療 App 專案', time: '2 小時前' },
     { user: 'Emily Jones', action: '新增了留言於：', target: '外送服務架構', time: '3 小時前' },
@@ -43,6 +35,9 @@ const MOCK_ACTIVITIES = [
 
 export default function Dashboard() {
     const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+    const [workload, setWorkload] = useState<any[]>([]);
+    const [events, setEvents] = useState<any[]>([]);
+    const [activities, setActivities] = useState<any[]>(MOCK_ACTIVITIES);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -51,10 +46,45 @@ export default function Dashboard() {
 
     const fetchDashboardData = async () => {
         try {
-            const response = await projectApi.getProjects();
-            const projects = response.data;
-            const active = projects.filter(p => p.status !== 'DONE');
-            setRecentProjects(active.slice(0, 5));
+            const [projRes, employeesRes, eventsRes] = await Promise.all([
+                projectApi.getProjects(),
+                hrApi.getEmployees().catch(() => []),
+                eventApi.getEvents().catch(() => [])
+            ]);
+            
+            if (projRes?.data) {
+                const active = projRes.data.filter(p => p.status !== 'DONE');
+                setRecentProjects(active.slice(0, 5));
+                
+                // 根據最新專案建立一些動態
+                const recentActs = active.slice(0, 3).map(p => ({
+                    user: '系統',
+                    action: '正在追蹤專案：',
+                    target: p.title,
+                    time: '最近更新'
+                }));
+                if(recentActs.length > 0) setActivities(recentActs);
+            }
+
+            if (employeesRes && employeesRes.length > 0) {
+                const mappedWorkload = employeesRes.slice(0, 8).map((emp, idx) => ({
+                    name: emp.name,
+                    role: emp.role === 'ROLE_ADMIN' ? '管理員' : '一般員工',
+                    level: '活躍',
+                    progress: Math.floor(Math.random() * 60) + 20, // Mock progress for now
+                    color: COLORS[idx % COLORS.length]
+                }));
+                setWorkload(mappedWorkload);
+            }
+
+            if (eventsRes && eventsRes.length > 0) {
+                const mappedEvents = eventsRes.slice(0, 5).map(ev => ({
+                    time: ev.startTime || ev.date || '今日',
+                    title: ev.title
+                }));
+                setEvents(mappedEvents);
+            }
+
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
         } finally {
@@ -116,9 +146,13 @@ export default function Dashboard() {
                             pb: 2,
                             '&::-webkit-scrollbar': { display: 'none' }
                         }}>
-                            {MOCK_WORKLOAD.map((w, i) => (
+                            {workload.length > 0 ? workload.map((w, i) => (
                                 <WorkloadCard key={i} {...w} />
-                            ))}
+                            )) : (
+                                <Typography sx={{ color: '#7D8592', fontFamily: 'Nunito Sans', p: 2 }}>
+                                    暫無成員資料
+                                </Typography>
+                            )}
                         </Box>
                     </Box>
 
@@ -161,8 +195,8 @@ export default function Dashboard() {
                 </Grid>
 
                 <Grid size={{ xs: 12, lg: 4 }}>
-                    <NearestEvents events={MOCK_EVENTS} />
-                    <ActivityStream activities={MOCK_ACTIVITIES} />
+                    <NearestEvents events={events.length > 0 ? events : [{ time: '今日', title: '目前沒有近期活動' }]} />
+                    <ActivityStream activities={activities} />
                 </Grid>
             </Grid>
         </Box>
