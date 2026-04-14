@@ -24,7 +24,7 @@ interface MockEmployee {
     id: string;
     name: string;
     email: string;
-    gender: 'Male' | 'Female';
+    gender: 'Male' | 'Female' | '男' | '女';
     birthday: string;
     age: number;
     position: string;

@@ -4,7 +4,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 interface ProjectRowCardProps {
     pn: string; // e.g. 'PN0001245'
     title: string;
-    progressType: 'High' | 'Medium' | 'Low';
+    progressType: string;
     progressColor: string;
     allTasks: number;
     activeTasks: number;
