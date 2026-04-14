@@ -1,5 +1,6 @@
 import { Box, Typography } from '@mui/material';
 import { KeyboardArrowDown, ChevronRight } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 import type { Project } from '../../api/projects';
 
 interface ProjectSidebarProps {
@@ -9,6 +10,8 @@ interface ProjectSidebarProps {
 }
 
 export default function ProjectSidebar({ projects, activeProjectId, onSelectProject }: ProjectSidebarProps) {
+    const navigate = useNavigate();
+
     return (
         <Box
             sx={{
@@ -86,7 +89,13 @@ export default function ProjectSidebar({ projects, activeProjectId, onSelectProj
 
                                 {/* View details link for active row */}
                                 {isActive && (
-                                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                                    <Box 
+                                        sx={{ display: 'flex', alignItems: 'center', mt: 1 }}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/admin/projects/${project.id}`);
+                                        }}
+                                    >
                                         <Typography sx={{ color: '#3F8CFF', fontSize: 14, fontFamily: 'Nunito Sans', fontWeight: 600 }}>
                                             查看詳情
                                         </Typography>
