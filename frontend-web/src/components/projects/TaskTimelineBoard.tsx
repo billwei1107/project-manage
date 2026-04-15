@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import type { TaskItem } from '../../pages/projects/ProjectDetail';
+import type { TaskItem } from './TaskRowCard';
 
 /**
  * @file TaskTimelineBoard.tsx
