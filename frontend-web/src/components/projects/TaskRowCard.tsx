@@ -15,6 +15,10 @@ import type { Task } from '../../types/project';
 export type TaskItem = Task & {
     spentTime?: string;
     priority?: 'low' | 'medium' | 'high';
+    section?: 'active' | 'backlog';
+    group?: string;
+    startDay?: number;
+    duration?: number;
 };
 
 const statusConfigs: Record<string, { label: string, color: string, bgcolor: string }> = {
