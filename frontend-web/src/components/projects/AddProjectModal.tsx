@@ -9,7 +9,11 @@ import {
     Typography,
     Box,
     useTheme,
-    alpha
+    alpha,
+    Select,
+    Chip,
+    Avatar,
+    OutlinedInput
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
@@ -21,6 +25,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs, { Dayjs } from 'dayjs';
 import 'dayjs/locale/zh-tw';
 import type { Project, ProjectStatus } from '../../types/project';
+import { hrApi } from '../../api/hr';
+import type { EmployeeBrief } from '../../api/hr';
 
 interface AddProjectModalProps {
     open: boolean;
@@ -66,6 +72,16 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
         githubRepoName: '',
         githubPrivate: true
     });
+
+    const [employees, setEmployees] = useState<EmployeeBrief[]>([]);
+
+    React.useEffect(() => {
+        hrApi.getEmployees().then(data => {
+            setEmployees(data);
+        }).catch(err => {
+            console.error('Failed to fetch employees:', err);
+        });
+    }, []);
 
     React.useEffect(() => {
         if (open && project) {
@@ -261,6 +277,41 @@ export default function AddProjectModal({ open, onClose, onSubmit, project }: Ad
                                 <MenuItem value="Medium">Medium</MenuItem>
                                 <MenuItem value="High">High</MenuItem>
                             </TextField>
+                        </Box>
+
+                        <Box sx={{ mb: 3 }}>
+                            <CustomLabel text="Team Members" />
+                            <Select
+                                multiple
+                                fullWidth
+                                name="teamIds"
+                                value={formData.teamIds}
+                                onChange={(e) => setFormData({ ...formData, teamIds: typeof e.target.value === 'string' ? e.target.value.split(',') : e.target.value })}
+                                input={<OutlinedInput sx={customInputStyle['& .MuiOutlinedInput-root']} />}
+                                renderValue={(selected) => (
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                        {selected.map((value) => {
+                                            const emp = employees.find(e => e.id === value);
+                                            return emp ? <Chip key={value} label={emp.name} sx={{ borderRadius: '8px', bgcolor: 'rgba(63, 140, 255, 0.1)', color: '#3F8CFF', fontWeight: 600 }} /> : null;
+                                        })}
+                                    </Box>
+                                )}
+                                MenuProps={{
+                                    PaperProps: {
+                                        style: {
+                                            maxHeight: 224,
+                                            width: 250,
+                                        },
+                                    },
+                                }}
+                            >
+                                {employees.map((emp) => (
+                                    <MenuItem key={emp.id} value={emp.id}>
+                                        <Avatar sx={{ width: 24, height: 24, mr: 1, fontSize: 12 }}>{emp.name.charAt(0)}</Avatar>
+                                        {emp.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
                         </Box>
 
                         <Box sx={{ mb: 4 }}>
